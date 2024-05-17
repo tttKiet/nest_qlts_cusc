@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
-import { AccountModule } from 'src/account/account.module';
 import { AccountService } from './account.service';
 import { taikhoan } from 'src/entites/taikhoan.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -15,7 +14,6 @@ const privateKey = process.env.JWT_SECRET;
 @Module({
   imports: [
     TypeOrmModule.forFeature([taikhoan]),
-    AccountModule,
     PassportModule,
     JwtModule.register({
       global: true,

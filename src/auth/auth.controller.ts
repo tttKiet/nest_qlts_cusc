@@ -24,7 +24,6 @@ export class AuthController {
     @Res() res: Response,
   ) {
     const { TENDANGNHAP, MATKHAU } = body;
-    console.log('{ TENDANGNHAP, MATKHAU }', { TENDANGNHAP, MATKHAU });
     const data: {
       token: string;
       account: taikhoan;
