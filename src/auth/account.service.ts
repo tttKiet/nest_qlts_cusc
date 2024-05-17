@@ -15,13 +15,11 @@ export class AccountService {
   ) {}
 
   async findOne({ TENDANGNHAP }: any): Promise<taikhoan> {
-    console.log('find one -> TENDANGNHAP', TENDANGNHAP);
     const acc = await this.taiKhoanRepository.findOne({
       where: {
         TENDANGNHAP,
       },
     });
-    console.log('find one -> acc', acc);
 
     return acc;
   }
