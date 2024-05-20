@@ -8,7 +8,8 @@ export class UserController {
 
   @Get()
   async getUsers(@Req() req: Request, @Res() res: Response) {
-    const listUser = await this.userService.getAllUsers();
+    const filter: FilterUser = req.query;
+    const listUser = await this.userService.getAllUsers(filter);
     return res.status(200).json({
       statusCode: 200,
       message: 'Lấy danh sách người dùng thành công.',

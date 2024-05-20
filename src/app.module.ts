@@ -6,6 +6,8 @@ import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { taikhoan } from './entites/taikhoan.entity';
 import { UserModule } from './user/user.module';
+import { admin } from './entites/admin.entity';
+import { usermanager } from './entites/usermanager.entity';
 
 @Module({
   imports: [
@@ -19,10 +21,10 @@ import { UserModule } from './user/user.module';
       username: 'root',
       password: '',
       database: 'htqltuyensinh',
-      entities: [taikhoan],
+      autoLoadEntities: true,
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([taikhoan]),
+    TypeOrmModule.forFeature([taikhoan, admin, usermanager]),
     UserModule,
   ],
   controllers: [AppController],

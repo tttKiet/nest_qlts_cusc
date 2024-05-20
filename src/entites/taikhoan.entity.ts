@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToOne, JoinColumn } from 'typeorm';
+import { admin } from './admin.entity';
+import { usermanager } from './usermanager.entity';
 
 @Entity()
 export class taikhoan {
@@ -9,6 +11,14 @@ export class taikhoan {
     primaryKeyConstraintName: 'ten_dang_nhap',
   })
   TENDANGNHAP: string;
+
+  @OneToOne(() => admin)
+  @JoinColumn({ name: 'MAADMIN' })
+  admin: admin;
+
+  @OneToOne(() => usermanager)
+  @JoinColumn({ name: 'SDT' })
+  usermanager: usermanager;
 
   @Column({ nullable: true, type: 'char', length: 13 })
   MAADMIN: string;
