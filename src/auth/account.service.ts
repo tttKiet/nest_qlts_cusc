@@ -19,6 +19,10 @@ export class AccountService {
       where: {
         TENDANGNHAP,
       },
+      relations: {
+        admin: true,
+        usermanager: true,
+      },
     });
 
     return acc;

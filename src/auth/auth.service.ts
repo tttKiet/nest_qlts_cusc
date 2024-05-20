@@ -44,8 +44,12 @@ export class AuthService {
       SDT: acc.SDT,
       MAADMIN: acc.MAADMIN,
     });
+
     return {
-      account: acc,
+      account: {
+        ...acc,
+        MATKHAU: null,
+      },
       token,
     };
   }
