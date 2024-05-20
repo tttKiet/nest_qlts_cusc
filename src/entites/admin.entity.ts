@@ -25,6 +25,6 @@ export class admin {
   @Column({ nullable: true, type: 'char', length: 32 })
   EMAIL: string;
 
-  @Column({ nullable: false, type: 'tinyint' })
+  @Column({ nullable: false, type: 'tinyint', default: 1 })
   TRANGTHAIADMIN: number;
 }
