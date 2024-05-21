@@ -78,9 +78,9 @@ export class UserService {
       query.andWhere(
         new Brackets((qb) => {
           qb.where('usermanager.HOTEN LIKE :name', {
-            name: `${name}`,
+            name: `%${name}%`,
           }).orWhere('admin.HOTEN LIKE :name', {
-            name: `${name}`,
+            name: `%${name}%`,
           });
         }),
       );
