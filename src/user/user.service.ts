@@ -116,24 +116,28 @@ export class UserService {
       );
     }
 
-    let users = await query
+    const users = await query
       .take(take || 6)
       .skip(skip || 0)
       .orderBy('tk.MAADMIN', 'ASC')
-      .getMany();
+      .getManyAndCount();
 
-    users = users.map((tk) => {
+    const data = users[0].map((tk) => {
       return {
         ...tk,
         MATKHAU: null,
       };
     });
 
-    return users;
+    return {
+      take: take || 6,
+      skip: skip || 0,
+      total: users[1],
+      data: data,
+    };
   }
 
   async editUsers(body: EditAccountDto) {
-    console.log(body);
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
