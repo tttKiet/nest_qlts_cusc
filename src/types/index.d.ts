@@ -8,4 +8,5 @@ interface FilterUser {
   gender?: string;
   email?: string;
   status?: number;
+  name?: string;
 }

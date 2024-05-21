@@ -26,10 +26,11 @@ export class UserService {
       skip,
       email,
       loginName,
-      adminName,
       gender,
       phone,
       status,
+      name,
+      adminName,
       userMangerName,
     } = filter;
     const query = this.taiKhoanRepository
@@ -68,6 +69,18 @@ export class UserService {
             gender: `${gender}`,
           }).orWhere('admin.GIOITINH LIKE :gender', {
             gender: `${gender}`,
+          });
+        }),
+      );
+    }
+
+    if (name) {
+      query.andWhere(
+        new Brackets((qb) => {
+          qb.where('usermanager.HOTEN LIKE :name', {
+            name: `${name}`,
+          }).orWhere('admin.HOTEN LIKE :name', {
+            name: `${name}`,
           });
         }),
       );
