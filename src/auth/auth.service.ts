@@ -37,12 +37,14 @@ export class AuthService {
     if (!passwordIsValid) {
       throw new HttpException('Sai tên đăng nhập hoặc mật khẩu.', 401);
     }
+    const dataSign = {
+      ...acc,
+      MATKHAU: null,
+    };
 
     // Render token jwt
     const token = this.jwtService.sign({
-      TENDANGNHAP: acc.TENDANGNHAP,
-      SDT: acc.SDT,
-      MAADMIN: acc.MAADMIN,
+      ...dataSign,
     });
 
     return {
