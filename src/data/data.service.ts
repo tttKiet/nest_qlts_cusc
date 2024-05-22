@@ -22,11 +22,9 @@ export class DataService {
 
   async getSchools({ provinceCode }: { provinceCode?: string }) {
     const query = this.customerRepository.createQueryBuilder('kh');
-    console.log('provinceCode', provinceCode);
     query
       .leftJoinAndSelect('kh.tinh', 'tinh')
       .leftJoinAndSelect('kh.truong', 'truong')
-      // .select(['kh.MATRUONG'])
       .select(['truong.TENTRUONG as TENTRUONG', 'kh.MATINH as MATINH'])
       .distinct(true)
       .distinctOn(['truong', 'TENTRUONG', 'kh.MATINH', 'tinh']);
@@ -37,6 +35,22 @@ export class DataService {
       });
     }
     const data = await query.getRawMany();
+    return data;
+  }
+
+  async getCustomer({ schoolCode }: { schoolCode?: string }) {
+    const query = this.customerRepository.createQueryBuilder('kh');
+    query
+      .leftJoinAndSelect('kh.tinh', 'tinh')
+      .leftJoinAndSelect('kh.truong', 'truong');
+
+    if (schoolCode) {
+      query.where('kh.MATRUONG = :code', {
+        code: schoolCode,
+      });
+    }
+
+    const data = await query.getMany();
     return data;
   }
 }
