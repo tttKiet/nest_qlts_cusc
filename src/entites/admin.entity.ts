@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToOne } from 'typeorm';
+import { taikhoan } from './taikhoan.entity';
 
 @Entity()
 export class admin {
@@ -9,6 +10,13 @@ export class admin {
     primaryKeyConstraintName: 'ma_admin',
   })
   MAADMIN: string;
+
+  @OneToOne(() => taikhoan, (taikhoan) => taikhoan.admin, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  taikhoan: taikhoan;
 
   @Column({ nullable: true, type: 'char', length: 32 })
   HOTEN: string;

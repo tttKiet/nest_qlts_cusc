@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
+import { khachhang } from './khachhang.entity';
 
 @Entity()
 export class hinhthucthuthap {
@@ -11,4 +12,7 @@ export class hinhthucthuthap {
 
   @Column({ nullable: true, type: 'char', length: 32 })
   TENHINHTHUC: string;
+
+  @OneToMany(() => khachhang, (khachhang) => khachhang.hinhthucthuthap)
+  khachhang: khachhang[];
 }
