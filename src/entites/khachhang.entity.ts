@@ -21,10 +21,7 @@ export class khachhang {
   @Column({ nullable: true, type: 'char', length: 3 })
   MAHINHTHUC: string;
 
-  @Column({ nullable: false, type: 'char', default: 32 })
-  HOTEN: string;
-
-  @Column({ nullable: false, type: 'char', default: 32 })
+  @Column({ nullable: true, type: 'char', length: 32 })
   EMAIL: string;
 
   @Column({ nullable: false, type: 'tinyint' })

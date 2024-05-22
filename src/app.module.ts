@@ -8,6 +8,7 @@ import { taikhoan } from './entites/taikhoan.entity';
 import { UserModule } from './user/user.module';
 import { admin } from './entites/admin.entity';
 import { usermanager } from './entites/usermanager.entity';
+import { CustomerModule } from './customer/customer.module';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { usermanager } from './entites/usermanager.entity';
       synchronize: true,
     }),
     TypeOrmModule.forFeature([taikhoan, admin, usermanager]),
-    UserModule,
+    CustomerModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigModule],
