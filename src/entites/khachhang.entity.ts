@@ -44,7 +44,10 @@ export class khachhang {
   @Column({ nullable: true, type: 'char', length: 3 })
   MAHINHTHUC: string;
 
-  @Column({ nullable: true, type: 'char', length: 32 })
+  @Column({ nullable: false, type: 'char', length: 32 })
+  HOTEN: string;
+
+  @Column({ nullable: false, type: 'char', length: 32 })
   EMAIL: string;
 
   @Column({ nullable: false, type: 'tinyint' })
