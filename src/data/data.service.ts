@@ -23,12 +23,11 @@ export class DataService {
   async getSchools() {
     const query = this.customerRepository.createQueryBuilder('kh');
     query
-      .select(['truong.MATRUONG', 'truong.TENTRUONG'])
-      .distinct(true)
-      .innerJoin('kh.tinh', 'tinh')
-      .innerJoin('kh.truong', 'truong');
+      .leftJoinAndSelect('kh.tinh', 'tinh')
+      .leftJoinAndSelect('kh.truong', 'truong')
+      .where({});
 
-    const data = await query.getRawMany();
+    const data = await query.getMany();
     return data;
   }
 }

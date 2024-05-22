@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryColumn, JoinColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryColumn, JoinColumn, ManyToOne } from 'typeorm';
 import { nghenghiep } from './nghenghiep.entity';
 import { truong } from './truong.entity';
 import { tinh } from './tinh.entity';
@@ -13,28 +13,28 @@ export class khachhang {
   })
   SDT: string;
 
-  @OneToMany(() => nghenghiep, (nghenghiep) => nghenghiep.khachhang)
+  @ManyToOne(() => nghenghiep, (nghenghiep) => nghenghiep.khachhang)
   @JoinColumn({ name: 'MANGHENGHIEP' })
   nghenghiep: nghenghiep;
 
   @Column({ nullable: true, type: 'char', length: 10 })
   MANGHENGHIEP: string;
 
-  @OneToMany(() => truong, (truong) => truong.khachhang)
+  @ManyToOne(() => truong, (truong) => truong.khachhang)
   @JoinColumn({ name: 'MATRUONG' })
   truong: truong;
 
   @Column({ nullable: true, type: 'char', length: 10 })
   MATRUONG: string;
 
-  @OneToMany(() => tinh, (tinh) => tinh.khachhang)
+  @ManyToOne(() => tinh, (tinh) => tinh)
   @JoinColumn({ name: 'MATINH' })
   tinh: tinh;
 
   @Column({ nullable: true, type: 'char', length: 10 })
   MATINH: string;
 
-  @OneToMany(
+  @ManyToOne(
     () => hinhthucthuthap,
     (hinhthucthuthap) => hinhthucthuthap.khachhang,
   )

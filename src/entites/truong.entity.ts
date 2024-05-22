@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
 import { khachhang } from './khachhang.entity';
 
 @Entity()
@@ -13,6 +13,6 @@ export class truong {
   @Column({ nullable: true, type: 'varchar', length: 128 })
   TENTRUONG: string;
 
-  @ManyToOne(() => khachhang, (khachhang) => khachhang.truong)
+  @OneToMany(() => khachhang, (khachhang) => khachhang.truong)
   khachhang: khachhang[];
 }
