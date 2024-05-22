@@ -1,4 +1,4 @@
-import { Controller, Get, Res } from '@nestjs/common';
+import { Controller, Get, Query, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { DataService } from './data.service';
 
@@ -18,8 +18,13 @@ export class DataController {
   }
 
   @Get('/school')
-  async getSchool(@Res() res: Response) {
-    const data = await this.dataService.getSchools();
+  async getSchool(
+    @Res() res: Response,
+    @Query() query: { provinceCode?: string },
+  ) {
+    const data = await this.dataService.getSchools({
+      ...query,
+    });
 
     return res.status(200).json({
       statusCode: 200,
