@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, ManyToOne } from 'typeorm';
+import { khachhang } from './khachhang.entity';
 
 @Entity()
 export class tinh {
@@ -11,4 +12,7 @@ export class tinh {
 
   @Column({ nullable: true, type: 'char', length: 32 })
   TENTINH: string;
+
+  @ManyToOne(() => khachhang, (khachhang) => khachhang.tinh)
+  khachhang: khachhang[];
 }

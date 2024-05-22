@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AccountService } from 'src/auth/account.service';
-import { EditAccountDto } from 'src/dto/edit-account.dto';
+import { CreateAccountDto, EditAccountDto } from 'src/dto/edit-account.dto';
 import { admin } from 'src/entites/admin.entity';
 import { taikhoan } from 'src/entites/taikhoan.entity';
 import { usermanager } from 'src/entites/usermanager.entity';
@@ -137,23 +137,35 @@ export class UserService {
     };
   }
 
-  async editUsers(body: EditAccountDto) {
+  async createUser(body: CreateAccountDto) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
+
     if (body.ROLE !== 'admin' && body.ROLE !== 'usermanager') {
       throw new HttpException('Vui lòng chuyền đúng role.', 400);
     }
 
     try {
       if (body.ROLE == 'admin') {
+        // check
+        const filter = await this.adminRepository.findOne({
+          where: {
+            MAADMIN: 'AD' + body.SDT,
+          },
+        });
+
+        if (filter) {
+          throw new HttpException('Đã tạo admin này.', 400);
+        }
+
         // create admin
         const admin = this.adminRepository.create({
           DIACHI: body.DIACHI,
           EMAIL: body.EMAIL,
           GIOITINH: body.GIOITINH,
           HOTEN: body.HOVATEN,
-          MAADMIN: body?.MAADMIN || 'AD' + body.SDT,
+          MAADMIN: 'AD' + body.SDT,
           SDT: body.SDT,
         });
         await this.adminRepository.save(admin, {
@@ -170,7 +182,21 @@ export class UserService {
         await this.taiKhoanRepository.save(acc, {
           reload: true,
         });
+
+        return {
+          acc,
+        };
       } else if (body.ROLE == 'usermanager') {
+        const filter = await this.usermanagerRepository.findOne({
+          where: {
+            SDT: body.SDT,
+          },
+        });
+
+        if (filter) {
+          throw new HttpException('Đã tạo usermanager này.', 400);
+        }
+
         const userManager = this.usermanagerRepository.create({
           DIACHI: body.DIACHI,
           EMAIL: body.EMAIL,
@@ -178,6 +204,7 @@ export class UserService {
           HOTEN: body.HOVATEN,
           SDT: body.SDT,
         });
+
         await this.usermanagerRepository.save(userManager, {
           reload: true,
         });
@@ -192,8 +219,106 @@ export class UserService {
         await this.taiKhoanRepository.save(acc, {
           reload: true,
         });
+
+        return userManager;
       }
       await queryRunner.commitTransaction();
+    } catch (e) {
+      await queryRunner.rollbackTransaction();
+      throw e;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async editUsers(body: EditAccountDto) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    if (body.ROLE !== 'admin' && body.ROLE !== 'usermanager') {
+      throw new HttpException('Vui lòng chuyền đúng role.', 400);
+    }
+
+    try {
+      // fillter data existed
+      const account = await this.taiKhoanRepository.findOne({
+        where: {
+          TENDANGNHAP: body.TENDANGNHAP,
+        },
+        relations: {
+          usermanager: true,
+          admin: true,
+        },
+      });
+
+      if (!account) {
+        throw new HttpException(
+          `Không tìm thấy người dùng có tên: "${body.TENDANGNHAP}".`,
+          400,
+        );
+      }
+      if (body.ROLE == 'admin') {
+        const updateResultAdmin = await this.adminRepository.update(
+          {
+            MAADMIN: account.MAADMIN,
+          },
+          {
+            DIACHI: body?.DIACHI,
+            EMAIL: body?.EMAIL,
+            GIOITINH: body?.GIOITINH,
+            HOTEN: body?.HOVATEN,
+            TRANGTHAIADMIN: body?.TRANGTHAIADMIN,
+          },
+        );
+
+        let pass;
+        if (body.MATKHAU) {
+          pass = await this.accountService.hashPassword(body.MATKHAU);
+        }
+        const updateResultAccount = await this.taiKhoanRepository.update(
+          { TENDANGNHAP: account.TENDANGNHAP },
+          {
+            MATKHAU: pass,
+          },
+        );
+        await queryRunner.commitTransaction();
+
+        return {
+          updateResultAccount,
+          updateResultAdmin,
+        };
+      } else if (body.ROLE == 'usermanager') {
+        const updateResultUserManager = await this.usermanagerRepository.update(
+          {
+            SDT: account.usermanager.SDT,
+          },
+          {
+            DIACHI: body?.DIACHI,
+            EMAIL: body?.EMAIL,
+            GIOITINH: body?.GIOITINH,
+            HOTEN: body?.HOVATEN,
+          },
+        );
+
+        let pass;
+        if (body.MATKHAU) {
+          pass = await this.accountService.hashPassword(body.MATKHAU);
+        }
+        const updateResultUserManagerAcc = await this.taiKhoanRepository.update(
+          {
+            TENDANGNHAP: account.TENDANGNHAP,
+          },
+          {
+            MATKHAU: pass,
+          },
+        );
+
+        await queryRunner.commitTransaction();
+        return {
+          updateResultUserManager,
+          updateResultUserManagerAcc,
+        };
+      }
     } catch (e) {
       await queryRunner.rollbackTransaction();
       throw e;

@@ -12,7 +12,7 @@ export class taikhoan {
   })
   TENDANGNHAP: string;
 
-  @OneToOne(() => admin)
+  @OneToOne(() => admin, (admin) => admin.taikhoan)
   @JoinColumn({ name: 'MAADMIN' })
   admin: admin;
 

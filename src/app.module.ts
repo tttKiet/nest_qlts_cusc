@@ -1,13 +1,11 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { taikhoan } from './entites/taikhoan.entity';
+import { DataModule } from './data/data.module';
 import { UserModule } from './user/user.module';
-import { admin } from './entites/admin.entity';
-import { usermanager } from './entites/usermanager.entity';
 
 @Module({
   imports: [
@@ -24,8 +22,8 @@ import { usermanager } from './entites/usermanager.entity';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([taikhoan, admin, usermanager]),
-    UserModule,
+    // TypeOrmModule.forFeature([taikhoan, admin, usermanager, tinh]),
+    DataModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigModule],
