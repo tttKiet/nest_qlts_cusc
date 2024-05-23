@@ -31,7 +31,11 @@ export class DataService {
     query
       .leftJoinAndSelect('kh.tinh', 'tinh')
       .leftJoinAndSelect('kh.truong', 'truong')
-      .select(['truong.TENTRUONG as TENTRUONG', 'kh.MATINH as MATINH'])
+      .select([
+        'truong.TENTRUONG as TENTRUONG',
+        'truong.MATRUONG as MATRUONG',
+        'kh.MATINH as MATINH',
+      ])
       .distinct(true)
       .distinctOn(['truong', 'TENTRUONG', 'kh.MATINH', 'tinh']);
 
@@ -83,8 +87,15 @@ export class DataService {
         code: schoolCode,
       });
     }
+    query
+      .select([
+        'nganh.TENNGANH as TENNGANH',
+        'nganh.MANGANH as MANGANH',
+        'count(khachhang.SDT) as count',
+      ])
+      .groupBy('nganh.MANGANH');
 
-    const data = await query.getMany();
+    const data = await query.getRawMany();
     return data;
   }
 }
