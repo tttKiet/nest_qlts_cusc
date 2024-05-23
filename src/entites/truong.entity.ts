@@ -14,5 +14,5 @@ export class truong {
   TENTRUONG: string;
 
   @OneToMany(() => khachhang, (khachhang) => khachhang.truong)
-  khachhang: khachhang[];
-}
+  khachhang: khachhang[]; 
+} 

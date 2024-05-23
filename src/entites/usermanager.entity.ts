@@ -6,7 +6,6 @@ export class usermanager {
     type: 'char',
     length: 11,
     nullable: false,
-    // primaryKeyConstraintName: 'ten_dang_nhap',
   })
   SDT: string;
 
@@ -22,6 +21,6 @@ export class usermanager {
   @Column({ nullable: true, type: 'varchar', length: 60 })
   DIACHI: string;
 
-  @Column({ nullable: false, type: 'tinyint', default: 1 })
+  @Column({ nullable: false, type: 'tinyint', default: 1 }) 
   TRANGTHAIUM: string;
 }

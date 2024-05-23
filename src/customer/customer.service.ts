@@ -13,9 +13,8 @@ export class CustomerService {
   async getInfoCustomer() {
     const query = await this.khachhangRepository.findOne({
       where: {
-        SDT: '0187654358',
+        SDT: '0329876750',
       },
-       
     });
 
     return {
