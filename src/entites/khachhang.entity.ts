@@ -1,8 +1,16 @@
-import { Entity, Column, PrimaryColumn, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryColumn,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { nghenghiep } from './nghenghiep.entity';
 import { truong } from './truong.entity';
 import { tinh } from './tinh.entity';
 import { hinhthucthuthap } from './hinhthucthuthap.entity';
+import { nganhyeuthich } from './nganhyeuthich.entity';
 
 @Entity()
 export class khachhang {
@@ -52,4 +60,8 @@ export class khachhang {
 
   @Column({ nullable: false, type: 'tinyint' })
   TRANGTHAIKHACHHANG: string;
+
+  @OneToMany(() => nganhyeuthich, (nganhyeuthich) => nganhyeuthich.khachhang)
+  @JoinColumn()
+  nganhyeuthich: nganhyeuthich;
 }

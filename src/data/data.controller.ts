@@ -36,9 +36,29 @@ export class DataController {
   @Get('/customer')
   async getCustomer(
     @Res() res: Response,
-    @Query() query: { schoolCode?: string },
+    @Query()
+    query: {
+      schoolCode?: string;
+      provinceCode?: string;
+    },
   ) {
     const data = await this.dataService.getCustomer({
+      ...query,
+    });
+
+    return res.status(200).json({
+      statusCode: 200,
+      message: 'Lấy dữ liệu thành công.',
+      data,
+    });
+  }
+
+  @Get('/job-like')
+  async getJobLike(
+    @Res() res: Response,
+    @Query() query: { schoolCode?: string },
+  ) {
+    const data = await this.dataService.getJobLike({
       ...query,
     });
 
