@@ -261,7 +261,7 @@ export class DataService {
 
   async getSegment() {
     const query = this.segmentRepository.createQueryBuilder('pd');
-    // query.leftJoinAndSelect('pd.chitietpq', 'chitietpq');
+    query.leftJoinAndSelect('pd.truong', 'truong');
 
     const data = await query.getMany();
     return data;

@@ -6,7 +6,6 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
-  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { khoahocquantam } from './khoahocquantam.entity';
 import { kenhnhanthongbao } from './kenhnhanthongbao.entity';
@@ -25,7 +24,7 @@ export class phieudkxettuyen {
   })
   MAPHIEUDK: string;
 
-  @Column({ nullable: false, type: 'int', length: 11 })
+  @Column({ nullable: false, type: 'int' })
   MALOAIKHOAHOC: string;
 
   @Column({ nullable: false, type: 'char', length: 10 })
@@ -34,7 +33,7 @@ export class phieudkxettuyen {
   @Column({ nullable: false, type: 'char', length: 11 })
   SDT: string;
 
-  @Column({ nullable: false, type: 'int', length: 11 })
+  @Column({ nullable: false, type: 'int', default: 3 })
   MAKETQUA: string;
 
   @Column({ nullable: true, type: 'char', length: 32 })

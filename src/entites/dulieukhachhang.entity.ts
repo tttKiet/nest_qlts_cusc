@@ -1,11 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryColumn,
-  JoinColumn,
-  ManyToOne,
-  OneToOne,
-} from 'typeorm';
+import { Entity, Column, PrimaryColumn, JoinColumn, OneToOne } from 'typeorm';
 import { khachhang } from './khachhang.entity';
 
 @Entity()
