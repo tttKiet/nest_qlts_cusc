@@ -10,6 +10,7 @@ import { kenhnhanthongbao } from 'src/entites/kenhnhanthongbao.entity';
 import { hoso } from 'src/entites/hoso.entity';
 import { khoahocquantam } from 'src/entites/khoahocquantam.entity';
 import { nganh } from 'src/entites/nganh.entity';
+import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
 
 @Injectable()
 export class CustomerService {
@@ -19,7 +20,7 @@ export class CustomerService {
     @InjectRepository(dulieukhachhang)
     private dulieukhachhangRepository: Repository<dulieukhachhang>,
     @InjectRepository(phieudkxettuyen)
-    private phieudkxettuyenRepository: Repository<phieudkxettuyen>,
+    private phieudkxettuyenRepository: Repository<phieudkxettuyen>, 
   ) {}
 
   async getInfoCustomer(props: GetCustomerDto) {
@@ -34,13 +35,14 @@ export class CustomerService {
       .leftJoinAndSelect('khachhang.nghenghiep', 'nghenghiep')
       .leftJoinAndSelect('khachhang.dulieukhachhang', 'dulieukhachhang')
       .leftJoinAndSelect('khachhang.phieudkxettuyen', 'phieudkxettuyen')
-      .leftJoinAndSelect('khachhang.nghanhyeuthich', 'nghanhyeuthich')
-      .leftJoinAndSelect('phieudkxettuyen.kenhnhanthongbao', 'kenhnhanthongbao')
+      .leftJoinAndSelect('khachhang.nghanhyeuthich', 'nghanhyeuthich') 
+
+      .leftJoinAndSelect('phieudkxettuyen.kenhnhanthongbao', 'kenhnhanthongbao') 
       .leftJoinAndSelect('phieudkxettuyen.ketquatotnghiep', 'ketquatotnghiep')
       .leftJoinAndSelect('phieudkxettuyen.dottuyendung', 'dottuyendung')
       .leftJoinAndSelect('phieudkxettuyen.hoso', 'hoso')
       .leftJoinAndSelect('phieudkxettuyen.khoahocquantam', 'khoahocquantam')
-      .getOne();
+      .getMany();
 
     return {
       data: data,
