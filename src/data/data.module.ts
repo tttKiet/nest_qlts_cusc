@@ -7,6 +7,10 @@ import { truong } from 'src/entites/truong.entity';
 import { khachhang } from 'src/entites/khachhang.entity';
 import { nghenghiep } from 'src/entites/nghenghiep.entity';
 import { hinhthucthuthap } from 'src/entites/hinhthucthuthap.entity';
+import { nganh } from 'src/entites/nganh.entity';
+import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
+import { phanquyen } from 'src/entites/phanquyen.entity';
+import { chitietpq } from 'src/entites/chitietpq.entity';
 
 @Module({
   providers: [DataService],
@@ -18,6 +22,10 @@ import { hinhthucthuthap } from 'src/entites/hinhthucthuthap.entity';
       khachhang,
       nghenghiep,
       hinhthucthuthap,
+      nganh,
+      nganhyeuthich,
+      phanquyen,
+      chitietpq,
     ]),
   ],
 })
