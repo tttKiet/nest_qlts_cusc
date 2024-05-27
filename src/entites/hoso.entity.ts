@@ -1,26 +1,23 @@
 import {
   Entity,
   Column,
-  PrimaryColumn,
   ManyToOne,
   JoinColumn,
-  OneToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { phieudkxettuyen } from './phieudkxettuyen.entity';
 
 @Entity()
 export class hoso {
-  @PrimaryColumn({
-    type: 'char',
-    length: 11,
-    nullable: false,
+  @PrimaryGeneratedColumn('increment', {
+    type: 'int',
   })
   MAHOSO: string;
 
-  @Column({ nullable: true, type: 'char', length: 32 })
+  @Column({ nullable: true, type: 'char' })
   MAPHIEUDK: string;
 
-  @Column({ nullable: true, type: 'char', length: 255 })
+  @Column({ nullable: true, type: 'varchar', length: 255 })
   HOSO: string;
 
   // nganh

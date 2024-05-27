@@ -1,12 +1,10 @@
-import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
+import { Entity, Column, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { phieudkxettuyen } from './phieudkxettuyen.entity';
 
 @Entity()
 export class khoahocquantam {
-  @PrimaryColumn({
-    type: 'char',
-    length: 11,
-    nullable: false,
+  @PrimaryGeneratedColumn('increment', {
+    type: 'int',
   })
   MALOAIKHOAHOC: string;
 

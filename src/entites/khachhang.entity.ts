@@ -64,14 +64,12 @@ export class khachhang {
   @Column({ nullable: false, type: 'tinyint' })
   TRANGTHAIKHACHHANG: string;
 
-
   @OneToOne(
     () => dulieukhachhang,
     (dulieukhachhang) => dulieukhachhang.khachhang,
   )
   dulieukhachhang: dulieukhachhang;
 
-  
   @OneToOne(
     () => phieudkxettuyen,
     (phieudkxettuyen) => phieudkxettuyen.khachhang,
@@ -81,5 +79,4 @@ export class khachhang {
   @OneToMany(() => nganhyeuthich, (nganhyeuthich) => nganhyeuthich.khachhang)
   @JoinColumn()
   nganhyeuthich: nganhyeuthich[];
-
 }

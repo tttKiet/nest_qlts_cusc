@@ -128,14 +128,17 @@ export class DataController {
   @Delete('/segment')
   async deleteSegment(@Body() body: DeleteSegmentDto, @Res() res: Response) {
     try {
-      const data = await this.dataService.deleteSegment(
+      const deleteResult = await this.dataService.deleteSegment(
         Array.isArray(body.MaPQArray) ? body.MaPQArray : [body.MaPQArray],
       );
 
       return res.status(200).json({
         statusCode: 200,
-        message: 'Xóa đoạn thành công.',
-        data,
+        message:
+          deleteResult.affected > 0
+            ? 'Xóa đoạn thành công.'
+            : 'Dữ liệu chưa thay đổi.',
+        data: deleteResult,
       });
     } catch (error) {
       throw new HttpException(

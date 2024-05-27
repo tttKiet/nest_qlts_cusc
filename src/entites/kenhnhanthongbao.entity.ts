@@ -18,5 +18,5 @@ export class kenhnhanthongbao {
     () => phieudkxettuyen,
     (phieudkxettuyen) => phieudkxettuyen.kenhnhanthongbao,
   )
-  phieudkxettuyen: phieudkxettuyen[]; 
-} 
+  phieudkxettuyen: phieudkxettuyen[];
+}

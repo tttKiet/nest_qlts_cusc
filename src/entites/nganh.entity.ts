@@ -16,10 +16,7 @@ export class nganh {
 
   @OneToMany(() => nganhyeuthich, (nganhyeuthich) => nganhyeuthich.nganh)
   nganhyeuthich: nganhyeuthich[];
-  
-  @OneToMany(
-    () => phieudkxettuyen,
-    (phieudkxettuyen) => phieudkxettuyen.nganh,
-  )
-  phieudkxettuyen: phieudkxettuyen[];  
+
+  @OneToMany(() => phieudkxettuyen, (phieudkxettuyen) => phieudkxettuyen.nganh)
+  phieudkxettuyen: phieudkxettuyen[];
 }
