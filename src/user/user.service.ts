@@ -271,49 +271,66 @@ export class UserService {
           },
         );
 
-        let pass;
+        let pass = undefined;
         if (body.MATKHAU) {
           pass = await this.accountService.hashPassword(body.MATKHAU);
+          const updateResultAccount = await this.taiKhoanRepository.update(
+            { TENDANGNHAP: account.TENDANGNHAP },
+            {
+              MATKHAU: pass,
+            },
+          );
+          await queryRunner.commitTransaction();
+
+          return {
+            updateResultAccount,
+            updateResultAdmin,
+          };
         }
-        const updateResultAccount = await this.taiKhoanRepository.update(
-          { TENDANGNHAP: account.TENDANGNHAP },
-          {
-            MATKHAU: pass,
-          },
-        );
-        await queryRunner.commitTransaction();
 
         return {
-          updateResultAccount,
-          updateResultAdmin,
+          updateResultAccount: {
+            generatedMaps: [],
+            raw: [],
+            affected: 0,
+          },
+          updateResultAdmin: {
+            generatedMaps: [],
+            raw: [],
+            affected: 0,
+          },
         };
       } else if (body.ROLE == 'usermanager') {
-        const updateResultUserManager = await this.usermanagerRepository.update(
-          {
-            SDT: account.usermanager.SDT,
-          },
-          {
-            DIACHI: body?.DIACHI,
-            EMAIL: body?.EMAIL,
-            GIOITINH: body?.GIOITINH,
-            HOTEN: body?.HOVATEN,
-          },
-        );
+        let updateResultUserManager = undefined;
+        let updateResultUserManagerAcc = undefined;
+        if (account.usermanager) {
+          updateResultUserManager = await this.usermanagerRepository.update(
+            {
+              SDT: account.usermanager.SDT,
+            },
+            {
+              DIACHI: body?.DIACHI,
+              EMAIL: body?.EMAIL,
+              GIOITINH: body?.GIOITINH,
+              HOTEN: body?.HOVATEN,
+            },
+          );
+        }
 
-        let pass;
+        let pass = undefined;
         if (body.MATKHAU) {
           pass = await this.accountService.hashPassword(body.MATKHAU);
+          updateResultUserManagerAcc = await this.taiKhoanRepository.update(
+            {
+              TENDANGNHAP: account.TENDANGNHAP,
+            },
+            {
+              MATKHAU: pass,
+            },
+          );
         }
-        const updateResultUserManagerAcc = await this.taiKhoanRepository.update(
-          {
-            TENDANGNHAP: account.TENDANGNHAP,
-          },
-          {
-            MATKHAU: pass,
-          },
-        );
-
         await queryRunner.commitTransaction();
+
         return {
           updateResultUserManager,
           updateResultUserManagerAcc,

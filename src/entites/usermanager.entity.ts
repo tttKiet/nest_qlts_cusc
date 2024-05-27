@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
+import { phanquyen } from './phanquyen.entity';
+// import { phanquyen } from './phanquyen.entity';
 
 @Entity()
 export class usermanager {
@@ -23,4 +25,7 @@ export class usermanager {
 
   @Column({ nullable: false, type: 'tinyint', default: 1 }) 
   TRANGTHAIUM: string;
+
+  @OneToMany(() => phanquyen, (phanquyen) => phanquyen.usermanager)
+  phanquyen: phanquyen[];
 }

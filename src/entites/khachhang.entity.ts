@@ -13,6 +13,7 @@ import { tinh } from './tinh.entity';
 import { hinhthucthuthap } from './hinhthucthuthap.entity';
 import { phieudkxettuyen } from './phieudkxettuyen.entity';
 import { dulieukhachhang } from './dulieukhachhang.entity';
+import { nganhyeuthich } from './nganhyeuthich.entity';
 
 @Entity()
 export class khachhang {
@@ -63,17 +64,22 @@ export class khachhang {
   @Column({ nullable: false, type: 'tinyint' })
   TRANGTHAIKHACHHANG: string;
 
-  // du liẹu khách hàng
+
   @OneToOne(
     () => dulieukhachhang,
     (dulieukhachhang) => dulieukhachhang.khachhang,
   )
   dulieukhachhang: dulieukhachhang;
 
-  // phieudkxettuyen
+  
   @OneToOne(
     () => phieudkxettuyen,
     (phieudkxettuyen) => phieudkxettuyen.khachhang,
   )
   phieudkxettuyen: phieudkxettuyen;
+
+  @OneToMany(() => nganhyeuthich, (nganhyeuthich) => nganhyeuthich.khachhang)
+  @JoinColumn()
+  nganhyeuthich: nganhyeuthich[];
+
 }

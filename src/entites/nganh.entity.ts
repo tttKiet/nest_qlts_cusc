@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
 import { phieudkxettuyen } from './phieudkxettuyen.entity';
+import { nganhyeuthich } from './nganhyeuthich.entity';
 
 @Entity()
 export class nganh {
@@ -10,10 +11,12 @@ export class nganh {
   })
   MANGANH: string;
 
-  @Column({ nullable: true, type: 'char', length: 128 })
+  @Column({ nullable: true, type: 'varchar', length: 128 })
   TENNGANH: string;
 
-  // phieudkxettuyen
+  @OneToMany(() => nganhyeuthich, (nganhyeuthich) => nganhyeuthich.nganh)
+  nganhyeuthich: nganhyeuthich[];
+  
   @OneToMany(
     () => phieudkxettuyen,
     (phieudkxettuyen) => phieudkxettuyen.nganh,

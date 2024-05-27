@@ -1,5 +1,7 @@
 import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
 import { khachhang } from './khachhang.entity';
+import { phanquyen } from './phanquyen.entity';
+// import { phanquyen } from './phanquyen.entity';
 
 @Entity()
 export class truong {
@@ -12,7 +14,10 @@ export class truong {
 
   @Column({ nullable: true, type: 'varchar', length: 128 })
   TENTRUONG: string;
-
+  
   @OneToMany(() => khachhang, (khachhang) => khachhang.truong)
-  khachhang: khachhang[];  
-}  
+  khachhang: khachhang[];
+
+  @OneToMany(() => phanquyen, (phanquyen) => phanquyen.truong)
+  phanquyen: phanquyen[];
+}
