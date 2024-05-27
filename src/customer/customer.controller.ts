@@ -19,7 +19,7 @@ export class CustomerController {
       });
     } catch (error) {
       return res.status(500).json({
-        statusCode: 200,
+        statusCode: 500,
         message: error?.message || 'Lỗi server.',
       });
     }

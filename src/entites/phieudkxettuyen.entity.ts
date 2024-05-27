@@ -25,7 +25,7 @@ export class phieudkxettuyen {
   })
   MAPHIEUDK: string;
 
-  @Column({ nullable: false, type: 'char', length: 11 }) 
+  @Column({ nullable: false, type: 'int', length: 11 })
   MALOAIKHOAHOC: string;
 
   @Column({ nullable: false, type: 'char', length: 10 })
@@ -34,7 +34,7 @@ export class phieudkxettuyen {
   @Column({ nullable: false, type: 'char', length: 11 })
   SDT: string;
 
-  @Column({ nullable: false, type: 'char', length: 11 })
+  @Column({ nullable: false, type: 'int', length: 11 })
   MAKETQUA: string;
 
   @Column({ nullable: true, type: 'char', length: 32 })
@@ -76,7 +76,7 @@ export class phieudkxettuyen {
 
   // nganh
   @ManyToOne(() => nganh, (nganh) => nganh.phieudkxettuyen)
-  @JoinColumn({ name: 'MANGANH' })
+  @JoinColumn({ name: 'NGANHDK' })
   nganh: nganh;
 
   // dot tuyen dung
