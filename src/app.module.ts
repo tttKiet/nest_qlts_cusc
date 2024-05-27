@@ -6,12 +6,14 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { DataModule } from './data/data.module';
 import { UserModule } from './user/user.module';
+import { CustomerModule } from './customer/customer.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
     UserModule,
+    CustomerModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
@@ -20,7 +22,7 @@ import { UserModule } from './user/user.module';
       password: '',
       database: 'htqltuyensinh',
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
     }),
     // TypeOrmModule.forFeature([taikhoan, admin, usermanager, tinh]),
     DataModule,

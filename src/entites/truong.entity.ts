@@ -14,7 +14,7 @@ export class truong {
 
   @Column({ nullable: true, type: 'varchar', length: 128 })
   TENTRUONG: string;
-
+  
   @OneToMany(() => khachhang, (khachhang) => khachhang.truong)
   khachhang: khachhang[];
 

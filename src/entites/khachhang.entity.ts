@@ -4,12 +4,15 @@ import {
   PrimaryColumn,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   OneToMany,
 } from 'typeorm';
 import { nghenghiep } from './nghenghiep.entity';
 import { truong } from './truong.entity';
 import { tinh } from './tinh.entity';
 import { hinhthucthuthap } from './hinhthucthuthap.entity';
+import { phieudkxettuyen } from './phieudkxettuyen.entity';
+import { dulieukhachhang } from './dulieukhachhang.entity';
 import { nganhyeuthich } from './nganhyeuthich.entity';
 
 @Entity()
@@ -35,7 +38,7 @@ export class khachhang {
   @Column({ nullable: true, type: 'char', length: 10 })
   MATRUONG: string;
 
-  @ManyToOne(() => tinh, (tinh) => tinh)
+  @ManyToOne(() => tinh, (tinh) => tinh.khachhang)
   @JoinColumn({ name: 'MATINH' })
   tinh: tinh;
 
@@ -61,7 +64,22 @@ export class khachhang {
   @Column({ nullable: false, type: 'tinyint' })
   TRANGTHAIKHACHHANG: string;
 
+
+  @OneToOne(
+    () => dulieukhachhang,
+    (dulieukhachhang) => dulieukhachhang.khachhang,
+  )
+  dulieukhachhang: dulieukhachhang;
+
+  
+  @OneToOne(
+    () => phieudkxettuyen,
+    (phieudkxettuyen) => phieudkxettuyen.khachhang,
+  )
+  phieudkxettuyen: phieudkxettuyen;
+
   @OneToMany(() => nganhyeuthich, (nganhyeuthich) => nganhyeuthich.khachhang)
   @JoinColumn()
   nganhyeuthich: nganhyeuthich[];
+
 }
