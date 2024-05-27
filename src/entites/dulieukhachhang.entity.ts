@@ -1,8 +1,12 @@
-import { Entity, Column, PrimaryColumn, JoinColumn, ManyToOne } from 'typeorm';
-import { nghenghiep } from './nghenghiep.entity';
-import { truong } from './truong.entity';
-import { tinh } from './tinh.entity';
-import { hinhthucthuthap } from './hinhthucthuthap.entity';
+import {
+  Entity,
+  Column,
+  PrimaryColumn,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+} from 'typeorm';
+import { khachhang } from './khachhang.entity';
 
 @Entity()
 export class dulieukhachhang {
@@ -24,4 +28,10 @@ export class dulieukhachhang {
 
   @Column({ nullable: true, type: 'char', length: 60 })
   FACEBOOK: string;
+
+  @OneToOne(() => khachhang, (khachhang) => khachhang.dulieukhachhang)
+  @JoinColumn({
+    name: 'SDT',
+  })
+  khachhang: khachhang;
 }

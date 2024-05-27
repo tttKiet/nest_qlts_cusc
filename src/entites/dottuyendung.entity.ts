@@ -13,7 +13,7 @@ export class dottuyendung {
 
   @PrimaryColumn({
     type: 'char',
-    length: 12,
+    length: 20,
     nullable: false,
   })
   NAM: string;
@@ -24,13 +24,13 @@ export class dottuyendung {
   // phieudkxettuyen
   @ManyToOne(
     () => phieudkxettuyen,
-    (phieudkxettuyen) => phieudkxettuyen.MAPHIEUDK,
+    (phieudkxettuyen) => phieudkxettuyen.dottuyendung,
   )
   @JoinColumn({ name: 'MAPHIEUDK' })
   phieudkxettuyen: phieudkxettuyen;
 
   // nam
-  @ManyToOne(() => nam, (nam) => nam.NAM)
+  @ManyToOne(() => nam, (nam) => nam.dottuyendung)
   @JoinColumn({ name: 'NAM' })
   nam: nam;
 }

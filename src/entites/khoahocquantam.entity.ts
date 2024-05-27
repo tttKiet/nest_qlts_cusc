@@ -15,7 +15,7 @@ export class khoahocquantam {
 
   @OneToMany(
     () => phieudkxettuyen,
-    (phieudkxettuyen) => phieudkxettuyen.MALOAIKHOAHOC,
+    (phieudkxettuyen) => phieudkxettuyen.khoahocquantam,
   )
   phieudkxettuyen: phieudkxettuyen[];
 }

@@ -6,6 +6,7 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { khoahocquantam } from './khoahocquantam.entity';
 import { kenhnhanthongbao } from './kenhnhanthongbao.entity';
@@ -24,7 +25,7 @@ export class phieudkxettuyen {
   })
   MAPHIEUDK: string;
 
-  @Column({ nullable: false, type: 'char', length: 11 })
+  @Column({ nullable: false, type: 'char', length: 11 }) 
   MALOAIKHOAHOC: string;
 
   @Column({ nullable: false, type: 'char', length: 10 })
@@ -42,45 +43,47 @@ export class phieudkxettuyen {
   @Column({ nullable: true, type: 'char', length: 10 })
   NGANHDK: string;
 
-  // khoa hoc quan tam
-  @ManyToOne(
-    () => khoahocquantam,
-    (khoahocquantam) => khoahocquantam.MALOAIKHOAHOC,
-  )
-  @JoinColumn({ name: 'MALOAIKHOAHOC' })
-  khoahocquantam: khoahocquantam;
-
   // kenh nhan thong bao
   @ManyToOne(
     () => kenhnhanthongbao,
-    (kenhnhanthongbao) => kenhnhanthongbao.MAKENH,
+    (kenhnhanthongbao) => kenhnhanthongbao.phieudkxettuyen,
   )
   @JoinColumn({ name: 'MAKENH' })
   kenhnhanthongbao: kenhnhanthongbao;
 
   // khach hang
-  @OneToOne(() => khachhang, (khachhang) => khachhang.SDT)
-  @JoinColumn({ name: 'SDT' })
+  @OneToOne(() => khachhang, (khachhang) => khachhang.phieudkxettuyen)
+  @JoinColumn({
+    name: 'SDT',
+  })
   khachhang: khachhang;
+
+  // khoa hoc quan tam
+  @ManyToOne(
+    () => khoahocquantam,
+    (khoahocquantam) => khoahocquantam.phieudkxettuyen,
+  )
+  @JoinColumn({ name: 'MALOAIKHOAHOC' })
+  khoahocquantam: khoahocquantam;
 
   // ket qua tot nghiep
   @ManyToOne(
     () => ketquatotnghiep,
-    (ketquatotnghiep) => ketquatotnghiep.MAKETQUA,
+    (ketquatotnghiep) => ketquatotnghiep.phieudkxettuyen,
   )
   @JoinColumn({ name: 'MAKETQUA' })
   ketquatotnghiep: ketquatotnghiep;
 
   // nganh
-  @ManyToOne(() => nganh, (nganh) => nganh.MANGANH)
+  @ManyToOne(() => nganh, (nganh) => nganh.phieudkxettuyen)
   @JoinColumn({ name: 'MANGANH' })
   nganh: nganh;
 
   // dot tuyen dung
-  @OneToMany(() => dottuyendung, (dottuyendung) => dottuyendung.MAPHIEUDK)
+  @OneToMany(() => dottuyendung, (dottuyendung) => dottuyendung.phieudkxettuyen)
   dottuyendung: dottuyendung[];
 
   // hoso
-  @OneToMany(() => hoso, (hoso) => hoso.MAPHIEUDK)
+  @OneToMany(() => hoso, (hoso) => hoso.phieudkxettuyen)
   hoso: hoso[];
 }

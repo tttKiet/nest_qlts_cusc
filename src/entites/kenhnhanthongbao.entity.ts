@@ -14,6 +14,9 @@ export class kenhnhanthongbao {
   TENKENH: string;
 
   // phieudkxettuyen
-  @OneToMany(() => phieudkxettuyen, (phieudkxettuyen) => phieudkxettuyen.MAKENH)
-  phieudkxettuyen: phieudkxettuyen[];
-}
+  @OneToMany(
+    () => phieudkxettuyen,
+    (phieudkxettuyen) => phieudkxettuyen.kenhnhanthongbao,
+  )
+  phieudkxettuyen: phieudkxettuyen[]; 
+} 

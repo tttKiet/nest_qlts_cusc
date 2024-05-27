@@ -1,4 +1,12 @@
-import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryColumn,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
+import { phieudkxettuyen } from './phieudkxettuyen.entity';
 
 @Entity()
 export class hoso {
@@ -19,4 +27,9 @@ export class hoso {
   @ManyToOne(() => hoso, (hoso) => hoso.MAPHIEUDK)
   @JoinColumn({ name: 'MAPHIEUDK' })
   hoso: hoso;
+
+  // phieudkxettuyen
+  @ManyToOne(() => phieudkxettuyen, (phieudkxettuyen) => phieudkxettuyen.hoso)
+  @JoinColumn({ name: 'HOSO' })
+  phieudkxettuyen: phieudkxettuyen;
 }

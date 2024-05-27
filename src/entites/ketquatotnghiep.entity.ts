@@ -16,7 +16,7 @@ export class ketquatotnghiep {
   // khach hang
   @OneToMany(
     () => phieudkxettuyen,
-    (phieudkxettuyen) => phieudkxettuyen.MAKETQUA,
+    (phieudkxettuyen) => phieudkxettuyen.ketquatotnghiep,
   )
-  phieudkxettuyen: phieudkxettuyen[];
+  phieudkxettuyen: phieudkxettuyen[]; 
 }

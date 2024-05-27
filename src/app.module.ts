@@ -22,7 +22,7 @@ import { CustomerModule } from './customer/customer.module';
       password: '',
       database: 'htqltuyensinh',
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
     }),
     // TypeOrmModule.forFeature([taikhoan, admin, usermanager, tinh]),
     DataModule,
