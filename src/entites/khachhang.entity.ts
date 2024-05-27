@@ -63,5 +63,5 @@ export class khachhang {
 
   @OneToMany(() => nganhyeuthich, (nganhyeuthich) => nganhyeuthich.khachhang)
   @JoinColumn()
-  nganhyeuthich: nganhyeuthich;
+  nganhyeuthich: nganhyeuthich[];
 }

@@ -1,6 +1,16 @@
-import { Controller, Get, Query, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  Post,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { DataService } from './data.service';
+import { CreateSegmentDto, DeleteSegmentDto } from 'src/dto/create-segment.dto';
 
 @Controller('data')
 export class DataController {
@@ -8,13 +18,20 @@ export class DataController {
 
   @Get('/province')
   async getAllProvince(@Res() res: Response) {
-    const data = await this.dataService.getAllProvince();
+    try {
+      const data = await this.dataService.getAllProvince();
 
-    return res.status(200).json({
-      statusCode: 200,
-      message: 'Lấy tỉnh thành công.',
-      data,
-    });
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Lấy tỉnh thành công.',
+        data,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
   }
 
   @Get('/school')
@@ -22,15 +39,22 @@ export class DataController {
     @Res() res: Response,
     @Query() query: { provinceCode?: string },
   ) {
-    const data = await this.dataService.getSchools({
-      ...query,
-    });
+    try {
+      const data = await this.dataService.getSchools({
+        ...query,
+      });
 
-    return res.status(200).json({
-      statusCode: 200,
-      message: 'Lấy dữ liệu thành công.',
-      data,
-    });
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Lấy dữ liệu thành công.',
+        data,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
   }
 
   @Get('/customer')
@@ -42,15 +66,22 @@ export class DataController {
       provinceCode?: string;
     },
   ) {
-    const data = await this.dataService.getCustomer({
-      ...query,
-    });
+    try {
+      const data = await this.dataService.getCustomer({
+        ...query,
+      });
 
-    return res.status(200).json({
-      statusCode: 200,
-      message: 'Lấy dữ liệu thành công.',
-      data,
-    });
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Lấy dữ liệu thành công.',
+        data,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
   }
 
   @Get('/job-like')
@@ -58,14 +89,77 @@ export class DataController {
     @Res() res: Response,
     @Query() query: { schoolCode?: string },
   ) {
-    const data = await this.dataService.getJobLike({
-      ...query,
-    });
+    try {
+      const data = await this.dataService.getJobLike({
+        ...query,
+      });
 
-    return res.status(200).json({
-      statusCode: 200,
-      message: 'Lấy dữ liệu thành công.',
-      data,
-    });
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Lấy dữ liệu thành công.',
+        data,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
+  }
+
+  @Post('/segment')
+  async createSegment(@Body() body: CreateSegmentDto, @Res() res: Response) {
+    try {
+      const data = await this.dataService.createSegment(body);
+
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Phân đoạn thành công.',
+        data,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
+  }
+
+  @Delete('/segment')
+  async deleteSegment(@Body() body: DeleteSegmentDto, @Res() res: Response) {
+    try {
+      const data = await this.dataService.deleteSegment(
+        Array.isArray(body.MaPQArray) ? body.MaPQArray : [body.MaPQArray],
+      );
+
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Xóa đoạn thành công.',
+        data,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
+  }
+
+  @Get('/segment')
+  async getSegment(@Res() res: Response) {
+    try {
+      const data = await this.dataService.getSegment();
+
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Lấy đoạn thành công.',
+        data,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
   }
 }

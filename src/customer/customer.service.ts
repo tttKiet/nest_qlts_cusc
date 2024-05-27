@@ -15,7 +15,6 @@ export class CustomerService {
       where: {
         SDT: '0187654358',
       },
-       
     });
 
     return {

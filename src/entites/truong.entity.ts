@@ -1,5 +1,7 @@
 import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
 import { khachhang } from './khachhang.entity';
+import { phanquyen } from './phanquyen.entity';
+// import { phanquyen } from './phanquyen.entity';
 
 @Entity()
 export class truong {
@@ -15,4 +17,7 @@ export class truong {
 
   @OneToMany(() => khachhang, (khachhang) => khachhang.truong)
   khachhang: khachhang[];
+
+  @OneToMany(() => phanquyen, (phanquyen) => phanquyen.truong)
+  phanquyen: phanquyen[];
 }
