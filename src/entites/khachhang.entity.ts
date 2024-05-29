@@ -68,7 +68,7 @@ export class khachhang {
     () => dulieukhachhang,
     (dulieukhachhang) => dulieukhachhang.khachhang,
   )
-  @JoinColumn()
+  // @JoinColumn({ referencedColumnName: 'SDT' })
   dulieukhachhang: dulieukhachhang;
 
   @OneToOne(
