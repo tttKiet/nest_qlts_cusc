@@ -15,7 +15,7 @@ export class CustomerController {
       return res.status(200).json({
         statusCode: 200,
         message: `Lấy thông tin khách hàng có SDT: ${param.SDT} thành công.`,
-        data: data,
+        data: data.data,
       });
     } catch (error) {
       return res.status(500).json({

@@ -42,6 +42,14 @@ export class phieudkxettuyen {
   @Column({ nullable: true, type: 'char', length: 10 })
   NGANHDK: string;
 
+  // khoa hoc quan tam
+  @ManyToOne(
+    () => khoahocquantam,
+    (khoahocquantam) => khoahocquantam.phieudkxettuyen,
+  )
+  @JoinColumn({ name: 'MALOAIKHOAHOC' })
+  khoahocquantam: khoahocquantam;
+
   // kenh nhan thong bao
   @ManyToOne(
     () => kenhnhanthongbao,
@@ -57,14 +65,6 @@ export class phieudkxettuyen {
   })
   khachhang: khachhang;
 
-  // khoa hoc quan tam
-  @ManyToOne(
-    () => khoahocquantam,
-    (khoahocquantam) => khoahocquantam.phieudkxettuyen,
-  )
-  @JoinColumn({ name: 'MALOAIKHOAHOC' })
-  khoahocquantam: khoahocquantam;
-
   // ket qua tot nghiep
   @ManyToOne(
     () => ketquatotnghiep,
@@ -74,8 +74,12 @@ export class phieudkxettuyen {
   ketquatotnghiep: ketquatotnghiep;
 
   // nganh
-  @ManyToOne(() => nganh, (nganh) => nganh.phieudkxettuyen)
-  @JoinColumn({ name: 'NGANHDK' })
+  @OneToOne(() => nganh, (nganh) => nganh.phieudkxettuyen, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'NGANHDK', referencedColumnName: 'MANGANH' })
   nganh: nganh;
 
   // dot tuyen dung

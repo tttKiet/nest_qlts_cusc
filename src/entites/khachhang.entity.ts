@@ -65,7 +65,7 @@ export class khachhang {
   TRANGTHAIKHACHHANG: string;
 
   @OneToOne(
-    () => dulieukhachhang,
+    () => dulieukhachhang, 
     (dulieukhachhang) => dulieukhachhang.khachhang,
   )
   dulieukhachhang: dulieukhachhang;
@@ -77,6 +77,5 @@ export class khachhang {
   phieudkxettuyen: phieudkxettuyen;
 
   @OneToMany(() => nganhyeuthich, (nganhyeuthich) => nganhyeuthich.khachhang)
-  @JoinColumn()
   nganhyeuthich: nganhyeuthich[];
 }
