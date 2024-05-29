@@ -73,14 +73,7 @@ export class phieudkxettuyen {
   @JoinColumn({ name: 'MAKETQUA' })
   ketquatotnghiep: ketquatotnghiep;
 
-  // nganh
-  @OneToOne(() => nganh, (nganh) => nganh.phieudkxettuyen, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn({ name: 'NGANHDK', referencedColumnName: 'MANGANH' })
-  nganh: nganh;
+  
 
   // dot tuyen dung
   @OneToMany(() => dottuyendung, (dottuyendung) => dottuyendung.phieudkxettuyen)

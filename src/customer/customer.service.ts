@@ -19,35 +19,52 @@ export class CustomerService {
     private khachhangRepository: Repository<khachhang>,
     @InjectRepository(nganhyeuthich)
     private nganhyeuthichRepository: Repository<nganhyeuthich>,
+    @InjectRepository(nganh)
+    private nganhRepository: Repository<nganh>,
   ) {}
 
   async getInfoCustomer(props: GetCustomerDto) {
     const { SDT } = props;
 
     try {
-      let data = await this.khachhangRepository
+      let query = this.khachhangRepository
         .createQueryBuilder('khachhang')
         .where('khachhang.SDT = :SDT', { SDT })
         .leftJoinAndSelect('khachhang.phieudkxettuyen', 'phieudkxettuyen')
-        // .leftJoinAndSelect('phieudkxettuyen.nganh', 'nganh')
-        // .leftJoinAndSelect('khachhang.nganhyeuthich', 'nganhyeuthich')
-        // .leftJoinAndSelect('nganhyeuthich.nganh', 'nganh')
-        // .leftJoinAndSelect('khachhang.tinh', 'tinh')
-        // .leftJoinAndSelect('khachhang.hinhthucthuthap', 'hinhthucthuthap')
-        // .leftJoinAndSelect('khachhang.truong', 'truong')
-        // .leftJoinAndSelect('khachhang.nghenghiep', 'nghenghiep')
-        // .leftJoinAndSelect('khachhang.dulieukhachhang', 'dulieukhachhang')
-        // .leftJoinAndSelect(
-        //   'phieudkxettuyen.kenhnhanthongbao',
-        //   'kenhnhanthongbao',
-        // )
-        // .leftJoinAndSelect('phieudkxettuyen.ketquatotnghiep', 'ketquatotnghiep')
-        // .leftJoinAndSelect('phieudkxettuyen.dottuyendung', 'dottuyendung')
-        // .leftJoinAndSelect('phieudkxettuyen.hoso', 'hoso')
-        // .leftJoinAndSelect('phieudkxettuyen.khoahocquantam', 'khoahocquantam')
+        .leftJoinAndSelect('khachhang.nganhyeuthich', 'nganhyeuthich')
+        .leftJoinAndSelect('nganhyeuthich.nganh', 'nganh')
+        .leftJoinAndSelect('khachhang.tinh', 'tinh')
+        .leftJoinAndSelect('khachhang.hinhthucthuthap', 'hinhthucthuthap')
+        .leftJoinAndSelect('khachhang.truong', 'truong')
+        .leftJoinAndSelect('khachhang.nghenghiep', 'nghenghiep')
+        .leftJoinAndSelect('khachhang.dulieukhachhang', 'dulieukhachhang')
+        .leftJoinAndSelect(
+          'phieudkxettuyen.kenhnhanthongbao',
+          'kenhnhanthongbao',
+        )
+        .leftJoinAndSelect('phieudkxettuyen.ketquatotnghiep', 'ketquatotnghiep')
+        .leftJoinAndSelect('phieudkxettuyen.dottuyendung', 'dottuyendung')
+        .leftJoinAndSelect('phieudkxettuyen.hoso', 'hoso')
+        .leftJoinAndSelect('phieudkxettuyen.khoahocquantam', 'khoahocquantam');
+
+      const data = await query.getOne();
+
+      let nganh = await this.nganhRepository
+        .createQueryBuilder('nganh')
+        .where('nganh.MANGANH = :MANGANH', {
+          MANGANH: data.phieudkxettuyen.NGANHDK,
+        })
         .getOne();
 
-      return { data: data };
+      const combinedData = {
+        ...data,
+        phieudkxettuyen: {
+          ...data.phieudkxettuyen,
+          nganh: nganh,
+        },
+      };
+
+      return { data: combinedData };
     } catch (error) {
       throw new Error(`Lỗi khi truy vấn khách hàng: ${error.message}`);
     }

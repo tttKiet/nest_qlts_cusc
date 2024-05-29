@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryColumn, OneToMany, OneToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryColumn,
+  OneToMany,
+  OneToOne,
+  ManyToOne,
+} from 'typeorm';
 import { phieudkxettuyen } from './phieudkxettuyen.entity';
 import { nganhyeuthich } from './nganhyeuthich.entity';
 
@@ -16,8 +23,4 @@ export class nganh {
 
   @OneToMany(() => nganhyeuthich, (nganhyeuthich) => nganhyeuthich.nganh)
   nganhyeuthich: nganhyeuthich[];
-
-  @OneToOne(() => phieudkxettuyen, (phieudkxettuyen) => phieudkxettuyen.nganh)
-  phieudkxettuyen: phieudkxettuyen;
 }
- 
