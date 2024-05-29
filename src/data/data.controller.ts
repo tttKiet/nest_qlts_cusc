@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpException,
+  Param,
   Post,
   Query,
   Res,
@@ -139,6 +140,27 @@ export class DataController {
             ? 'Xóa đoạn thành công.'
             : 'Dữ liệu chưa thay đổi.',
         data: deleteResult,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
+  }
+
+  @Get('/segment/:id')
+  async getOneSegmentDetail(
+    @Param() param: { id: string },
+    @Res() res: Response,
+  ) {
+    try {
+      const data = await this.dataService.getOneSegmentDetail(param.id);
+
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Lấy chi tiết đoạn thành công.',
+        data,
       });
     } catch (error) {
       throw new HttpException(

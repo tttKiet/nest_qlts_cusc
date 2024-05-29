@@ -266,4 +266,38 @@ export class DataService {
     const data = await query.getMany();
     return data;
   }
+
+  //dang lam
+  async getOneSegmentDetail(id: string) {
+    const query = this.segmentDetailsRepository.createQueryBuilder('ct');
+    query
+      // .select(['ct.SDT', 'ct.MaPQ', 'khachhang'])
+      .innerJoinAndSelect('khachhang', 'khachhang', 'ct.SDT = khachhang.SDT')
+      .leftJoinAndSelect('khachhang.dulieukhachhang', 'dulieukhachhang')
+      .leftJoinAndSelect('khachhang.truong', 'truong')
+      .select([
+        'khachhang.SDT as SDT ',
+        'khachhang.MANGHENGHIEP as MANGHENGHIEP',
+        'khachhang.MATRUONG as MATRUONG',
+        'khachhang.MATINH as MATINH',
+        'khachhang.MAHINHTHUC as MAHINHTHUC',
+        'khachhang.HOTEN as HOTEN',
+        'khachhang.EMAIL as EMAIL',
+        'khachhang.TRANGTHAIKHACHHANG as TRANGTHAIKHACHHANG',
+      ])
+      .addSelect(['ct.MaPQ as MaPQ'])
+      .addSelect([
+        'truong.TENTRUONG as TENTRUONG',
+        'truong.MATRUONG as MATRUONG',
+      ])
+      .addSelect([
+        'dulieukhachhang.SDTBA as SDTBA',
+        'dulieukhachhang.SDTME as SDTME',
+        'dulieukhachhang.SDTZALO as SDTZALO',
+        'dulieukhachhang.FACEBOOK as FACEBOOK',
+      ])
+      .where('ct.MaPQ = :id', { id });
+    const data = await query.getRawMany();
+    return data;
+  }
 }
