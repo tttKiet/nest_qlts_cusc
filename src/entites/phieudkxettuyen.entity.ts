@@ -1,19 +1,18 @@
 import {
-  Entity,
   Column,
-  PrimaryColumn,
-  OneToOne,
-  ManyToOne,
+  Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
+  OneToOne,
+  PrimaryColumn,
 } from 'typeorm';
-import { khoahocquantam } from './khoahocquantam.entity';
-import { kenhnhanthongbao } from './kenhnhanthongbao.entity';
-import { khachhang } from './khachhang.entity';
-import { ketquatotnghiep } from './ketquatotnghiep.entity';
-import { nganh } from './nganh.entity';
 import { dottuyendung } from './dottuyendung.entity';
 import { hoso } from './hoso.entity';
+import { kenhnhanthongbao } from './kenhnhanthongbao.entity';
+import { ketquatotnghiep } from './ketquatotnghiep.entity';
+import { khachhang } from './khachhang.entity';
+import { khoahocquantam } from './khoahocquantam.entity';
 
 @Entity()
 export class phieudkxettuyen {
@@ -72,11 +71,6 @@ export class phieudkxettuyen {
   )
   @JoinColumn({ name: 'MAKETQUA' })
   ketquatotnghiep: ketquatotnghiep;
-
-  // nganh
-  @ManyToOne(() => nganh, (nganh) => nganh.phieudkxettuyen)
-  @JoinColumn({ name: 'MANGANH' })
-  nganh: nganh;
 
   // dot tuyen dung
   @OneToMany(() => dottuyendung, (dottuyendung) => dottuyendung.phieudkxettuyen)

@@ -70,7 +70,8 @@ export class DataService {
     const query = this.customerRepository.createQueryBuilder('kh');
     query
       .leftJoinAndSelect('kh.tinh', 'tinh')
-      .leftJoinAndSelect('kh.truong', 'truong');
+      .leftJoinAndSelect('kh.truong', 'truong')
+      .leftJoinAndSelect('kh.dulieukhachhang', 'dulieukhachhang');
 
     if (provinceCode) {
       query.where('kh.MATINH = :code', {
