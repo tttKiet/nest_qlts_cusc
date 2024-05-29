@@ -68,6 +68,7 @@ export class khachhang {
     () => dulieukhachhang,
     (dulieukhachhang) => dulieukhachhang.khachhang,
   )
+  @JoinColumn()
   dulieukhachhang: dulieukhachhang;
 
   @OneToOne(

@@ -11,6 +11,7 @@ import { nganh } from 'src/entites/nganh.entity';
 import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
 import { phanquyen } from 'src/entites/phanquyen.entity';
 import { chitietpq } from 'src/entites/chitietpq.entity';
+import { dulieukhachhang } from 'src/entites/dulieukhachhang.entity';
 
 @Module({
   providers: [DataService],
@@ -26,6 +27,7 @@ import { chitietpq } from 'src/entites/chitietpq.entity';
       nganhyeuthich,
       phanquyen,
       chitietpq,
+      dulieukhachhang,
     ]),
   ],
 })
