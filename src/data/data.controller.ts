@@ -5,13 +5,20 @@ import {
   Get,
   HttpException,
   Param,
+  Patch,
   Post,
   Query,
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { DataService } from './data.service';
-import { CreateSegmentDto, DeleteSegmentDto } from 'src/dto/create-segment.dto';
+import {
+  CreateSegmentDto,
+  DeleteSegmentDto,
+  OpentContactSegmentDto,
+  PatchPermisionSegmentDto,
+  RefundSegmentDto,
+} from 'src/dto';
 
 @Controller('data')
 export class DataController {
@@ -126,6 +133,75 @@ export class DataController {
     }
   }
 
+  @Patch('/segment/open-contact')
+  async openContact(
+    @Body() body: OpentContactSegmentDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const deleteResult = await this.dataService.opentContactSegment(body);
+
+      return res.status(200).json({
+        statusCode: 200,
+        message:
+          deleteResult.affected > 0
+            ? 'Cập nhật thành công.'
+            : 'Dữ liệu chưa thay đổi.',
+        data: deleteResult,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
+  }
+
+  @Patch('/segment/refund-permision')
+  async refundPermission(@Body() body: RefundSegmentDto, @Res() res: Response) {
+    try {
+      const deleteResult = await this.dataService.refundPermisionSegment(body);
+
+      return res.status(200).json({
+        statusCode: 200,
+        message:
+          deleteResult.affected > 0
+            ? 'Cập nhật thành công.'
+            : 'Dữ liệu chưa thay đổi.',
+        data: deleteResult,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
+  }
+
+  @Patch('/segment')
+  async permisionSegment(
+    @Body() body: PatchPermisionSegmentDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const data = await this.dataService.updatePermistionSegment(body);
+
+      return res.status(200).json({
+        statusCode: 200,
+        message:
+          data.affected > 0
+            ? 'Phân chia đoạn thành công.'
+            : 'Dữ liệu chưa thay đổi.',
+        data,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
+  }
+
   @Delete('/segment')
   async deleteSegment(@Body() body: DeleteSegmentDto, @Res() res: Response) {
     try {
@@ -171,9 +247,9 @@ export class DataController {
   }
 
   @Get('/segment')
-  async getSegment(@Res() res: Response) {
+  async getSegment(@Query() query, @Res() res: Response) {
     try {
-      const data = await this.dataService.getSegment();
+      const data = await this.dataService.getSegment({ ...query });
 
       return res.status(200).json({
         statusCode: 200,
