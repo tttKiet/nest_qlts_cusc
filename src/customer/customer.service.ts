@@ -11,6 +11,9 @@ import { hoso } from 'src/entites/hoso.entity';
 import { khoahocquantam } from 'src/entites/khoahocquantam.entity';
 import { nganh } from 'src/entites/nganh.entity';
 import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
+import { chuyende } from 'src/entites/chuyende.entity';
+import { chitietchuyende } from 'src/entites/chitietchuyende.entity';
+import { lienhe } from 'src/entites/lienhe.entity';
 
 @Injectable()
 export class CustomerService {
@@ -21,7 +24,19 @@ export class CustomerService {
     private nganhyeuthichRepository: Repository<nganhyeuthich>,
     @InjectRepository(nganh)
     private nganhRepository: Repository<nganh>,
+    @InjectRepository(lienhe)
+    private lienheRepository: Repository<lienhe>,
   ) {}
+
+  async getContactNumber(SDT: string, number: number) {
+    let lienhe = await this.lienheRepository
+      .createQueryBuilder('lienhe')
+      .where('lienhe.SDT_KH = :SDT', { SDT })
+      .andWhere('lienhe.LAN = :number', { number })
+      .getOne();
+
+    return lienhe;
+  }
 
   async getInfoCustomer(props: GetCustomerDto) {
     const { SDT } = props;
@@ -38,6 +53,9 @@ export class CustomerService {
         .leftJoinAndSelect('khachhang.truong', 'truong')
         .leftJoinAndSelect('khachhang.nghenghiep', 'nghenghiep')
         .leftJoinAndSelect('khachhang.dulieukhachhang', 'dulieukhachhang')
+        .leftJoinAndSelect('khachhang.chitietchuyende', 'chitietchuyende')
+        .leftJoinAndSelect('khachhang.lienhe', 'lienhe')
+        .leftJoinAndSelect('chitietchuyende.chuyende', 'chuyende')
         .leftJoinAndSelect(
           'phieudkxettuyen.kenhnhanthongbao',
           'kenhnhanthongbao',
@@ -49,10 +67,11 @@ export class CustomerService {
 
       const data = await query.getOne();
 
+      // nghành
       let nganh = await this.nganhRepository
         .createQueryBuilder('nganh')
         .where('nganh.MANGANH = :MANGANH', {
-          MANGANH: data.phieudkxettuyen.NGANHDK,
+          MANGANH: data?.phieudkxettuyen?.NGANHDK,
         })
         .getOne();
 
@@ -71,14 +90,31 @@ export class CustomerService {
   }
 
   async getInfoCustomers() {
-    const data = await this.khachhangRepository.find({
-      relations: {
-        tinh: true,
-        hinhthucthuthap: true,
-      },
-    });
-    return {
-      data: data,
-    };
+    try {
+      let query = this.khachhangRepository
+        .createQueryBuilder('khachhang')
+        .leftJoinAndSelect('khachhang.phieudkxettuyen', 'phieudkxettuyen')
+        .leftJoinAndSelect('khachhang.nganhyeuthich', 'nganhyeuthich')
+        .leftJoinAndSelect('nganhyeuthich.nganh', 'nganh')
+        .leftJoinAndSelect('khachhang.tinh', 'tinh')
+        .leftJoinAndSelect('khachhang.hinhthucthuthap', 'hinhthucthuthap')
+        .leftJoinAndSelect('khachhang.truong', 'truong')
+        .leftJoinAndSelect('khachhang.nghenghiep', 'nghenghiep')
+        .leftJoinAndSelect('khachhang.dulieukhachhang', 'dulieukhachhang')
+        .leftJoinAndSelect(
+          'phieudkxettuyen.kenhnhanthongbao',
+          'kenhnhanthongbao',
+        )
+        .leftJoinAndSelect('phieudkxettuyen.ketquatotnghiep', 'ketquatotnghiep')
+        .leftJoinAndSelect('phieudkxettuyen.dottuyendung', 'dottuyendung')
+        .leftJoinAndSelect('phieudkxettuyen.hoso', 'hoso')
+        .leftJoinAndSelect('phieudkxettuyen.khoahocquantam', 'khoahocquantam');
+
+      const data = await query.getManyAndCount();
+
+      return { data: data };
+    } catch (error) {
+      throw new Error(`Lỗi khi truy vấn khách hàng: ${error.message}`);
+    }
   }
 }

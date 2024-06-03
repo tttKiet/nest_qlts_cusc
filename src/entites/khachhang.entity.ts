@@ -14,6 +14,9 @@ import { hinhthucthuthap } from './hinhthucthuthap.entity';
 import { phieudkxettuyen } from './phieudkxettuyen.entity';
 import { dulieukhachhang } from './dulieukhachhang.entity';
 import { nganhyeuthich } from './nganhyeuthich.entity';
+import { chitietchuyende } from './chitietchuyende.entity';
+import { lienhe } from './lienhe.entity';
+import { chuyende } from './chuyende.entity';
 
 @Entity()
 export class khachhang {
@@ -65,7 +68,7 @@ export class khachhang {
   TRANGTHAIKHACHHANG: string;
 
   @OneToOne(
-    () => dulieukhachhang, 
+    () => dulieukhachhang,
     (dulieukhachhang) => dulieukhachhang.khachhang,
   )
   // @JoinColumn({ referencedColumnName: 'SDT' })
@@ -79,4 +82,13 @@ export class khachhang {
 
   @OneToMany(() => nganhyeuthich, (nganhyeuthich) => nganhyeuthich.khachhang)
   nganhyeuthich: nganhyeuthich[];
+
+  @OneToMany(
+    () => chitietchuyende,
+    (chitietchuyende) => chitietchuyende.khachhang,
+  )
+  chitietchuyende: chitietchuyende[];
+
+  @OneToMany(() => lienhe, (lienhe) => lienhe.khachhang) 
+  lienhe: lienhe[];
 }

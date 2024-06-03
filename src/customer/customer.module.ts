@@ -13,6 +13,11 @@ import { dottuyendung } from 'src/entites/dottuyendung.entity';
 import { nam } from 'src/entites/nam.entity';
 import { hoso } from 'src/entites/hoso.entity';
 import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
+import { chuyende } from 'src/entites/chuyende.entity';
+import { chitietchuyende } from 'src/entites/chitietchuyende.entity';
+import { lienhe } from 'src/entites/lienhe.entity';
+import { trangthai } from 'src/entites/trangthai.entity';
+import { usermanager } from 'src/entites/usermanager.entity';
 
 @Module({
   providers: [CustomerService],
@@ -30,6 +35,11 @@ import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
       dottuyendung,
       nam,
       hoso,
+      chuyende,
+      chitietchuyende,
+      lienhe,
+      trangthai,
+      usermanager,
     ]),
   ],
 })

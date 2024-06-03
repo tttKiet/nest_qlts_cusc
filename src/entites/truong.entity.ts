@@ -20,4 +20,6 @@ export class truong {
 
   @OneToMany(() => phanquyen, (phanquyen) => phanquyen.truong)
   phanquyen: phanquyen[];
+
+  
 }
