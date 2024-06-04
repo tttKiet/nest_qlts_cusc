@@ -14,6 +14,7 @@ import { hinhthucthuthap } from './hinhthucthuthap.entity';
 import { phieudkxettuyen } from './phieudkxettuyen.entity';
 import { dulieukhachhang } from './dulieukhachhang.entity';
 import { nganhyeuthich } from './nganhyeuthich.entity';
+import { chucvu } from './chucvu.entity';
 
 @Entity()
 export class khachhang {
@@ -80,4 +81,8 @@ export class khachhang {
   @OneToMany(() => nganhyeuthich, (nganhyeuthich) => nganhyeuthich.khachhang)
   @JoinColumn()
   nganhyeuthich: nganhyeuthich[];
+
+  // chucvu
+  @OneToMany(() => chucvu, (chucvu) => chucvu.khachhang)
+  chucvu: chucvu[];
 }

@@ -7,7 +7,12 @@ declare const module: any;
 async function bootstrap() {
   const port = process.env.PORT || 8080;
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+    }),
+  );
   app.setGlobalPrefix('/api/v1');
   await app.listen(port, () => {
     console.log(`Backend listenning http://127.0.0.1:${port}`);

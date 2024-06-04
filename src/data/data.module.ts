@@ -17,6 +17,8 @@ import { taikhoan } from 'src/entites/taikhoan.entity';
 import { admin } from 'src/entites/admin.entity';
 import { usermanager } from 'src/entites/usermanager.entity';
 import { AccountService } from 'src/auth/account.service';
+import { chucvu } from 'src/entites/chucvu.entity';
+import { lop } from 'src/entites/lop';
 
 @Module({
   providers: [DataService, UserService, AccountService],
@@ -36,6 +38,9 @@ import { AccountService } from 'src/auth/account.service';
       phanquyen,
       chitietpq,
       dulieukhachhang,
+      khachhang,
+      chucvu,
+      lop,
     ]),
   ],
 })

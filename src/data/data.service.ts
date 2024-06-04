@@ -96,13 +96,15 @@ export class DataService {
       const subQuery = this.joblikeRepository
         .createQueryBuilder('job')
         .subQuery()
-        .select(['like.SDT as SDT', 'like.MANGANH as MANGANH'])
+        .select('like.SDT as SDT')
         .from('nganhyeuthich', 'like')
-        .where('MANGANH = :jobCode', { jobCode });
+        .where('like.MANGANH = :jobCode', { jobCode });
 
       // const data = await subQuery.getMany();
-      // console.log(data);
-      query.andWhere(`kh.SDT IN (${subQuery.getQuery()})`);
+      // console.log(subQuery.getQuery());
+      query
+        .andWhere(`kh.SDT IN (${subQuery.getQuery()})`)
+        .setParameters({ jobCode });
     }
 
     const data = await query.getMany();

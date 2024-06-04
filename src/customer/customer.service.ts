@@ -1,14 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreateCustomerArrDto, GetCustomerDto } from 'src/dto/get-customer.dto';
+import { dulieukhachhang } from 'src/entites/dulieukhachhang.entity';
+import { phieudkxettuyen } from 'src/entites/phieudkxettuyen.entity';
 import { Repository } from 'typeorm';
 import { khachhang } from '../entites/khachhang.entity';
-import { GetCustomerDto } from 'src/dto/get-customer.dto';
-import { dulieukhachhang } from 'src/entites/dulieukhachhang.entity';
-import { find } from 'rxjs';
-import { phieudkxettuyen } from 'src/entites/phieudkxettuyen.entity';
-import { kenhnhanthongbao } from 'src/entites/kenhnhanthongbao.entity';
-import { hoso } from 'src/entites/hoso.entity';
-import { khoahocquantam } from 'src/entites/khoahocquantam.entity';
 
 @Injectable()
 export class CustomerService {
@@ -55,5 +51,15 @@ export class CustomerService {
     return {
       data: data,
     };
+  }
+
+  async createCustomerArr(data: CreateCustomerArrDto) {
+    console.log(data);
+    const dataResult = await this.dulieukhachhangRepository.upsert(data.data, [
+      'SDT',
+    ]);
+    console.log('dataResult: ', dataResult);
+
+    return dataResult;
   }
 }
