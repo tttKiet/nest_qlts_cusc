@@ -36,3 +36,23 @@ export class CreateCustomerArrDto {
   @Type(() => CustomerDto)
   data: CustomerDto[];
 }
+
+// position
+export class PositionDto {
+  @IsNotEmpty({ message: 'Bạn chưa gửi số điện thoại.' })
+  SDT: string;
+
+  @IsOptional()
+  STT: number;
+
+  @IsOptional()
+  tenchucvu: string;
+}
+
+export class PositionArrDto {
+  @IsArray({ message: 'Vui lòng chuyển một array!' })
+  @ValidateNested({ each: true })
+  @ArrayMinSize(1, { message: 'Dữ liệu > 0' })
+  @Type(() => PositionDto)
+  data: PositionDto[];
+}

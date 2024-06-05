@@ -7,7 +7,7 @@ export class chucvu {
   @PrimaryColumn({ length: 11, type: 'char' })
   SDT: string;
 
-  @PrimaryColumn({ type: 'int', name: 'chucvu_sdt' })
+  @PrimaryColumn({ type: 'int', name: 'STT' })
   STT: number;
 
   @Column({ type: 'varchar', length: 128 })
@@ -20,6 +20,6 @@ export class chucvu {
 
   // lop
   @ManyToOne(() => lop, (lop) => lop.chucvu)
-  @JoinColumn({ name: 'chucvu_sdt', referencedColumnName: 'STT' })
+  @JoinColumn({ name: 'STT', referencedColumnName: 'STT' })
   lop: lop;
 }

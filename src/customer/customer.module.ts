@@ -12,6 +12,7 @@ import { nganh } from 'src/entites/nganh.entity';
 import { dottuyendung } from 'src/entites/dottuyendung.entity';
 import { nam } from 'src/entites/nam.entity';
 import { hoso } from 'src/entites/hoso.entity';
+import { chucvu } from 'src/entites/chucvu.entity';
 
 @Module({
   providers: [CustomerService],
@@ -28,6 +29,7 @@ import { hoso } from 'src/entites/hoso.entity';
       dottuyendung,
       nam,
       hoso,
+      chucvu,
     ]),
   ],
 })

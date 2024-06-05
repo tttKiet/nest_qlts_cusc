@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsNumber, Length } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, Length } from 'class-validator';
 
 export class CreateSegmentDto {
   @IsNotEmpty({ message: 'Bạn chưa gửi MATRUONG.' })
@@ -40,4 +40,12 @@ export class OpentContactSegmentDto {
 export class RefundSegmentDto {
   @IsNotEmpty({ message: 'Bạn chưa gửi MAPQ.' })
   MAPQ: string;
+}
+
+export class FilterJobLikeDto {
+  @IsOptional()
+  schoolCode: string;
+
+  @IsOptional()
+  isAvalable: string;
 }

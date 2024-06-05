@@ -2,6 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CreateSegmentDto,
+  FilterJobLikeDto,
   OpentContactSegmentDto,
   PatchPermisionSegmentDto,
   RefundSegmentDto,
@@ -111,7 +112,7 @@ export class DataService {
     return data;
   }
 
-  async getJobLike({ schoolCode }: { schoolCode?: string }) {
+  async getJobLike({ schoolCode, isAvalable }: FilterJobLikeDto) {
     const query = this.joblikeRepository.createQueryBuilder('ng');
     query
       .leftJoinAndSelect('ng.nganh', 'nganh')
@@ -122,13 +123,38 @@ export class DataService {
         code: schoolCode,
       });
     }
-    query
-      .select([
-        'nganh.TENNGANH as TENNGANH',
-        'nganh.MANGANH as MANGANH',
-        'count(khachhang.SDT) as count',
-      ])
-      .groupBy('nganh.MANGANH');
+
+    if (isAvalable == 'true') {
+      //
+      const subQuery = this.customerRepository
+        .createQueryBuilder('kh')
+        .subQuery()
+        .select('ctpq.SDT')
+        .from('chitietpq', 'ctpq');
+
+      const queryNganh = this.customerRepository
+        .createQueryBuilder('kh')
+        .leftJoinAndSelect('kh.truong', 'truong')
+        .leftJoinAndSelect('kh.nganhyeuthich', 'nganhyeuthich')
+        .leftJoinAndSelect('nganhyeuthich.nganh', 'nganh')
+        .where('truong.MATRUONG = :schoolCode', { schoolCode })
+        .andWhere(`kh.SDT NOT IN (${subQuery.getQuery()})`)
+        .select([
+          'nganh.TENNGANH as TENNGANH',
+          'nganhyeuthich.MANGANH as MANGANH',
+          'COUNT(kh.SDT) as count',
+        ])
+        .groupBy('nganhyeuthich.MANGANH');
+
+      return queryNganh.getRawMany();
+    } else
+      query
+        .select([
+          'nganh.TENNGANH as TENNGANH',
+          'nganh.MANGANH as MANGANH',
+          'count(khachhang.SDT) as count',
+        ])
+        .groupBy('nganh.MANGANH');
 
     const data = await query.getRawMany();
     return data;
@@ -346,7 +372,7 @@ export class DataService {
       SDT: data.SDT_USERMANAGER,
     });
 
-    if (userMangagerExisted.data.length == 0) {
+    if (userMangagerExisted.length == 0) {
       throw new HttpException('User Manager không tồn tại.', 400);
     }
 

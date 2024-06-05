@@ -15,6 +15,7 @@ import { DataService } from './data.service';
 import {
   CreateSegmentDto,
   DeleteSegmentDto,
+  FilterJobLikeDto,
   OpentContactSegmentDto,
   PatchPermisionSegmentDto,
   RefundSegmentDto,
@@ -93,10 +94,7 @@ export class DataController {
   }
 
   @Get('/job-like')
-  async getJobLike(
-    @Res() res: Response,
-    @Query() query: { schoolCode?: string },
-  ) {
+  async getJobLike(@Res() res: Response, @Query() query: FilterJobLikeDto) {
     try {
       const data = await this.dataService.getJobLike({
         ...query,
