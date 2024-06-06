@@ -13,11 +13,13 @@ export class truong {
   MATRUONG: string;
 
   @Column({ nullable: true, type: 'varchar', length: 128 })
-  TENTRUONG: string;
-  
+  TENTRUONG: string; 
+
   @OneToMany(() => khachhang, (khachhang) => khachhang.truong)
   khachhang: khachhang[];
 
   @OneToMany(() => phanquyen, (phanquyen) => phanquyen.truong)
   phanquyen: phanquyen[];
+
+  
 }

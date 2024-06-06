@@ -7,6 +7,8 @@ import { AuthModule } from './auth/auth.module';
 import { DataModule } from './data/data.module';
 import { UserModule } from './user/user.module';
 import { CustomerModule } from './customer/customer.module';
+import { ThematicModule } from './thematic/thematic.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { CustomerModule } from './customer/customer.module';
     }),
     // TypeOrmModule.forFeature([taikhoan, admin, usermanager, tinh]),
     DataModule,
+    ThematicModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigModule],
