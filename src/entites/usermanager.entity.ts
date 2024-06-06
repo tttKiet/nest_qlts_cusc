@@ -14,7 +14,7 @@ export class usermanager {
   SDT: string;
 
   @Column({ nullable: true, type: 'char', length: 32 })
-  HOTEN: string;
+  HOTEN: string; 
 
   @Column({ nullable: true, type: 'char', length: 3 })
   GIOITINH: string;

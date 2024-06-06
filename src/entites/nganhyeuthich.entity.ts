@@ -21,11 +21,11 @@ export class nganhyeuthich {
   @Column({ nullable: true, type: 'varchar', length: 255 })
   CHITIET: string;
 
-  @ManyToOne(() => khachhang, (khachhang) => khachhang.nganhyeuthich)
+  @ManyToOne(() => khachhang, (khachhang) => khachhang.nganhyeuthich)  
   @JoinColumn({ name: 'SDT' })
-  khachhang: khachhang;
+  khachhang: khachhang; 
 
-  @ManyToOne(() => nganh, (nganh) => nganh.nganhyeuthich)
-  @JoinColumn({ name: 'MANGANH' })
-  nganh: nganh;
+  @ManyToOne(() => nganh, (nganh) => nganh.nganhyeuthich) 
+  @JoinColumn({ name: 'MANGANH' })  
+  nganh: nganh;  
 }

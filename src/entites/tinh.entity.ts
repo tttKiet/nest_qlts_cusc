@@ -13,6 +13,6 @@ export class tinh {
   @Column({ nullable: true, type: 'char', length: 32 })
   TENTINH: string;
 
-  @OneToMany(() => khachhang, (khachhang) => khachhang.tinh)
+  @OneToMany(() => khachhang, (khachhang) => khachhang.tinh) 
   khachhang: khachhang[];
 }
