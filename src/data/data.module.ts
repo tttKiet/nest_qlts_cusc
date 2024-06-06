@@ -12,12 +12,22 @@ import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
 import { phanquyen } from 'src/entites/phanquyen.entity';
 import { chitietpq } from 'src/entites/chitietpq.entity';
 import { dulieukhachhang } from 'src/entites/dulieukhachhang.entity';
+import { UserService } from 'src/user/user.service';
+import { taikhoan } from 'src/entites/taikhoan.entity';
+import { admin } from 'src/entites/admin.entity';
+import { usermanager } from 'src/entites/usermanager.entity';
+import { AccountService } from 'src/auth/account.service';
+import { chucvu } from 'src/entites/chucvu.entity';
+import { lop } from 'src/entites/lop';
 
 @Module({
-  providers: [DataService],
+  providers: [DataService, UserService, AccountService],
   controllers: [DataController],
   imports: [
     TypeOrmModule.forFeature([
+      taikhoan,
+      admin,
+      usermanager,
       tinh,
       truong,
       khachhang,
@@ -28,6 +38,9 @@ import { dulieukhachhang } from 'src/entites/dulieukhachhang.entity';
       phanquyen,
       chitietpq,
       dulieukhachhang,
+      khachhang,
+      chucvu,
+      lop,
     ]),
   ],
 })

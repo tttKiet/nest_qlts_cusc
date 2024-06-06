@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { khachhang } from '../entites/khachhang.entity';
-import { GetCustomerDto } from 'src/dto/get-customer.dto';
+import {
+  CreateCustomerArrDto,
+  GetCustomerDto,
+  PositionArrDto,
+  PositionDto,
+} from 'src/dto/get-customer.dto';
 import { dulieukhachhang } from 'src/entites/dulieukhachhang.entity';
-import { find } from 'rxjs';
 import { phieudkxettuyen } from 'src/entites/phieudkxettuyen.entity';
 import { kenhnhanthongbao } from 'src/entites/kenhnhanthongbao.entity';
 import { hoso } from 'src/entites/hoso.entity';
@@ -14,6 +16,9 @@ import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
 import { chuyende } from 'src/entites/chuyende.entity';
 import { chitietchuyende } from 'src/entites/chitietchuyende.entity';
 import { lienhe } from 'src/entites/lienhe.entity';
+import { Repository } from 'typeorm';
+import { khachhang } from '../entites/khachhang.entity';
+import { chucvu } from 'src/entites/chucvu.entity';
 
 @Injectable()
 export class CustomerService {
@@ -26,6 +31,14 @@ export class CustomerService {
     private nganhRepository: Repository<nganh>,
     @InjectRepository(lienhe)
     private lienheRepository: Repository<lienhe>,
+=======
+    @InjectRepository(dulieukhachhang)
+    private dulieukhachhangRepository: Repository<dulieukhachhang>,
+    @InjectRepository(phieudkxettuyen)
+    private phieudkxettuyenRepository: Repository<phieudkxettuyen>,
+
+    @InjectRepository(chucvu)
+    private chucvuRepository: Repository<chucvu>,
   ) {}
 
   async getContactNumber(SDT: string, number: number) {
@@ -116,5 +129,26 @@ export class CustomerService {
     } catch (error) {
       throw new Error(`Lỗi khi truy vấn khách hàng: ${error.message}`);
     }
+  }
+
+  async createCustomerArr(data: CreateCustomerArrDto) {
+    console.log(data);
+    const dataResult = await this.dulieukhachhangRepository.upsert(data.data, [
+      'SDT',
+    ]);
+    console.log('dataResult: ', dataResult);
+
+    return dataResult;
+  }
+
+  async createPosition(data: PositionArrDto) {
+    console.log(data);
+    const dataResult = await this.chucvuRepository.upsert(data.data, [
+      'SDT',
+      'STT',
+    ]);
+    console.log('dataResult: ', dataResult);
+
+    return dataResult;
   }
 }

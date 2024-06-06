@@ -1,13 +1,19 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateSegmentDto } from 'src/dto/create-segment.dto';
+import {
+  CreateSegmentDto,
+  FilterJobLikeDto,
+  OpentContactSegmentDto,
+  PatchPermisionSegmentDto,
+  RefundSegmentDto,
+} from 'src/dto';
 import { chitietpq } from 'src/entites/chitietpq.entity';
 import { khachhang } from 'src/entites/khachhang.entity';
 import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
 import { phanquyen } from 'src/entites/phanquyen.entity';
 // import { phanquyen } from 'src/entites/phanquyen.entity';
 import { tinh } from 'src/entites/tinh.entity';
-import { truong } from 'src/entites/truong.entity';
+import { UserService } from 'src/user/user.service';
 import { DataSource, In, Repository } from 'typeorm';
 
 @Injectable()
@@ -21,9 +27,6 @@ export class DataService {
     @InjectRepository(khachhang)
     private customerRepository: Repository<khachhang>,
 
-    @InjectRepository(truong)
-    private schoolRepository: Repository<truong>,
-
     @InjectRepository(nganhyeuthich)
     private joblikeRepository: Repository<nganhyeuthich>,
 
@@ -32,6 +35,8 @@ export class DataService {
 
     @InjectRepository(chitietpq)
     private segmentDetailsRepository: Repository<chitietpq>,
+
+    private userService: UserService,
   ) {}
 
   async getAllProvince() {
@@ -63,14 +68,18 @@ export class DataService {
   async getCustomer({
     schoolCode,
     provinceCode,
+    jobCode,
   }: {
     schoolCode?: string;
     provinceCode?: string;
+    jobCode?: string;
   }) {
     const query = this.customerRepository.createQueryBuilder('kh');
     query
       .leftJoinAndSelect('kh.tinh', 'tinh')
-      .leftJoinAndSelect('kh.truong', 'truong');
+      .leftJoinAndSelect('kh.truong', 'truong')
+      .leftJoinAndSelect('kh.dulieukhachhang', 'dulieukhachhang')
+      .leftJoinAndSelect('kh.nganhyeuthich', 'nganhyeuthich');
 
     if (provinceCode) {
       query.where('kh.MATINH = :code', {
@@ -84,11 +93,26 @@ export class DataService {
       });
     }
 
+    if (jobCode) {
+      const subQuery = this.joblikeRepository
+        .createQueryBuilder('job')
+        .subQuery()
+        .select('like.SDT as SDT')
+        .from('nganhyeuthich', 'like')
+        .where('like.MANGANH = :jobCode', { jobCode });
+
+      // const data = await subQuery.getMany();
+      // console.log(subQuery.getQuery());
+      query
+        .andWhere(`kh.SDT IN (${subQuery.getQuery()})`)
+        .setParameters({ jobCode });
+    }
+
     const data = await query.getMany();
     return data;
   }
 
-  async getJobLike({ schoolCode }: { schoolCode?: string }) {
+  async getJobLike({ schoolCode, isAvalable }: FilterJobLikeDto) {
     const query = this.joblikeRepository.createQueryBuilder('ng');
     query
       .leftJoinAndSelect('ng.nganh', 'nganh')
@@ -99,13 +123,38 @@ export class DataService {
         code: schoolCode,
       });
     }
-    query
-      .select([
-        'nganh.TENNGANH as TENNGANH',
-        'nganh.MANGANH as MANGANH',
-        'count(khachhang.SDT) as count',
-      ])
-      .groupBy('nganh.MANGANH');
+
+    if (isAvalable == 'true') {
+      //
+      const subQuery = this.customerRepository
+        .createQueryBuilder('kh')
+        .subQuery()
+        .select('ctpq.SDT')
+        .from('chitietpq', 'ctpq');
+
+      const queryNganh = this.customerRepository
+        .createQueryBuilder('kh')
+        .leftJoinAndSelect('kh.truong', 'truong')
+        .leftJoinAndSelect('kh.nganhyeuthich', 'nganhyeuthich')
+        .leftJoinAndSelect('nganhyeuthich.nganh', 'nganh')
+        .where('truong.MATRUONG = :schoolCode', { schoolCode })
+        .andWhere(`kh.SDT NOT IN (${subQuery.getQuery()})`)
+        .select([
+          'nganh.TENNGANH as TENNGANH',
+          'nganhyeuthich.MANGANH as MANGANH',
+          'COUNT(kh.SDT) as count',
+        ])
+        .groupBy('nganhyeuthich.MANGANH');
+
+      return queryNganh.getRawMany();
+    } else
+      query
+        .select([
+          'nganh.TENNGANH as TENNGANH',
+          'nganh.MANGANH as MANGANH',
+          'count(khachhang.SDT) as count',
+        ])
+        .groupBy('nganh.MANGANH');
 
     const data = await query.getRawMany();
     return data;
@@ -259,15 +308,18 @@ export class DataService {
     return rl;
   }
 
-  async getSegment() {
+  async getSegment({ schoolCode }: { schoolCode?: string }) {
     const query = this.segmentRepository.createQueryBuilder('pd');
     query.leftJoinAndSelect('pd.truong', 'truong');
+
+    if (schoolCode) {
+      query.where('pd.MATRUONG = :schoolCode', { schoolCode });
+    }
 
     const data = await query.getMany();
     return data;
   }
 
-  //dang lam
   async getOneSegmentDetail(id: string) {
     const query = this.segmentDetailsRepository.createQueryBuilder('ct');
     query
@@ -276,7 +328,7 @@ export class DataService {
       .leftJoinAndSelect('khachhang.dulieukhachhang', 'dulieukhachhang')
       .leftJoinAndSelect('khachhang.truong', 'truong')
       .select([
-        'khachhang.SDT as SDT ',
+        'khachhang.SDT as SDT',
         'khachhang.MANGHENGHIEP as MANGHENGHIEP',
         'khachhang.MATRUONG as MATRUONG',
         'khachhang.MATINH as MATINH',
@@ -299,5 +351,73 @@ export class DataService {
       .where('ct.MaPQ = :id', { id });
     const data = await query.getRawMany();
     return data;
+  }
+
+  async updatePermistionSegment(data: PatchPermisionSegmentDto) {
+    // Check đã phân quyền
+    const segmentExisted = await this.segmentRepository.findOne({
+      where: {
+        MaPQ: data.MAPQ,
+      },
+    });
+
+    if (!segmentExisted) {
+      throw new HttpException('Không tìm thấy đoạn này.', 400);
+    } else if (segmentExisted.SDT) {
+      throw new HttpException('Đoạn này đã được phân quyền.', 400);
+    }
+
+    // check user manager existed
+    const userMangagerExisted = await this.userService.getUserMangers({
+      SDT: data.SDT_USERMANAGER,
+    });
+
+    if (userMangagerExisted.length == 0) {
+      throw new HttpException('User Manager không tồn tại.', 400);
+    }
+
+    // Phân quyền
+    const segmentUpdateResult = await this.segmentRepository.update(
+      {
+        MaPQ: data.MAPQ,
+      },
+      {
+        SDT: data.SDT_USERMANAGER,
+        THOIGIANPQ: new Date(),
+        TRANGTHAILIENHE: data.TRANGTHAILIENHE,
+      },
+    );
+    return segmentUpdateResult;
+  }
+
+  async opentContactSegment(data: OpentContactSegmentDto) {
+    // check
+    if (data.TRANGTHAILIENHE > 3) {
+      throw new HttpException('Trạng thái phải <= 3', 400);
+    }
+    // Edit contact
+    const segmentUpdateResult = await this.segmentRepository.update(
+      {
+        MaPQ: data.MAPQ,
+      },
+      {
+        TRANGTHAILIENHE: data.TRANGTHAILIENHE,
+      },
+    );
+    return segmentUpdateResult;
+  }
+
+  async refundPermisionSegment(data: RefundSegmentDto) {
+    // Edit
+    const segmentUpdateResult = await this.segmentRepository.update(
+      {
+        MaPQ: data.MAPQ,
+      },
+      {
+        TRANGTHAILIENHE: null,
+        SDT: null,
+      },
+    );
+    return segmentUpdateResult;
   }
 }

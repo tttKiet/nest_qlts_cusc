@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToMany, OneToOne } from 'typeorm';
 import { phanquyen } from './phanquyen.entity';
+import { taikhoan } from './taikhoan.entity';
 // import { phanquyen } from './phanquyen.entity';
 
 @Entity()
@@ -9,6 +10,7 @@ export class usermanager {
     length: 11,
     nullable: false,
   })
+  @OneToOne(() => taikhoan, (taikhoan) => taikhoan.usermanager)
   SDT: string;
 
   @Column({ nullable: true, type: 'char', length: 32 })

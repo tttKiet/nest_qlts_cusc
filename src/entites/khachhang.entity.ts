@@ -17,6 +17,7 @@ import { nganhyeuthich } from './nganhyeuthich.entity';
 import { chitietchuyende } from './chitietchuyende.entity';
 import { lienhe } from './lienhe.entity';
 import { chuyende } from './chuyende.entity';
+import { chucvu } from './chucvu.entity';
 
 @Entity()
 export class khachhang {
@@ -82,7 +83,8 @@ export class khachhang {
 
   @OneToMany(() => nganhyeuthich, (nganhyeuthich) => nganhyeuthich.khachhang)
   nganhyeuthich: nganhyeuthich[];
-
+  
+  //chitietchuyende
   @OneToMany(
     () => chitietchuyende,
     (chitietchuyende) => chitietchuyende.khachhang,
@@ -91,4 +93,7 @@ export class khachhang {
 
   @OneToMany(() => lienhe, (lienhe) => lienhe.khachhang) 
   lienhe: lienhe[];
+  // chucvu
+  @OneToMany(() => chucvu, (chucvu) => chucvu.khachhang)
+  chucvu: chucvu[];
 }

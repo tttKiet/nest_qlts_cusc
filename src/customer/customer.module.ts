@@ -18,6 +18,7 @@ import { chitietchuyende } from 'src/entites/chitietchuyende.entity';
 import { lienhe } from 'src/entites/lienhe.entity';
 import { trangthai } from 'src/entites/trangthai.entity';
 import { usermanager } from 'src/entites/usermanager.entity';
+import { chucvu } from 'src/entites/chucvu.entity';
 
 @Module({
   providers: [CustomerService],
@@ -40,6 +41,7 @@ import { usermanager } from 'src/entites/usermanager.entity';
       lienhe,
       trangthai,
       usermanager,
+      chucvu,
     ]),
   ],
 })

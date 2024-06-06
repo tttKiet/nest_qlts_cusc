@@ -137,6 +137,29 @@ export class UserService {
     };
   }
 
+  async getUserMangers({ SDT }: { SDT?: string }) {
+    const query = this.taiKhoanRepository
+      .createQueryBuilder('tk')
+      .leftJoinAndSelect('tk.usermanager', 'usermanager');
+
+    if (SDT) {
+      query.andWhere('usermanager.SDT LIKE :SDT', {
+        SDT: `%${SDT}%`,
+      });
+    }
+
+    const users = await query.getMany();
+
+    const data = users.map((tk) => {
+      return {
+        ...tk,
+        MATKHAU: null,
+      };
+    });
+
+    return data;
+  }
+
   async createUser(body: CreateAccountDto) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
