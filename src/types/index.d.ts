@@ -10,3 +10,15 @@ interface FilterUser {
   status?: number;
   name?: string;
 }
+
+interface IFThematic {
+  MACHUYENDE?: number;
+  TENCHUYENDE?: string;
+  THOIGIANTHONGBAO?: Date;
+  THOIGIANTOCHUCCHUYENDE?: Date;
+  NOIDUNG?: string;
+  MATRUONG?: string;
+  SDT?: string;
+  take?: number;
+  skip?: number;
+}
