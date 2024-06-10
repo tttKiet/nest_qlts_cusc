@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { khachhang } from '../entites/khachhang.entity';
 import { dulieukhachhang } from 'src/entites/dulieukhachhang.entity';
 import { phieudkxettuyen } from 'src/entites/phieudkxettuyen.entity';
+import { trangthai } from 'src/entites/trangthai.entity';
 import { chucvu } from 'src/entites/chucvu.entity';
 import {
   CreateCustomerArrDto,
@@ -61,6 +62,7 @@ export class CustomerService {
         .leftJoinAndSelect('khachhang.dulieukhachhang', 'dulieukhachhang')
         .leftJoinAndSelect('khachhang.chitietchuyende', 'chitietchuyende')
         .leftJoinAndSelect('khachhang.lienhe', 'lienhe')
+        .leftJoinAndSelect('lienhe.trangthai', 'trangthai')
         .leftJoinAndSelect('chitietchuyende.chuyende', 'chuyende')
         .leftJoinAndSelect(
           'phieudkxettuyen.kenhnhanthongbao',

@@ -26,10 +26,10 @@ export class FileController {
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addFileTypeValidator({
-          fileType: 'xlsx',
+          fileType: 'sheet',
         })
         .addMaxSizeValidator({
-          maxSize: 1000,
+          maxSize: 1000000,
         })
         .build({
           errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -37,7 +37,9 @@ export class FileController {
     )
     file: Express.Multer.File,
   ) {
-    console.log('file >>>>>>>>>>>>>.', file);
+    return {
+      fileName: file.filename,
+    };
   }
 
   @Get('/readAlll')

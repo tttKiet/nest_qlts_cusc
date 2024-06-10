@@ -1,12 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { join } from 'path';
 
 declare const module: any;
 
 async function bootstrap() {
   const port = process.env.PORT || 8080;
   const app = await NestFactory.create(AppModule);
+
+  // app.useStaticAssets(join(__dirname, '..', 'public'));
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
