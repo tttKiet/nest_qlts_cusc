@@ -113,17 +113,6 @@ export class DataService {
   }
 
   async getJobLike({ schoolCode, isAvalable }: FilterJobLikeDto) {
-    const query = this.joblikeRepository.createQueryBuilder('ng');
-    query
-      .leftJoinAndSelect('ng.nganh', 'nganh')
-      .leftJoinAndSelect('ng.khachhang', 'khachhang');
-
-    if (schoolCode) {
-      query.where('khachhang.MATRUONG = :code', {
-        code: schoolCode,
-      });
-    }
-
     if (isAvalable == 'true') {
       //
       const subQuery = this.customerRepository
@@ -132,22 +121,51 @@ export class DataService {
         .select('ctpq.SDT')
         .from('chitietpq', 'ctpq');
 
-      const queryNganh = this.customerRepository
-        .createQueryBuilder('kh')
-        .leftJoinAndSelect('kh.truong', 'truong')
-        .leftJoinAndSelect('kh.nganhyeuthich', 'nganhyeuthich')
-        .leftJoinAndSelect('nganhyeuthich.nganh', 'nganh')
-        .where('truong.MATRUONG = :schoolCode', { schoolCode })
-        .andWhere(`kh.SDT NOT IN (${subQuery.getQuery()})`)
+      const queryNganh = this.joblikeRepository
+        .createQueryBuilder('ng')
+        .leftJoinAndSelect('ng.khachhang', 'khachhang')
+        .leftJoinAndSelect('ng.nganh', 'nganh')
+        .leftJoinAndSelect('khachhang.truong', 'truong');
+
+      queryNganh.where(`ng.SDT NOT IN (${subQuery.getQuery()})`);
+
+      if (schoolCode) {
+        queryNganh.andWhere('truong.MATRUONG = :schoolCode', {
+          schoolCode,
+        });
+        queryNganh
+          .select([
+            'nganh.TENNGANH as TENNGANH',
+            'truong.MATRUONG as MATRUONG',
+            'ng.MANGANH as MANGANH',
+            'COUNT(ng.SDT) as count',
+          ])
+          .groupBy('ng.MANGANH');
+
+        return queryNganh.getRawMany();
+      }
+
+      queryNganh
         .select([
           'nganh.TENNGANH as TENNGANH',
-          'nganhyeuthich.MANGANH as MANGANH',
-          'COUNT(kh.SDT) as count',
+          'ng.MANGANH as MANGANH',
+          'COUNT(ng.SDT) as count',
         ])
-        .groupBy('nganhyeuthich.MANGANH');
+        .groupBy('ng.MANGANH');
 
       return queryNganh.getRawMany();
-    } else
+    } else {
+      const query = this.joblikeRepository.createQueryBuilder('ng');
+      query
+        .leftJoinAndSelect('ng.nganh', 'nganh')
+        .leftJoinAndSelect('ng.khachhang', 'khachhang');
+
+      if (schoolCode) {
+        query.where('khachhang.MATRUONG = :code', {
+          code: schoolCode,
+        });
+      }
+
       query
         .select([
           'nganh.TENNGANH as TENNGANH',
@@ -156,8 +174,9 @@ export class DataService {
         ])
         .groupBy('nganh.MANGANH');
 
-    const data = await query.getRawMany();
-    return data;
+      const data = await query.getRawMany();
+      return data;
+    }
   }
 
   async getCustomerNotInSegment({
@@ -189,7 +208,7 @@ export class DataService {
     }
 
     const data = await query.getMany();
-
+    console.log('data getCustomerNotInSegment: ', data);
     return data;
   }
 
@@ -209,6 +228,7 @@ export class DataService {
       schoolCode: MATRUONG,
       limit: SODONG,
     });
+    console.log('customerNotInSegment: ', customerNotInSegment);
 
     // create data
     const data: chitietpq[] = customerNotInSegment.map((c) =>
@@ -308,7 +328,13 @@ export class DataService {
     return rl;
   }
 
-  async getSegment({ schoolCode }: { schoolCode?: string }) {
+  async getSegment({
+    schoolCode,
+    provinceCode,
+  }: {
+    schoolCode?: string;
+    provinceCode?: string;
+  }) {
     const query = this.segmentRepository.createQueryBuilder('pd');
     query.leftJoinAndSelect('pd.truong', 'truong');
 

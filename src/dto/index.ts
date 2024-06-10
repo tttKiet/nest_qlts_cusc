@@ -13,7 +13,6 @@ export class CreateSegmentDto {
 
 export class DeleteSegmentDto {
   @IsNotEmpty({ message: 'Bạn chưa gửi MaPQArray[].' })
-  @Length(0, undefined, { message: 'Số lượng cần xóa > 0.' })
   MaPQArray: string[];
 }
 
