@@ -330,16 +330,23 @@ export class DataService {
 
   async getSegment({
     schoolCode,
-    provinceCode,
+    type,
   }: {
     schoolCode?: string;
-    provinceCode?: string;
+    type?: 'doing' | 'done' | undefined;
   }) {
     const query = this.segmentRepository.createQueryBuilder('pd');
     query.leftJoinAndSelect('pd.truong', 'truong');
 
     if (schoolCode) {
       query.where('pd.MATRUONG = :schoolCode', { schoolCode });
+    }
+
+    if (type == 'doing') {
+      query.where('pd.SDT IS NULL ');
+    }
+    if (type == 'done') {
+      query.where('pd.SDT IS NOT NULL ');
     }
 
     const data = await query.getMany();
