@@ -1,22 +1,11 @@
-import {
-  Entity,
-  Column,
-  PrimaryColumn,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  ManyToMany,
-  ManyToOne,
-  JoinColumn,
-  OneToOne,
-} from 'typeorm';
-import { khachhang } from './khachhang.entity';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { chuyende } from './chuyende.entity';
+import { khachhang } from './khachhang.entity';
 
 @Entity()
 export class chitietchuyende {
   @PrimaryColumn({
     type: 'int',
-    nullable: false,
   })
   MACHUYENDE: number;
 
@@ -24,6 +13,7 @@ export class chitietchuyende {
     type: 'char',
     length: 11,
     nullable: false,
+    name: 'SDT',
   })
   SDT: string;
 
@@ -48,8 +38,7 @@ export class chitietchuyende {
 
   @ManyToOne(() => khachhang, (khachhang) => khachhang.chitietchuyende)
   @JoinColumn({
-    // foreignKeyConstraintName: 'chitietchuyende_ibfk_2',
-
+    foreignKeyConstraintName: 'chitietchuyende_ibfk_2',
     name: 'SDT',
   })
   khachhang: khachhang;
