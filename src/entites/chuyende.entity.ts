@@ -1,16 +1,5 @@
-import {
-  Entity,
-  Column,
-  PrimaryColumn,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  OneToOne,
-} from 'typeorm';
-import { khachhang } from './khachhang.entity';
-import { phanquyen } from './phanquyen.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { chitietchuyende } from './chitietchuyende.entity';
-import { truong } from './truong.entity';
-import { usermanager } from './usermanager.entity';
 
 @Entity()
 export class chuyende {
@@ -42,6 +31,4 @@ export class chuyende {
     (chitietchuyende) => chitietchuyende.chuyende,
   )
   chitietchuyende: chitietchuyende[];
-
-
 }

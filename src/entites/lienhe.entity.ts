@@ -1,15 +1,12 @@
 import {
-  Entity,
   Column,
-  PrimaryColumn,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  ManyToMany,
-  ManyToOne,
+  Entity,
   JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
-import { trangthai } from './trangthai.entity';
 import { khachhang } from './khachhang.entity';
+import { trangthai } from './trangthai.entity';
 // import { khachhang } from './khachhang.entity';
 // import { usermanager } from './usermanager.entity';
 
@@ -50,6 +47,7 @@ export class lienhe {
   @ManyToOne(() => khachhang, (khachhang) => khachhang.lienhe)
   @JoinColumn({
     name: 'SDT_KH',
+    foreignKeyConstraintName: 'FK_LIENHE_KHACHHANG',
   })
   khachhang: khachhang;
 }
