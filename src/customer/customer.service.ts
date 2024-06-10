@@ -1,24 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { lienhe } from 'src/entites/lienhe.entity';
+import { nganh } from 'src/entites/nganh.entity';
+import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
+import { Repository } from 'typeorm';
+import { khachhang } from '../entites/khachhang.entity';
+import { dulieukhachhang } from 'src/entites/dulieukhachhang.entity';
+import { phieudkxettuyen } from 'src/entites/phieudkxettuyen.entity';
+import { chucvu } from 'src/entites/chucvu.entity';
 import {
   CreateCustomerArrDto,
   GetCustomerDto,
   PositionArrDto,
-  PositionDto,
 } from 'src/dto/get-customer.dto';
-import { dulieukhachhang } from 'src/entites/dulieukhachhang.entity';
-import { phieudkxettuyen } from 'src/entites/phieudkxettuyen.entity';
-import { kenhnhanthongbao } from 'src/entites/kenhnhanthongbao.entity';
-import { hoso } from 'src/entites/hoso.entity';
-import { khoahocquantam } from 'src/entites/khoahocquantam.entity';
-import { nganh } from 'src/entites/nganh.entity';
-import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
-import { chuyende } from 'src/entites/chuyende.entity';
-import { chitietchuyende } from 'src/entites/chitietchuyende.entity';
-import { lienhe } from 'src/entites/lienhe.entity';
-import { Repository } from 'typeorm';
-import { khachhang } from '../entites/khachhang.entity';
-import { chucvu } from 'src/entites/chucvu.entity';
 
 @Injectable()
 export class CustomerService {
@@ -31,7 +25,6 @@ export class CustomerService {
     private nganhRepository: Repository<nganh>,
     @InjectRepository(lienhe)
     private lienheRepository: Repository<lienhe>,
-=======
     @InjectRepository(dulieukhachhang)
     private dulieukhachhangRepository: Repository<dulieukhachhang>,
     @InjectRepository(phieudkxettuyen)
@@ -42,7 +35,7 @@ export class CustomerService {
   ) {}
 
   async getContactNumber(SDT: string, number: number) {
-    let lienhe = await this.lienheRepository
+    const lienhe = await this.lienheRepository
       .createQueryBuilder('lienhe')
       .where('lienhe.SDT_KH = :SDT', { SDT })
       .andWhere('lienhe.LAN = :number', { number })
@@ -55,7 +48,7 @@ export class CustomerService {
     const { SDT } = props;
 
     try {
-      let query = this.khachhangRepository
+      const query = this.khachhangRepository
         .createQueryBuilder('khachhang')
         .where('khachhang.SDT = :SDT', { SDT })
         .leftJoinAndSelect('khachhang.phieudkxettuyen', 'phieudkxettuyen')
@@ -81,7 +74,7 @@ export class CustomerService {
       const data = await query.getOne();
 
       // nghành
-      let nganh = await this.nganhRepository
+      const nganh = await this.nganhRepository
         .createQueryBuilder('nganh')
         .where('nganh.MANGANH = :MANGANH', {
           MANGANH: data?.phieudkxettuyen?.NGANHDK,
@@ -104,7 +97,7 @@ export class CustomerService {
 
   async getInfoCustomers() {
     try {
-      let query = this.khachhangRepository
+      const query = this.khachhangRepository
         .createQueryBuilder('khachhang')
         .leftJoinAndSelect('khachhang.phieudkxettuyen', 'phieudkxettuyen')
         .leftJoinAndSelect('khachhang.nganhyeuthich', 'nganhyeuthich')
