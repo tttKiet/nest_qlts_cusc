@@ -31,7 +31,7 @@ export class CustomerService {
     private nganhRepository: Repository<nganh>,
     @InjectRepository(lienhe)
     private lienheRepository: Repository<lienhe>,
-=======
+
     @InjectRepository(dulieukhachhang)
     private dulieukhachhangRepository: Repository<dulieukhachhang>,
     @InjectRepository(phieudkxettuyen)
