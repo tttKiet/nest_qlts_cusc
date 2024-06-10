@@ -1,5 +1,13 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { chitietchuyende } from './chitietchuyende.entity';
+import { usermanager } from './usermanager.entity';
 
 @Entity()
 export class chuyende {
@@ -31,4 +39,8 @@ export class chuyende {
     (chitietchuyende) => chitietchuyende.chuyende,
   )
   chitietchuyende: chitietchuyende[];
+
+  @ManyToOne(() => usermanager, (usermanager) => usermanager.phanquyen)
+  @JoinColumn({ name: 'SDT' })
+  usermanager: usermanager;
 }
