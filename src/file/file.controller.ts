@@ -37,28 +37,11 @@ export class FileController {
     )
     file: Express.Multer.File,
   ) {
+    const columnsData = this.fileService.readExcelFile(file.path);
+
     return {
-      fileName: file.filename,
+      fileName: file.originalname,
+      columnsData,
     };
-  }
-
-  @Get('/readAlll')
-  readAll(@Body() body: string) {
-    return this.fileService.readAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.fileService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFileDto: UpdateFileDto) {
-    return this.fileService.update(+id, updateFileDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.fileService.remove(+id);
   }
 }
