@@ -3,9 +3,37 @@ import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import * as XLSX from 'xlsx';
 import * as fs from 'fs';
+import { log } from 'console';
+import {
+  CreateCustomerArrDto,
+  CustomerDto,
+  PositionDto,
+} from 'src/dto/get-customer.dto';
 
 @Injectable()
 export class FileService {
+  filterObject(ar: any[], column: string, value: string) {
+    const a = ar.find((item, index) => {
+      const keys = Object.keys(item);
+      if (keys.includes(column)) {
+        const columnValue = item[column];
+        if (columnValue == value) {
+          return true;
+        }
+      } else {
+        return false;
+      }
+    });
+    return a;
+  }
+
+  // const ar = [
+  //   { tenkhoahoc: 'Dài hạn', ma: '1' },
+  //       { tenkhoahoc: 'Arena', ma: '2' },
+
+  // ];
+  // filterId(ar, 'tenkhoahoc', 'Dài hạn');
+
   readExcelFile(filePath: string) {
     const fileBuffer = fs.readFileSync(filePath);
     const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
@@ -13,7 +41,7 @@ export class FileService {
     const sheet = workbook.Sheets[sheetName];
     const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-    const students = jsonData.slice(1).map((row) => {
+    const students = jsonData.slice(2).map((row) => {
       const nganhYeuThich = [];
       const nganhColumns = [
         'APTECH',
@@ -31,6 +59,7 @@ export class FileService {
           nganhYeuThich.push(col === 'NGÀNH KHÁC' ? row[14 + index] : col);
         }
       });
+
       return {
         hoVaTen: row[1],
         tinhThanh: row[2],
@@ -50,6 +79,33 @@ export class FileService {
         khoaHocQuanTam: row[23] || '',
         ketQuaDaiHocCaoDang: row[24] || '',
       };
+    });
+
+    let dulieukhachhang: CustomerDto[] = [];
+    let chucvukhachhang: PositionDto[] = [];
+
+    students.forEach((item) => {
+      // dư liệu khách hàng
+      dulieukhachhang.push({
+        SDT: item.dienThoai,
+        SDTBA: item.dienThoaiBa,
+        SDTME: item.dienThoaiMe,
+        SDTZALO: item.zalo,
+        FACEBOOK: item.facebook,
+      });
+      // chức vụ khách hàng
+
+      chucvukhachhang.push({
+        SDT: item.dienThoai,
+        STT: item.lop,
+        tenchucvu: item.chucVu,
+      });
+      // nghành yêu thích
+      const nghanhyeuthich = [];
+      // phieudkxettuyen
+      const phieudkxettuyen = [];
+
+      console.log('dulieukhachhang', dulieukhachhang);
     });
 
     return students;
