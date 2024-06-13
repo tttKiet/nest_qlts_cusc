@@ -81,8 +81,8 @@ export class FileService {
       };
     });
 
-    let dulieukhachhang: CustomerDto[] = [];
-    let chucvukhachhang: PositionDto[] = [];
+    const dulieukhachhang: CustomerDto[] = [];
+    const chucvukhachhang: PositionDto[] = [];
 
     students.forEach((item) => {
       // dư liệu khách hàng
