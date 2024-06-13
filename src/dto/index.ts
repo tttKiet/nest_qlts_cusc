@@ -1,5 +1,7 @@
 import { Transform, Type } from 'class-transformer';
 import {
+  IsArray,
+  isArray,
   IsNotEmpty,
   IsNumber,
   IsObject,
@@ -75,6 +77,12 @@ export class CustomerDto {
   MATINH: string;
 
   @IsOptional()
+  MANGHENGHIEP: string;
+
+  @IsOptional()
+  MAHINHTHUC: string;
+
+  @IsOptional()
   MATRUONG: string;
 
   @IsOptional()
@@ -108,4 +116,34 @@ export class InforCustomerDto {
   @ValidateNested()
   @Type(() => CustomerDataDto)
   data: CustomerDataDto;
+}
+
+// doi tuong
+export class ChuyenDeThamGiaDto {
+  @IsOptional()
+  MACHUYENDE: number;
+
+  @IsNotEmpty({ message: 'Bạn chưa gửi SDT khách hàng.' })
+  SDT: string;
+
+  @IsOptional()
+  TRANGTHAI: string;
+}
+
+export class NganhYeuThichDto {
+  @IsOptional()
+  @IsArray()
+  data: string[];
+}
+
+export class InforObjectDto {
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ChuyenDeThamGiaDto)
+  chuyendethamgia: ChuyenDeThamGiaDto;
+
+  @IsObject()
+  @ValidateNested()
+  @Type(() => NganhYeuThichDto)
+  nganhyeuthich: NganhYeuThichDto;
 }

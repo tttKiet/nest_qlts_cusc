@@ -7,7 +7,6 @@ import { Repository, UpdateResult } from 'typeorm';
 import { khachhang } from '../entites/khachhang.entity';
 import { dulieukhachhang } from 'src/entites/dulieukhachhang.entity';
 import { phieudkxettuyen } from 'src/entites/phieudkxettuyen.entity';
-import { trangthai } from 'src/entites/trangthai.entity';
 import { chucvu } from 'src/entites/chucvu.entity';
 import {
   CreateCustomerArrDto,
@@ -16,7 +15,8 @@ import {
   PositionArrDto,
   RegistrationFormArrDto,
 } from 'src/dto/get-customer.dto';
-import { InforCustomerDto } from 'src/dto';
+import { InforCustomerDto, InforObjectDto } from 'src/dto';
+import { chitietchuyende } from 'src/entites/chitietchuyende.entity';
 
 @Injectable()
 export class CustomerService {
@@ -33,7 +33,8 @@ export class CustomerService {
     private dulieukhachhangRepository: Repository<dulieukhachhang>,
     @InjectRepository(phieudkxettuyen)
     private phieudkxettuyenRepository: Repository<phieudkxettuyen>,
-
+    @InjectRepository(chitietchuyende)
+    private chitietchuyendeRepository: Repository<chitietchuyende>,
     @InjectRepository(chucvu)
     private chucvuRepository: Repository<chucvu>,
   ) {}
@@ -205,6 +206,41 @@ export class CustomerService {
       dataEdit: data,
       customerResult,
       dataResult,
+    };
+  }
+
+  async editInfoObjectCustomer(data: InforObjectDto) {
+    console.log(data);
+    let chuyendethamgiaResult: UpdateResult;
+    let nganhyeuthichResult: UpdateResult;
+    if (Object.keys(data.chuyendethamgia).length > 0) {
+      chuyendethamgiaResult = await this.chitietchuyendeRepository.update(
+        {
+          SDT: data.chuyendethamgia.SDT,
+        },
+        {
+          ...data.chuyendethamgia,
+        },
+      );
+    }
+
+    if (Object.keys(data.nganhyeuthich).length > 0) {
+      await this.nganhyeuthichRepository.delete({
+        SDT: data.chuyendethamgia.SDT,
+      });
+
+      nganhyeuthichResult = await this.nganhyeuthichRepository.upsert(
+        {
+          ...data.chuyendethamgia,
+        },
+        ['SDT'],
+      );
+    }
+
+    return {
+      dataEdit: data,
+      chuyendethamgiaResult,
+      nganhyeuthichResult,
     };
   }
 }
