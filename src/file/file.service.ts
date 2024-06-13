@@ -9,12 +9,19 @@ import {
   CustomerDto,
   PositionDto,
 } from 'src/dto/get-customer.dto';
+import { lop } from 'src/entites/lop';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { DataService } from 'src/data/data.service';
 
 @Injectable()
 export class FileService {
+  constructor(private dataService: DataService) {}
+
   filterObject(ar: any[], column: string, value: string) {
     const a = ar.find((item, index) => {
       const keys = Object.keys(item);
+
       if (keys.includes(column)) {
         const columnValue = item[column];
         if (columnValue == value) {
@@ -34,7 +41,7 @@ export class FileService {
   // ];
   // filterId(ar, 'tenkhoahoc', 'Dài hạn');
 
-  readExcelFile(filePath: string) {
+  async readExcelFile(filePath: string) {
     const fileBuffer = fs.readFileSync(filePath);
     const workbook = XLSX.read(fileBuffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[0];
@@ -81,6 +88,11 @@ export class FileService {
       };
     });
 
+    let dulieukhachhang: CustomerDto[] = [];
+    let chucvukhachhang: PositionDto[] = [];
+    const dataTableLop = await this.dataService.dataTableLop();
+
+    console.log('dataTableLop', dataTableLop);
     const dulieukhachhang: CustomerDto[] = [];
     const chucvukhachhang: PositionDto[] = [];
 
@@ -94,18 +106,18 @@ export class FileService {
         FACEBOOK: item.facebook,
       });
       // chức vụ khách hàng
+      const idLop = this.filterObject(dataTableLop, 'STT', `${item.lop}`);
+      console.log('idLop', idLop);
 
       chucvukhachhang.push({
         SDT: item.dienThoai,
-        STT: item.lop,
+        STT: idLop,
         tenchucvu: item.chucVu,
       });
       // nghành yêu thích
       const nghanhyeuthich = [];
       // phieudkxettuyen
       const phieudkxettuyen = [];
-
-      console.log('dulieukhachhang', dulieukhachhang);
     });
 
     return students;

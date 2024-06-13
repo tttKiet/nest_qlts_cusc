@@ -10,6 +10,7 @@ import {
 } from 'src/dto';
 import { chitietpq } from 'src/entites/chitietpq.entity';
 import { khachhang } from 'src/entites/khachhang.entity';
+import { lop } from 'src/entites/lop';
 import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
 import { nhatkythaydoi } from 'src/entites/nhatkythaydoi.entity';
 import { phanquyen } from 'src/entites/phanquyen.entity';
@@ -40,6 +41,9 @@ export class DataService {
 
     @InjectRepository(nhatkythaydoi)
     private nhatkythaydoiRepository: Repository<nhatkythaydoi>,
+
+    @InjectRepository(lop)
+    private lopRepository: Repository<lop>,
 
     private userService: UserService,
   ) {}
@@ -473,6 +477,7 @@ export class DataService {
     });
     return a;
   }
+
   async addStory(data: StoryDto) {
     if (!data.maadmin && !data.sdt) {
       throw new HttpException('Vui lòng truyền người tạo.', 400);
@@ -484,4 +489,9 @@ export class DataService {
     const storyDoc = await this.nhatkythaydoiRepository.save(story);
     return storyDoc;
   }
+
+  async dataTableLop() {
+    return await this.lopRepository.find();
+  }
+
 }
