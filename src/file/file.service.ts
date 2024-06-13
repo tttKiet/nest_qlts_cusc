@@ -105,6 +105,7 @@ export class FileService {
       });
       // chức vụ khách hàng
       const idLop = this.filterObject(dataTableLop, 'STT', `${item.lop}`);
+      console.log('idLop', idLop);
 
       chucvukhachhang.push({
         SDT: item.dienThoai,
