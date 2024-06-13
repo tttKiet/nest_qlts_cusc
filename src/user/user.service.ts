@@ -157,7 +157,7 @@ export class UserService {
       };
     });
 
-    return data;
+    return data.filter((d) => d.usermanager !== null);
   }
 
   async createUser(body: CreateAccountDto) {
