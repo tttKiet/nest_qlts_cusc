@@ -19,6 +19,7 @@ import { usermanager } from 'src/entites/usermanager.entity';
 import { AccountService } from 'src/auth/account.service';
 import { chucvu } from 'src/entites/chucvu.entity';
 import { lop } from 'src/entites/lop';
+import { nhatkythaydoi } from 'src/entites/nhatkythaydoi.entity';
 
 @Module({
   providers: [DataService, UserService, AccountService],
@@ -41,6 +42,7 @@ import { lop } from 'src/entites/lop';
       khachhang,
       chucvu,
       lop,
+      nhatkythaydoi,
     ]),
   ],
 })

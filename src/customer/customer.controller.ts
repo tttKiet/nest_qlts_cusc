@@ -4,6 +4,7 @@ import { CustomerService } from 'src/customer/customer.service';
 import {
   CreateCustomerArrDto,
   GetCustomerDto,
+  JobLikeDtoArrDto,
   PositionArrDto,
 } from 'src/dto/get-customer.dto';
 
@@ -47,6 +48,7 @@ export class CustomerController {
     }
   }
 
+  // Tạo khách hàng theo mảng
   @Post()
   async createCustomer(
     @Body() body: CreateCustomerArrDto,
@@ -68,10 +70,30 @@ export class CustomerController {
     }
   }
 
+  // Tạo chức vụ theo mảng
   @Post('/position')
   async createPosition(@Body() body: PositionArrDto, @Res() res: Response) {
     try {
       const data = await this.customerService.createPosition(body);
+
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Tạo thành công.',
+        data: data,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        statusCode: 200,
+        message: error?.message || 'Lỗi server.',
+      });
+    }
+  }
+
+  // Tạo ngành yêu thích theo mảng
+  @Post('/job-like')
+  async createJobLike(@Body() body: JobLikeDtoArrDto, @Res() res: Response) {
+    try {
+      const data = await this.customerService.createJobLikeArr(body);
 
       return res.status(200).json({
         statusCode: 200,
