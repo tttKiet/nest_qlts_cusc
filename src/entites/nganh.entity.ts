@@ -1,4 +1,12 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryColumn,
+  OneToMany,
+  OneToOne,
+  ManyToOne,
+} from 'typeorm';
+import { phieudkxettuyen } from './phieudkxettuyen.entity';
 import { nganhyeuthich } from './nganhyeuthich.entity';
 
 @Entity()

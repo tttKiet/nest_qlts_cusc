@@ -459,6 +459,19 @@ export class DataService {
     return segmentUpdateResult;
   }
 
+  async filterId(ar: any[], column: string, value: string) {
+    const a = ar.find((item, index) => {
+      const keys = Object.keys(item);
+      if (keys.includes(column)) {
+        const columnValue = item[column];
+        if (columnValue == value) {
+          return true;
+        }
+      } else {
+        return false;
+      }
+    });
+    return a;
   async addStory(data: StoryDto) {
     if (!data.maadmin && !data.sdt) {
       throw new HttpException('Vui lòng truyền người tạo.', 400);
@@ -471,3 +484,5 @@ export class DataService {
     return storyDoc;
   }
 }
+
+

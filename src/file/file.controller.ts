@@ -26,10 +26,10 @@ export class FileController {
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addFileTypeValidator({
-          fileType: 'xlsx',
+          fileType: 'sheet',
         })
         .addMaxSizeValidator({
-          maxSize: 1000,
+          maxSize: 1000000,
         })
         .build({
           errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -37,26 +37,11 @@ export class FileController {
     )
     file: Express.Multer.File,
   ) {
-    console.log('file >>>>>>>>>>>>>.', file);
-  }
+    const columnsData = this.fileService.readExcelFile(file.path);
 
-  @Get('/readAlll')
-  readAll(@Body() body: string) {
-    return this.fileService.readAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.fileService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFileDto: UpdateFileDto) {
-    return this.fileService.update(+id, updateFileDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.fileService.remove(+id);
+    return {
+      fileName: file.originalname,
+      columnsData,
+    };
   }
 }

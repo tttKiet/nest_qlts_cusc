@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CreateThematicDto } from './dto/create-thematic.dto';
 import { UpdateThematicDto } from './dto/update-thematic.dto';
 import { chuyende } from 'src/entites/chuyende.entity';
+import { chitietchuyende } from 'src/entites/chitietchuyende.entity';
+import { usermanager } from 'src/entites/usermanager.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -73,6 +75,7 @@ export class ThematicService {
       where: condition,
       take: take ?? undefined,
       skip: skip ?? undefined,
+      relations: ['usermanager'], 
     };
 
     return await this.chuyendeRepository.find(queryOptions);
