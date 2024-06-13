@@ -16,6 +16,7 @@ import { nhatkythaydoi } from 'src/entites/nhatkythaydoi.entity';
 import { phanquyen } from 'src/entites/phanquyen.entity';
 // import { phanquyen } from 'src/entites/phanquyen.entity';
 import { tinh } from 'src/entites/tinh.entity';
+import { truong } from 'src/entites/truong.entity';
 import { UserService } from 'src/user/user.service';
 import { DataSource, In, Repository } from 'typeorm';
 
@@ -41,6 +42,9 @@ export class DataService {
 
     @InjectRepository(nhatkythaydoi)
     private nhatkythaydoiRepository: Repository<nhatkythaydoi>,
+
+    @InjectRepository(truong)
+    private truongRepository: Repository<truong>,
 
     @InjectRepository(lop)
     private lopRepository: Repository<lop>,
@@ -151,7 +155,18 @@ export class DataService {
           ])
           .groupBy('ng.MANGANH');
 
-        return queryNganh.getRawMany();
+        // let all count
+        const allCount = await this.customerRepository.count({
+          where: {
+            MATRUONG: schoolCode,
+          },
+        });
+
+        const data = await queryNganh.getRawMany();
+        return {
+          data: data,
+          allCount: allCount,
+        };
       }
 
       queryNganh
@@ -493,5 +508,4 @@ export class DataService {
   async dataTableLop() {
     return await this.lopRepository.find();
   }
-
 }

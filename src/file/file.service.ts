@@ -1,25 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { CreateFileDto } from './dto/create-file.dto';
-import { UpdateFileDto } from './dto/update-file.dto';
-import * as XLSX from 'xlsx';
 import * as fs from 'fs';
-import { log } from 'console';
-import {
-  CreateCustomerArrDto,
-  CustomerDto,
-  PositionDto,
-} from 'src/dto/get-customer.dto';
-import { lop } from 'src/entites/lop';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { DataService } from 'src/data/data.service';
+import { CustomerDto, PositionDto } from 'src/dto/get-customer.dto';
+import * as XLSX from 'xlsx';
 
 @Injectable()
 export class FileService {
   constructor(private dataService: DataService) {}
 
   filterObject(ar: any[], column: string, value: string) {
-    const a = ar.find((item, index) => {
+    const a = ar.find((item) => {
       const keys = Object.keys(item);
 
       if (keys.includes(column)) {
@@ -88,8 +78,6 @@ export class FileService {
       };
     });
 
-    let dulieukhachhang: CustomerDto[] = [];
-    let chucvukhachhang: PositionDto[] = [];
     const dataTableLop = await this.dataService.dataTableLop();
 
     console.log('dataTableLop', dataTableLop);
