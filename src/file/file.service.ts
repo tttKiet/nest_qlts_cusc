@@ -93,6 +93,8 @@ export class FileService {
     const dataTableLop = await this.dataService.dataTableLop();
 
     console.log('dataTableLop', dataTableLop);
+    const dulieukhachhang: CustomerDto[] = [];
+    const chucvukhachhang: PositionDto[] = [];
 
     students.forEach((item) => {
       // dư liệu khách hàng
