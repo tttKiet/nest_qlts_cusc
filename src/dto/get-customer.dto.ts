@@ -56,3 +56,55 @@ export class PositionArrDto {
   @Type(() => PositionDto)
   data: PositionDto[];
 }
+
+// joblike
+export class JobLikeDto {
+  @IsNotEmpty({ message: 'Bạn chưa gửi số điện thoại.' })
+  SDT: string;
+
+  @IsNotEmpty({ message: 'Bạn chưa gửi mã ngành.' })
+  MANGANH: string;
+
+  @IsOptional()
+  CHITIET: string;
+}
+
+export class JobLikeDtoArrDto {
+  @IsArray({ message: 'Vui lòng chuyển một array!' })
+  @ValidateNested({ each: true })
+  @ArrayMinSize(1, { message: 'Dữ liệu > 0' })
+  @Type(() => JobLikeDto)
+  data: JobLikeDto[];
+}
+
+// phieudanhky
+export class RegistrationFormDto {
+  @IsNotEmpty({ message: 'Bạn chưa gửi MAPHIEUDK.' })
+  MAPHIEUDK: string;
+
+  @IsNotEmpty({ message: 'Bạn chưa gửi MALOAIKHOAHOC.' })
+  MALOAIKHOAHOC: string;
+
+  @IsNotEmpty({ message: 'Bạn chưa gửi MAKENH.' })
+  MAKENH: string;
+
+  @IsNotEmpty({ message: 'Bạn chưa gửi SDT.' })
+  SDT: string;
+
+  @IsNotEmpty({ message: 'Bạn chưa gửi MAKETQUA.' })
+  MAKETQUA: string;
+
+  @IsOptional()
+  SDTZALO: string;
+
+  @IsOptional()
+  NGANHDK: string;
+}
+
+export class RegistrationFormArrDto {
+  @IsArray({ message: 'Vui lòng chuyền một array!' })
+  @ValidateNested({ each: true })
+  @ArrayMinSize(1, { message: 'Dữ liệu > 0' })
+  @Type(() => RegistrationFormDto)
+  data: RegistrationFormDto[];
+}

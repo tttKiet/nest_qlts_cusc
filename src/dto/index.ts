@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsOptional, Length } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class CreateSegmentDto {
   @IsNotEmpty({ message: 'Bạn chưa gửi MATRUONG.' })
@@ -47,4 +47,15 @@ export class FilterJobLikeDto {
 
   @IsOptional()
   isAvalable: string;
+}
+
+export class StoryDto {
+  @IsOptional()
+  maadmin: string;
+
+  @IsOptional()
+  sdt: string;
+
+  @IsNotEmpty({ message: 'Bạn chưa gửi hanhdong.' })
+  hanhdong: string;
 }

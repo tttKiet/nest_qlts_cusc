@@ -6,10 +6,12 @@ import {
   OpentContactSegmentDto,
   PatchPermisionSegmentDto,
   RefundSegmentDto,
+  StoryDto,
 } from 'src/dto';
 import { chitietpq } from 'src/entites/chitietpq.entity';
 import { khachhang } from 'src/entites/khachhang.entity';
 import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
+import { nhatkythaydoi } from 'src/entites/nhatkythaydoi.entity';
 import { phanquyen } from 'src/entites/phanquyen.entity';
 // import { phanquyen } from 'src/entites/phanquyen.entity';
 import { tinh } from 'src/entites/tinh.entity';
@@ -35,6 +37,9 @@ export class DataService {
 
     @InjectRepository(chitietpq)
     private segmentDetailsRepository: Repository<chitietpq>,
+
+    @InjectRepository(nhatkythaydoi)
+    private nhatkythaydoiRepository: Repository<nhatkythaydoi>,
 
     private userService: UserService,
   ) {}
@@ -452,5 +457,17 @@ export class DataService {
       },
     );
     return segmentUpdateResult;
+  }
+
+  async addStory(data: StoryDto) {
+    if (!data.maadmin && !data.sdt) {
+      throw new HttpException('Vui lòng truyền người tạo.', 400);
+    }
+    // create
+    const story = this.nhatkythaydoiRepository.create({
+      ...data,
+    });
+    const storyDoc = await this.nhatkythaydoiRepository.save(story);
+    return storyDoc;
   }
 }
