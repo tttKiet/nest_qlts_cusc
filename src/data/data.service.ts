@@ -371,7 +371,9 @@ export class DataService {
     type?: 'doing' | 'done' | undefined;
   }) {
     const query = this.segmentRepository.createQueryBuilder('pd');
-    query.leftJoinAndSelect('pd.truong', 'truong');
+    query
+      .leftJoinAndSelect('pd.truong', 'truong')
+      .leftJoinAndSelect('pd.usermanager', 'usermanager');
 
     if (schoolCode) {
       query.where('truong.MATRUONG = :schoolCode', { schoolCode });
