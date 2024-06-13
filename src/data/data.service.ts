@@ -11,11 +11,13 @@ import {
 import { chitietpq } from 'src/entites/chitietpq.entity';
 import { khachhang } from 'src/entites/khachhang.entity';
 import { lop } from 'src/entites/lop';
+import { nganh } from 'src/entites/nganh.entity';
 import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
 import { nhatkythaydoi } from 'src/entites/nhatkythaydoi.entity';
 import { phanquyen } from 'src/entites/phanquyen.entity';
 // import { phanquyen } from 'src/entites/phanquyen.entity';
 import { tinh } from 'src/entites/tinh.entity';
+import { truong } from 'src/entites/truong.entity';
 import { UserService } from 'src/user/user.service';
 import { DataSource, In, Repository } from 'typeorm';
 
@@ -44,6 +46,15 @@ export class DataService {
 
     @InjectRepository(lop)
     private lopRepository: Repository<lop>,
+
+    @InjectRepository(nganh)
+    private nganhRepository: Repository<nganh>,
+
+    @InjectRepository(tinh)
+    private tinhRepository: Repository<tinh>,
+
+    @InjectRepository(truong)
+    private truongRepository: Repository<truong>,
 
     private userService: UserService,
   ) {}
@@ -490,8 +501,19 @@ export class DataService {
     return storyDoc;
   }
 
-  async dataTableLop() {
+  async getTableLop() {
     return await this.lopRepository.find();
   }
 
+  async getTableNghanh() {
+    return await this.nganhRepository.find();
+  }
+
+  async getTableTinh() {
+    return await this.tinhRepository.find();
+  }
+
+  async getTableTruong() {
+    return await this.truongRepository.find();
+  }
 }

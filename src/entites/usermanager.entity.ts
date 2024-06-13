@@ -10,6 +10,7 @@ export class usermanager {
     type: 'char',
     length: 11,
     nullable: false,
+    name: 'SDT',
   })
   @OneToOne(() => taikhoan, (taikhoan) => taikhoan.usermanager)
   SDT: string;

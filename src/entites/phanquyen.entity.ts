@@ -45,5 +45,5 @@ export class phanquyen {
 
   @OneToMany(() => chitietpq, (chitietpq) => chitietpq.phanquyen)
   @JoinColumn()
-  chitietpq: chitietpq[];
+  chitietpq: chitietpq[]; 
 }

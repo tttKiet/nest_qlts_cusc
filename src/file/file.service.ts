@@ -13,6 +13,9 @@ import { lop } from 'src/entites/lop';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DataService } from 'src/data/data.service';
+import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
+import { nghenghiep } from 'src/entites/nghenghiep.entity';
+import { nganh } from 'src/entites/nganh.entity';
 
 @Injectable()
 export class FileService {
@@ -47,6 +50,7 @@ export class FileService {
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
     const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+    console.log('jsonData', jsonData);
 
     const students = jsonData.slice(2).map((row) => {
       const nganhYeuThich = [];
@@ -90,11 +94,9 @@ export class FileService {
 
     let dulieukhachhang: CustomerDto[] = [];
     let chucvukhachhang: PositionDto[] = [];
-    const dataTableLop = await this.dataService.dataTableLop();
-
-    console.log('dataTableLop', dataTableLop);
-    const dulieukhachhang: CustomerDto[] = [];
-    const chucvukhachhang: PositionDto[] = [];
+    let nganhyeuthich: nganhyeuthich[] = [];
+    const getTableLop = await this.dataService.getTableLop();
+    const getTableNganh = await this.dataService.getTableNghanh();
 
     students.forEach((item) => {
       // dư liệu khách hàng
@@ -106,20 +108,42 @@ export class FileService {
         FACEBOOK: item.facebook,
       });
       // chức vụ khách hàng
-      const idLop = this.filterObject(dataTableLop, 'STT', `${item.lop}`);
-      console.log('idLop', idLop);
+      const dataLop = this.filterObject(getTableLop, 'LOP', `${item.lop}`);
+      const dataNganh = this.filterObject(
+        getTableNganh,
+        'TENNGANH',
+        `${item.nganhYeuThich}`,
+      );
 
       chucvukhachhang.push({
         SDT: item.dienThoai,
-        STT: idLop,
+        STT: dataLop?.STT,
         tenchucvu: item.chucVu,
       });
+
       // nghành yêu thích
-      const nghanhyeuthich = [];
+      const nganhyth = item?.nganhYeuThich || [];
+
+      nganhyth.forEach((nganhItem) => {
+        const a = this.filterObject(getTableNganh, 'TENNGANH', nganhItem);
+
+        if (a) {
+          const b: nganhyeuthich = {
+            SDT: item.dienThoai,
+            MANGANH: a.MANGANH,
+            CHITIET: null,
+          } as nganhyeuthich;
+
+          nganhyeuthich.push(b);
+        }
+      });
+
       // phieudkxettuyen
-      const phieudkxettuyen = [];
+      const phieudkxettuyen = []; 
     });
 
-    return students;
+    console.log('nganhyeuthich', nganhyeuthich);
+
+    return nganhyeuthich;
   }
 }
