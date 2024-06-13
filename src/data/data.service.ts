@@ -156,16 +156,24 @@ export class DataService {
           .groupBy('ng.MANGANH');
 
         // let all count
-        const allCount = await this.customerRepository.count({
-          where: {
-            MATRUONG: schoolCode,
-          },
-        });
+        // const allCount = await this.customerRepository.count({
+        //   where: {
+        //     MATRUONG: schoolCode,
+        //   },
+        // });
+
+        const queryCustomer = this.customerRepository.createQueryBuilder('kh');
+        queryCustomer
+          .where(`kh.SDT NOT IN (${subQuery.getQuery()})`)
+          .andWhere('kh.MATRUONG = :schoolCode', {
+            schoolCode,
+          });
 
         const data = await queryNganh.getRawMany();
+        const allCount = await queryCustomer.getRawMany();
         return {
           data: data,
-          allCount: allCount,
+          allCount: allCount.length,
         };
       }
 
