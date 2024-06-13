@@ -371,14 +371,14 @@ export class DataService {
     query.leftJoinAndSelect('pd.truong', 'truong');
 
     if (schoolCode) {
-      query.where('pd.MATRUONG = :schoolCode', { schoolCode });
+      query.where('truong.MATRUONG = :schoolCode', { schoolCode });
     }
 
     if (type == 'doing') {
-      query.where('pd.SDT IS NULL ');
+      query.andWhere('pd.SDT IS NULL ');
     }
     if (type == 'done') {
-      query.where('pd.SDT IS NOT NULL ');
+      query.andWhere('pd.SDT IS NOT NULL ');
     }
 
     const data = await query.getMany();
