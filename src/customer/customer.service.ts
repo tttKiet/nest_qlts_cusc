@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { lienhe } from 'src/entites/lienhe.entity';
 import { nganh } from 'src/entites/nganh.entity';
 import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { khachhang } from '../entites/khachhang.entity';
 import { dulieukhachhang } from 'src/entites/dulieukhachhang.entity';
 import { phieudkxettuyen } from 'src/entites/phieudkxettuyen.entity';
@@ -16,6 +16,7 @@ import {
   PositionArrDto,
   RegistrationFormArrDto,
 } from 'src/dto/get-customer.dto';
+import { InforCustomerDto } from 'src/dto';
 
 @Injectable()
 export class CustomerService {
@@ -172,5 +173,38 @@ export class CustomerService {
     console.log('dataResult: ', dataResult);
 
     return dataResult;
+  }
+
+  async editInfoCustomer(data: InforCustomerDto) {
+    console.log(data);
+    let customerResult: UpdateResult;
+    let dataResult: UpdateResult;
+    if (Object.keys(data.customer).length > 0) {
+      customerResult = await this.khachhangRepository.update(
+        {
+          SDT: data.customer.SDT,
+        },
+        {
+          ...data.customer,
+        },
+      );
+    }
+
+    if (Object.keys(data.data).length > 0) {
+      dataResult = await this.dulieukhachhangRepository.update(
+        {
+          SDT: data.customer.SDT,
+        },
+        {
+          ...data.data,
+        },
+      );
+    }
+
+    return {
+      dataEdit: data,
+      customerResult,
+      dataResult,
+    };
   }
 }

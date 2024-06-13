@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { CustomerService } from 'src/customer/customer.service';
+import { InforCustomerDto } from 'src/dto';
 import {
   CreateCustomerArrDto,
   GetCustomerDto,
@@ -98,6 +99,25 @@ export class CustomerController {
       return res.status(200).json({
         statusCode: 200,
         message: 'Tạo thành công.',
+        data: data,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        statusCode: 200,
+        message: error?.message || 'Lỗi server.',
+      });
+    }
+  }
+
+  // Tạo ngành yêu thích theo mảng
+  @Post('/info')
+  async editInfo(@Body() body: InforCustomerDto, @Res() res: Response) {
+    try {
+      const data = await this.customerService.editInfoCustomer(body);
+
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Đã lưu thành công.',
         data: data,
       });
     } catch (error) {

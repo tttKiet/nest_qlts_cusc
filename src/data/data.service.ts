@@ -313,7 +313,10 @@ export class DataService {
         const pqDoc = this.segmentRepository.create({
           MaPQ: maPqRender,
           MATRUONG: body.MATRUONG,
-          Sodong: body.SODONG,
+          Sodong:
+            body.SODONG < customerLengthAvailable
+              ? body.SODONG
+              : customerLengthAvailable,
         });
 
         await this.segmentRepository.save(pqDoc);

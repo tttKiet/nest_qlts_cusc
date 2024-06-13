@@ -1,5 +1,11 @@
-import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
 
 export class CreateSegmentDto {
   @IsNotEmpty({ message: 'Bạn chưa gửi MATRUONG.' })
@@ -58,4 +64,48 @@ export class StoryDto {
 
   @IsNotEmpty({ message: 'Bạn chưa gửi hanhdong.' })
   hanhdong: string;
+}
+
+// Infor Customer Dto
+export class CustomerDto {
+  @IsNotEmpty({ message: 'Bạn chưa gửi SDT khách hàng.' })
+  SDT: string;
+
+  @IsOptional()
+  MATINH: string;
+
+  @IsOptional()
+  MATRUONG: string;
+
+  @IsOptional()
+  HOTEN: string;
+
+  @IsOptional()
+  EMAIL: string;
+}
+
+export class CustomerDataDto {
+  @IsOptional()
+  SDTBA: string;
+
+  @IsOptional()
+  SDTME: string;
+
+  @IsOptional()
+  FACEBOOK: string;
+
+  @IsOptional()
+  SDTZALO: string;
+}
+
+export class InforCustomerDto {
+  @IsObject()
+  @ValidateNested()
+  @Type(() => CustomerDto)
+  customer: CustomerDto;
+
+  @IsObject()
+  @ValidateNested()
+  @Type(() => CustomerDataDto)
+  data: CustomerDataDto;
 }
