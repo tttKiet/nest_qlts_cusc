@@ -9,10 +9,15 @@ import {
   StoryDto,
 } from 'src/dto';
 import { chitietpq } from 'src/entites/chitietpq.entity';
+import { hinhthucthuthap } from 'src/entites/hinhthucthuthap.entity';
+import { kenhnhanthongbao } from 'src/entites/kenhnhanthongbao.entity';
+import { ketquatotnghiep } from 'src/entites/ketquatotnghiep.entity';
 import { khachhang } from 'src/entites/khachhang.entity';
+import { khoahocquantam } from 'src/entites/khoahocquantam.entity';
 import { lop } from 'src/entites/lop';
 import { nganh } from 'src/entites/nganh.entity';
 import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
+import { nghenghiep } from 'src/entites/nghenghiep.entity';
 import { nhatkythaydoi } from 'src/entites/nhatkythaydoi.entity';
 import { phanquyen } from 'src/entites/phanquyen.entity';
 // import { phanquyen } from 'src/entites/phanquyen.entity';
@@ -55,6 +60,21 @@ export class DataService {
 
     @InjectRepository(truong)
     private truongRepository: Repository<truong>,
+
+    @InjectRepository(khoahocquantam)
+    private khoahocquantamRepository: Repository<khoahocquantam>,
+
+    @InjectRepository(kenhnhanthongbao)
+    private kenhnhanthongbaoRepository: Repository<kenhnhanthongbao>,
+
+    @InjectRepository(ketquatotnghiep)
+    private ketquatotnghiepRepository: Repository<ketquatotnghiep>,
+
+    @InjectRepository(hinhthucthuthap)
+    private hinhthucthuthapRepository: Repository<hinhthucthuthap>,
+
+    @InjectRepository(nghenghiep)
+    private nghenghiepRepository: Repository<nghenghiep>,
 
     private userService: UserService,
   ) {}
@@ -515,5 +535,25 @@ export class DataService {
 
   async getTableTruong() {
     return await this.truongRepository.find();
+  }
+
+  async getTableKhoahocquantam() {
+    return await this.khoahocquantamRepository.find();
+  }
+
+  async getTableKenhnhanthongbao() {
+    return await this.kenhnhanthongbaoRepository.find();
+  }
+
+  async getTableKetquatotnghiep() {
+    return await this.ketquatotnghiepRepository.find();
+  }
+
+  async getTableNghenghiep() {
+    return await this.nghenghiepRepository.find();
+  }
+
+  async getTableHinhthucthuthap() {
+    return await this.hinhthucthuthapRepository.find();
   }
 }

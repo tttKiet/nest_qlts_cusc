@@ -41,11 +41,18 @@ export class FileController {
     file: Express.Multer.File,
     @Res() res: Response,
   ) {
-    const data = await this.fileService.readExcelFile(file.path);
+    try {
+      const data = await this.fileService.readExcelFile(file.path);
 
-    return res.status(200).json({
-      fileName: file.originalname,
-      data: data,
-    });
+      return res.status(200).json({
+        fileName: file.originalname,
+        data: data,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        statusCode: 500,
+        message: error?.message || 'Lỗi server.',
+      });
+    }
   }
 }

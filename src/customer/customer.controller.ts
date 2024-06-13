@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { CustomerService } from 'src/customer/customer.service';
 import {
-  CreateCustomerArrDto,
+  CreateCustomerDataArrDto,
   GetCustomerDto,
   JobLikeDtoArrDto,
   PositionArrDto,
@@ -50,12 +50,12 @@ export class CustomerController {
 
   // Tạo khách hàng theo mảng
   @Post()
-  async createCustomer(
-    @Body() body: CreateCustomerArrDto,
+  async createCustomerData(
+    @Body() body: CreateCustomerDataArrDto,
     @Res() res: Response,
   ) {
     try {
-      const data = await this.customerService.createCustomerArr(body);
+      const data = await this.customerService.createCustomeDatarArr(body);
 
       return res.status(200).json({
         statusCode: 200,

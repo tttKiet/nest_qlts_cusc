@@ -24,10 +24,22 @@ import { truong } from 'src/entites/truong.entity';
 import { usermanager } from 'src/entites/usermanager.entity';
 import { UserService } from 'src/user/user.service';
 import { AccountService } from 'src/auth/account.service';
+import { kenhnhanthongbao } from 'src/entites/kenhnhanthongbao.entity';
+import { ketquatotnghiep } from 'src/entites/ketquatotnghiep.entity';
+import { khoahocquantam } from 'src/entites/khoahocquantam.entity';
+import { CustomerService } from 'src/customer/customer.service';
+import { lienhe } from 'src/entites/lienhe.entity';
+import { phieudkxettuyen } from 'src/entites/phieudkxettuyen.entity';
 
 @Module({
   controllers: [FileController],
-  providers: [FileService, DataService, UserService, AccountService],
+  providers: [
+    FileService,
+    DataService,
+    UserService,
+    AccountService,
+    CustomerService,
+  ],
   imports: [
     MulterModule.registerAsync({
       useClass: MulterConfigService,
@@ -50,6 +62,11 @@ import { AccountService } from 'src/auth/account.service';
       chucvu,
       lop,
       nhatkythaydoi,
+      khoahocquantam,
+      kenhnhanthongbao,
+      ketquatotnghiep,
+      lienhe,
+      phieudkxettuyen,
     ]),
   ],
 })

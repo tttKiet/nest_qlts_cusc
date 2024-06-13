@@ -11,6 +11,7 @@ import { trangthai } from 'src/entites/trangthai.entity';
 import { chucvu } from 'src/entites/chucvu.entity';
 import {
   CreateCustomerArrDto,
+  CreateCustomerDataArrDto,
   GetCustomerDto,
   JobLikeDtoArrDto,
   PositionArrDto,
@@ -128,9 +129,17 @@ export class CustomerService {
     }
   }
 
-  async createCustomerArr(data: CreateCustomerArrDto) {
-    console.log(data);
+  async createCustomeDatarArr(data: CreateCustomerDataArrDto) {
     const dataResult = await this.dulieukhachhangRepository.upsert(data.data, [
+      'SDT',
+    ]);
+    console.log('dataResult: ', dataResult);
+
+    return dataResult;
+  }
+
+  async createCustomerArr(data: CreateCustomerArrDto) {
+    const dataResult = await this.khachhangRepository.upsert(data.data, [
       'SDT',
     ]);
     console.log('dataResult: ', dataResult);

@@ -12,7 +12,7 @@ export class GetCustomerDto {
   SDT: string;
 }
 
-export class CustomerDto {
+export class CustomerDataDto {
   @IsNotEmpty({ message: 'Bạn chưa gửi số điện thoại.' })
   SDT: string;
 
@@ -29,12 +29,12 @@ export class CustomerDto {
   FACEBOOK: string;
 }
 
-export class CreateCustomerArrDto {
+export class CreateCustomerDataArrDto {
   @IsArray({ message: 'Vui lòng chuyển một array!' })
   @ValidateNested({ each: true })
   @ArrayMinSize(1, { message: 'Dữ liệu > 0' })
-  @Type(() => CustomerDto)
-  data: CustomerDto[];
+  @Type(() => CustomerDataDto)
+  data: CustomerDataDto[];
 }
 
 // position
@@ -107,4 +107,39 @@ export class RegistrationFormArrDto {
   @ArrayMinSize(1, { message: 'Dữ liệu > 0' })
   @Type(() => RegistrationFormDto)
   data: RegistrationFormDto[];
+}
+
+// customer
+export class CustomerDto {
+  @IsNotEmpty({ message: 'Bạn chưa gửi số điện thoại.' })
+  SDT: string;
+
+  @IsOptional()
+  MANGHENGHIEP: string;
+
+  @IsOptional()
+  MATRUONG: string;
+
+  @IsOptional()
+  MATINH: string;
+
+  @IsOptional()
+  MAHINHTHUC: string;
+
+  @IsOptional()
+  HOTEN: string;
+
+  @IsOptional()
+  EMAIL: string;
+
+  @IsOptional()
+  TRANGTHAIKHACHHANG: string;
+}
+
+export class CreateCustomerArrDto {
+  @IsArray({ message: 'Vui lòng chuyển một array!' })
+  @ValidateNested({ each: true })
+  @ArrayMinSize(1, { message: 'Dữ liệu > 0' })
+  @Type(() => CustomerDto)
+  data: CustomerDto[];
 }
