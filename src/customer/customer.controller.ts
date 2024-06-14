@@ -1,7 +1,11 @@
 import { Body, Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { CustomerService } from 'src/customer/customer.service';
-import { InforCustomerDto, InforObjectDto } from 'src/dto';
+import {
+  InforCustomerDto,
+  InforObjectDto,
+  RegistrationFormEditDto,
+} from 'src/dto';
 import {
   CreateCustomerArrDto,
   GetCustomerDto,
@@ -133,6 +137,28 @@ export class CustomerController {
   async editObject(@Body() body: InforObjectDto, @Res() res: Response) {
     try {
       const data = await this.customerService.editInfoObjectCustomer(body);
+
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Đã lưu thành công.',
+        data: data,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        statusCode: 200,
+        message: error?.message || 'Lỗi server.',
+      });
+    }
+  }
+
+  // Sửa thông tin một phiếu đăng ký
+  @Post('/edit-registration')
+  async editOneRegistrationForm(
+    @Body() body: RegistrationFormEditDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const data = await this.customerService.editOneRegistrationForm(body);
 
       return res.status(200).json({
         statusCode: 200,

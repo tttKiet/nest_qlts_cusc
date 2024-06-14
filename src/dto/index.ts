@@ -147,3 +147,24 @@ export class InforObjectDto {
   @Type(() => NganhYeuThichDto)
   nganhyeuthich: NganhYeuThichDto;
 }
+
+// phieudanhky
+export class RegistrationFormEditDto {
+  @IsOptional()
+  MALOAIKHOAHOC: string;
+
+  @IsOptional()
+  MAKENH: string;
+
+  @IsOptional()
+  MAKETQUA: string;
+
+  @IsNotEmpty({ message: 'Bạn chưa gửi SDT.' })
+  SDT: string;
+
+  @IsOptional()
+  SDTZALO: string;
+
+  @IsOptional()
+  NGANHDK: string;
+}

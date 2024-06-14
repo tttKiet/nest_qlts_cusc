@@ -15,7 +15,11 @@ import {
   PositionArrDto,
   RegistrationFormArrDto,
 } from 'src/dto/get-customer.dto';
-import { InforCustomerDto, InforObjectDto } from 'src/dto';
+import {
+  InforCustomerDto,
+  InforObjectDto,
+  RegistrationFormEditDto,
+} from 'src/dto';
 import { chitietchuyende } from 'src/entites/chitietchuyende.entity';
 
 @Injectable()
@@ -241,6 +245,22 @@ export class CustomerService {
       dataEdit: data,
       chuyendethamgiaResult,
       nganhyeuthichResult,
+    };
+  }
+
+  async editOneRegistrationForm(data: RegistrationFormEditDto) {
+    console.log(data);
+
+    const result = await this.phieudkxettuyenRepository.update(
+      {
+        SDT: data.SDT,
+      },
+      {
+        ...data,
+      },
+    );
+    return {
+      result,
     };
   }
 }
