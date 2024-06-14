@@ -172,4 +172,26 @@ export class CustomerController {
       });
     }
   }
+
+  // Sửa thông tin liên hệ
+  @Post('/contact')
+  async upsertContact(
+    @Body() body: RegistrationFormEditDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const data = await this.customerService.editOneRegistrationForm(body);
+
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Đã lưu thành công.',
+        data: data,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        statusCode: 200,
+        message: error?.message || 'Lỗi server.',
+      });
+    }
+  }
 }
