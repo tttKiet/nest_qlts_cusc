@@ -1,7 +1,19 @@
-import { Body, Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  Param,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
+import { JwtGuards } from 'src/auth/guards/jwt.guard';
 import { CustomerService } from 'src/customer/customer.service';
 import {
+  CreateContactDto,
   InforCustomerDto,
   InforObjectDto,
   RegistrationFormEditDto,
@@ -12,6 +24,7 @@ import {
   JobLikeDtoArrDto,
   PositionArrDto,
 } from 'src/dto/get-customer.dto';
+import { taikhoan } from 'src/entites/taikhoan.entity';
 
 @Controller('customer')
 export class CustomerController {
@@ -174,13 +187,23 @@ export class CustomerController {
   }
 
   // Sửa thông tin liên hệ
+  @UseGuards(JwtGuards)
   @Post('/contact')
   async upsertContact(
-    @Body() body: RegistrationFormEditDto,
+    @Body() body: CreateContactDto,
+    @Req() req: Request,
     @Res() res: Response,
   ) {
+    const user: Partial<taikhoan> = req.user;
+    if (!user.usermanager?.SDT) {
+      throw new HttpException('Vui lòng đăng nhập.', 401);
+    }
+    console.log('\n\n\nuser', user);
     try {
-      const data = await this.customerService.editOneRegistrationForm(body);
+      const data = await this.customerService.upsertContact(
+        body,
+        user.usermanager.SDT,
+      );
 
       return res.status(200).json({
         statusCode: 200,

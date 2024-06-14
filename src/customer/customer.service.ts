@@ -16,11 +16,13 @@ import {
   RegistrationFormArrDto,
 } from 'src/dto/get-customer.dto';
 import {
+  CreateContactDto,
   InforCustomerDto,
   InforObjectDto,
   RegistrationFormEditDto,
 } from 'src/dto';
 import { chitietchuyende } from 'src/entites/chitietchuyende.entity';
+import * as moment from 'moment';
 
 @Injectable()
 export class CustomerService {
@@ -262,5 +264,39 @@ export class CustomerService {
     return {
       result,
     };
+  }
+
+  async upsertContact(data: CreateContactDto, SDT_UM: string) {
+    // filter
+    const filterContact = await this.lienheRepository.findOne({
+      where: {
+        SDT_KH: data.SDT_KH,
+        LAN: data.LAN,
+      },
+    });
+    const dataUp: any = data;
+
+    // create
+    if (!filterContact) {
+      const time = moment().format('YYYY[-]MM[-]MO');
+      dataUp.THOIGIAN = time;
+      dataUp.SDT = SDT_UM;
+      const doc = this.lienheRepository.create(dataUp);
+      const result = await this.lienheRepository.save(doc);
+
+      return result;
+    } else {
+      // update
+      const result = await this.lienheRepository.update(
+        {
+          SDT_KH: data.SDT_KH,
+          LAN: data.LAN,
+        },
+        {
+          ...data,
+        },
+      );
+      return result;
+    }
   }
 }

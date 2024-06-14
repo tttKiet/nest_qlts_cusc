@@ -167,3 +167,21 @@ export class RegistrationFormEditDto {
   @IsOptional()
   NGANHDK: string;
 }
+
+// lienhe
+export class CreateContactDto {
+  @IsNotEmpty({ message: 'Bạn chưa gửi SDT khách hàng.' })
+  SDT_KH: string;
+
+  @IsNotEmpty({ message: 'Bạn chưa gửi MATRANGTHAI.' })
+  MATRANGTHAI: string;
+
+  @IsOptional()
+  CHITIETTRANGTHAI: string;
+
+  @IsNotEmpty({ message: 'Bạn chưa gửi LAN liên hệ.' })
+  LAN: string;
+
+  @IsNotEmpty({ message: 'Bạn chưa gửi KETQUA liên hệ.' })
+  KETQUA: string;
+}

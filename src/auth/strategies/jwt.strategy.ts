@@ -2,6 +2,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Injectable } from '@nestjs/common';
 import 'dotenv/config';
+import { taikhoan } from 'src/entites/taikhoan.entity';
 
 const privateKey = process.env.JWT_SECRET;
 
@@ -15,7 +16,9 @@ export class JwtStategy extends PassportStrategy(Strategy) {
     });
   }
 
-  validate(payload: any) {
+  validate(payload: taikhoan): taikhoan {
+    console.log('payload', payload);
+
     return payload;
   }
 }

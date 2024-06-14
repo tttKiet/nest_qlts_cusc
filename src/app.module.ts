@@ -9,6 +9,7 @@ import { UserModule } from './user/user.module';
 import { CustomerModule } from './customer/customer.module';
 import { ThematicModule } from './thematic/thematic.module';
 import { FileModule } from './file/file.module';
+import * as moment from 'moment';
 
 @Module({
   imports: [
@@ -32,6 +33,13 @@ import { FileModule } from './file/file.module';
     FileModule,
   ],
   controllers: [AppController],
-  providers: [AppService, ConfigModule],
+  providers: [
+    AppService,
+    ConfigModule,
+    {
+      provide: 'MomentWrapper',
+      useValue: moment,
+    },
+  ],
 })
 export class AppModule {}
