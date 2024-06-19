@@ -10,6 +10,7 @@ import { phieudkxettuyen } from 'src/entites/phieudkxettuyen.entity';
 import { chucvu } from 'src/entites/chucvu.entity';
 import {
   CreateCustomerArrDto,
+  CreateCustomerDataArrDto,
   GetCustomerDto,
   JobLikeDtoArrDto,
   PositionArrDto,
@@ -136,8 +137,7 @@ export class CustomerService {
     }
   }
 
-  async createCustomerArr(data: CreateCustomerArrDto) {
-    console.log(data);
+  async createCustomeDatarArr(data: CreateCustomerDataArrDto) {
     const dataResult = await this.dulieukhachhangRepository.upsert(data.data, [
       'SDT',
     ]);
@@ -146,39 +146,35 @@ export class CustomerService {
     return dataResult;
   }
 
+  async createCustomerArr(data: CreateCustomerArrDto) {
+    const dataResult = await this.khachhangRepository.upsert(data.data, [
+      'SDT',
+    ]);
+
+    return dataResult;
+  }
+
   async createPosition(data: PositionArrDto) {
-    console.log(data);
     const dataResult = await this.chucvuRepository.upsert(data.data, [
       'SDT',
       'STT',
     ]);
     console.log('dataResult: ', dataResult);
-
-    return dataResult;
   }
 
   async createJobLikeArr(data: JobLikeDtoArrDto) {
-    console.log(data);
     const dataResult = await this.nganhyeuthichRepository.upsert(data.data, [
       'SDT',
       'MANGANH',
     ]);
-    console.log('dataResult: ', dataResult);
 
     return dataResult;
   }
 
   async registrationFormArr(data: RegistrationFormArrDto) {
-    console.log(data);
     const dataResult = await this.phieudkxettuyenRepository.upsert(data.data, [
-      'MAPHIEUDK',
-      'MALOAIKHOAHOC',
-      'MAKENH',
       'SDT',
-      'MAKETQUA',
     ]);
-    console.log('dataResult: ', dataResult);
-
     return dataResult;
   }
 

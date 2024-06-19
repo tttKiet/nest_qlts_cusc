@@ -20,6 +20,9 @@ import { AccountService } from 'src/auth/account.service';
 import { chucvu } from 'src/entites/chucvu.entity';
 import { lop } from 'src/entites/lop';
 import { nhatkythaydoi } from 'src/entites/nhatkythaydoi.entity';
+import { khoahocquantam } from 'src/entites/khoahocquantam.entity';
+import { kenhnhanthongbao } from 'src/entites/kenhnhanthongbao.entity';
+import { ketquatotnghiep } from 'src/entites/ketquatotnghiep.entity';
 
 @Module({
   providers: [DataService, UserService, AccountService],
@@ -43,6 +46,9 @@ import { nhatkythaydoi } from 'src/entites/nhatkythaydoi.entity';
       chucvu,
       lop,
       nhatkythaydoi,
+      khoahocquantam,
+      kenhnhanthongbao,
+      ketquatotnghiep,
     ]),
   ],
 })

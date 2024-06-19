@@ -10,7 +10,10 @@ import {
   UploadedFile,
   ParseFilePipeBuilder,
   HttpStatus,
+  Res,
 } from '@nestjs/common';
+import { Request, Response } from 'express';
+
 import { FileService } from './file.service';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
@@ -22,7 +25,7 @@ export class FileController {
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  uploadFile(
+  async uploadFile(
     @UploadedFile(
       new ParseFilePipeBuilder()
         .addFileTypeValidator({
@@ -36,12 +39,20 @@ export class FileController {
         }),
     )
     file: Express.Multer.File,
+    @Res() res: Response,
   ) {
-    const columnsData = this.fileService.readExcelFile(file.path);
+    try {
+      const data = await this.fileService.readExcelFile(file.path);
 
-    return {
-      fileName: file.originalname,
-      columnsData,
-    };
+      return res.status(200).json({
+        fileName: file.originalname,
+        data: data,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        statusCode: 500,
+        message: error?.message || 'Lỗi server.',
+      });
+    }
   }
 }

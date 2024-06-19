@@ -24,3 +24,6 @@ export class nganh {
   @OneToMany(() => nganhyeuthich, (nganhyeuthich) => nganhyeuthich.nganh)
   nganhyeuthich: nganhyeuthich[];
 }
+
+
+

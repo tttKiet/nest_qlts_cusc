@@ -13,6 +13,7 @@ import { Request, Response } from 'express';
 import { JwtGuards } from 'src/auth/guards/jwt.guard';
 import { CustomerService } from 'src/customer/customer.service';
 import {
+  CreateCustomerDataArrDto,
   CreateContactDto,
   InforCustomerDto,
   InforObjectDto,
@@ -68,12 +69,12 @@ export class CustomerController {
 
   // Tạo khách hàng theo mảng
   @Post()
-  async createCustomer(
-    @Body() body: CreateCustomerArrDto,
+  async createCustomerData(
+    @Body() body: CreateCustomerDataArrDto,
     @Res() res: Response,
   ) {
     try {
-      const data = await this.customerService.createCustomerArr(body);
+      const data = await this.customerService.createCustomeDatarArr(body);
 
       return res.status(200).json({
         statusCode: 200,
