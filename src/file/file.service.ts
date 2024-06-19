@@ -14,8 +14,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DataService } from 'src/data/data.service';
 import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
-import { nghenghiep } from 'src/entites/nghenghiep.entity';
-import { nganh } from 'src/entites/nganh.entity';
 import { phieudkxettuyen } from 'src/entites/phieudkxettuyen.entity';
 import { CustomerService } from 'src/customer/customer.service';
 import { CleanPlugin } from 'webpack';
@@ -131,11 +129,11 @@ export class FileService {
         };
       });
 
-      let khachhang = [];
-      let dulieukhachhang = [];
-      let chucvukhachhang = [];
-      let nganhyeuthich = [];
-      let phieudkxettuyen = [];
+      const khachhang = [];
+      const dulieukhachhang = [];
+      const chucvukhachhang = [];
+      const nganhyeuthich = [];
+      const phieudkxettuyen = [];
       let getIdpdkxtMax = await this.getIdMaxTablePhieudkxettuyen();
 
       const getTableLop = await this.dataService.getTableLop();
@@ -152,7 +150,7 @@ export class FileService {
       const getTableHinhthucthuthap =
         await this.dataService.getTableHinhthucthuthap();
 
-      students.forEach((item, indexFor) => {
+      students.forEach((item) => {
         // khách hàng
         const dataNghenghiepItem = this.filterObject(
           getTableNghenghiep,
@@ -259,7 +257,7 @@ export class FileService {
         );
 
         getIdpdkxtMax++;
-        const maPqRender = 'DK' + getIdpdkxtMax;
+        // const maPqRender = 'DK' + getIdpdkxtMax;
 
         phieudkxettuyen.push({
           MAPHIEUDK: 'indexFor',

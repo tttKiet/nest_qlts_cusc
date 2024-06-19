@@ -49,9 +49,6 @@ export class DataService {
     @InjectRepository(nhatkythaydoi)
     private nhatkythaydoiRepository: Repository<nhatkythaydoi>,
 
-    @InjectRepository(truong)
-    private truongRepository: Repository<truong>,
-
     @InjectRepository(lop)
     private lopRepository: Repository<lop>,
 
