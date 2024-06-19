@@ -30,6 +30,7 @@ import { khoahocquantam } from 'src/entites/khoahocquantam.entity';
 import { CustomerService } from 'src/customer/customer.service';
 import { lienhe } from 'src/entites/lienhe.entity';
 import { phieudkxettuyen } from 'src/entites/phieudkxettuyen.entity';
+import { chitietchuyende } from 'src/entites/chitietchuyende.entity';
 
 @Module({
   controllers: [FileController],
@@ -67,6 +68,7 @@ import { phieudkxettuyen } from 'src/entites/phieudkxettuyen.entity';
       ketquatotnghiep,
       lienhe,
       phieudkxettuyen,
+      chitietchuyende,
     ]),
   ],
 })
