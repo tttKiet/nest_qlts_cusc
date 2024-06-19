@@ -247,10 +247,10 @@ export class FileService {
         );
 
         getIdpdkxtMax++;
-        // const maPqRender = 'DK' + getIdpdkxtMax;
+        const maPqRender = 'DK' + getIdpdkxtMax;
 
         phieudkxettuyen.push({
-          MAPHIEUDK: 'indexFor',
+          MAPHIEUDK: maPqRender,
           SDT: item.dienThoai,
           MAKENH: kntbItem?.MAKENH,
           MALOAIKHOAHOC: khqtItem?.MALOAIKHOAHOC,
@@ -260,13 +260,13 @@ export class FileService {
         });
       });
 
-      // await this.customerService.createCustomerArr({ data: khachhang });
-      // await this.customerService.createCustomeDatarArr({
-      //   data: dulieukhachhang,
-      // });
-      // await this.customerService.createJobLikeArr({
-      //   data: nganhyeuthich,
-      // });
+      await this.customerService.createCustomerArr({ data: khachhang });
+      await this.customerService.createCustomeDatarArr({
+        data: dulieukhachhang,
+      });
+      await this.customerService.createJobLikeArr({
+        data: nganhyeuthich,
+      });
       await this.customerService.registrationFormArr({
         data: phieudkxettuyen,
       });
