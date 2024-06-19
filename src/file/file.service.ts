@@ -257,10 +257,10 @@ export class FileService {
         );
 
         getIdpdkxtMax++;
-        // const maPqRender = 'DK' + getIdpdkxtMax;
+        const maPqRender = 'DK' + getIdpdkxtMax;
 
         phieudkxettuyen.push({
-          MAPHIEUDK: 'indexFor',
+          MAPHIEUDK: maPqRender,
           SDT: item.dienThoai,
           MAKENH: kntbItem?.MAKENH,
           MALOAIKHOAHOC: khqtItem?.MALOAIKHOAHOC,

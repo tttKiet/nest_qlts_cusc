@@ -15,6 +15,7 @@ import {
   JobLikeDtoArrDto,
   PositionArrDto,
   RegistrationFormArrDto,
+  RegistrationFormDto,
 } from 'src/dto/get-customer.dto';
 import {
   CreateContactDto,
@@ -172,10 +173,44 @@ export class CustomerService {
   }
 
   async registrationFormArr(data: RegistrationFormArrDto) {
-    const dataResult = await this.phieudkxettuyenRepository.upsert(data.data, [
-      'SDT',
-    ]);
+    const dataResult = await Promise.all(
+      data.data.map((d) => this.createRegistrationForm(d)),
+    );
+
     return dataResult;
+  }
+
+  async createRegistrationForm(data: RegistrationFormDto) {
+    // filter
+    const filter = await this.phieudkxettuyenRepository.findOne({
+      where: {
+        SDT: data.SDT,
+      },
+    });
+
+    const dataUp: any = data;
+    // create
+    if (!filter) {
+      const doc = this.phieudkxettuyenRepository.create(dataUp);
+      const result = await this.phieudkxettuyenRepository.save(doc);
+      return result;
+    } else {
+      // update
+
+      const result = await this.phieudkxettuyenRepository.update(
+        {
+          SDT: data.SDT,
+        },
+        {
+          MALOAIKHOAHOC: data.MALOAIKHOAHOC,
+          MAKENH: data.MAKENH,
+          MAKETQUA: data.MAKETQUA,
+          SDTZALO: data.SDTZALO,
+          NGANHDK: data.NGANHDK,
+        },
+      );
+      return result;
+    }
   }
 
   async editInfoCustomer(data: InforCustomerDto) {
@@ -212,7 +247,6 @@ export class CustomerService {
   }
 
   async editInfoObjectCustomer(data: InforObjectDto) {
-    console.log(data);
     let chuyendethamgiaResult: UpdateResult;
     let nganhyeuthichResult: UpdateResult;
     if (Object.keys(data.chuyendethamgia).length > 0) {
