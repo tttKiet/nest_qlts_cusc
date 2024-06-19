@@ -13,14 +13,13 @@ import { Request, Response } from 'express';
 import { JwtGuards } from 'src/auth/guards/jwt.guard';
 import { CustomerService } from 'src/customer/customer.service';
 import {
-  CreateCustomerDataArrDto,
   CreateContactDto,
   InforCustomerDto,
   InforObjectDto,
   RegistrationFormEditDto,
 } from 'src/dto';
 import {
-  CreateCustomerArrDto,
+  CreateCustomerDataArrDto,
   GetCustomerDto,
   JobLikeDtoArrDto,
   PositionArrDto,

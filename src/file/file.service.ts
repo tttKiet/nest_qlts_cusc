@@ -1,17 +1,11 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { CreateFileDto } from './dto/create-file.dto';
-import { UpdateFileDto } from './dto/update-file.dto';
-import * as XLSX from 'xlsx';
-import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import * as fs from 'fs';
+import { CustomerService } from 'src/customer/customer.service';
 import { DataService } from 'src/data/data.service';
 import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
-import { nghenghiep } from 'src/entites/nghenghiep.entity';
-import { nganh } from 'src/entites/nganh.entity';
 import { phieudkxettuyen } from 'src/entites/phieudkxettuyen.entity';
-import { CustomerService } from 'src/customer/customer.service';
-import { CleanPlugin } from 'webpack';
-import { CustomerDto, PositionDto } from 'src/dto/get-customer.dto';
+import { Repository } from 'typeorm';
 import * as XLSX from 'xlsx';
 
 @Injectable()
@@ -125,11 +119,11 @@ export class FileService {
         };
       });
 
-      let khachhang = [];
-      let dulieukhachhang = [];
-      let chucvukhachhang = [];
-      let nganhyeuthich = [];
-      let phieudkxettuyen = [];
+      const khachhang = [];
+      const dulieukhachhang = [];
+      const chucvukhachhang = [];
+      const nganhyeuthich = [];
+      const phieudkxettuyen = [];
       let getIdpdkxtMax = await this.getIdMaxTablePhieudkxettuyen();
 
       const getTableLop = await this.dataService.getTableLop();
@@ -146,7 +140,7 @@ export class FileService {
       const getTableHinhthucthuthap =
         await this.dataService.getTableHinhthucthuthap();
 
-      students.forEach((item, indexFor) => {
+      students.forEach((item) => {
         // khách hàng
         const dataNghenghiepItem = this.filterObject(
           getTableNghenghiep,
@@ -253,7 +247,7 @@ export class FileService {
         );
 
         getIdpdkxtMax++;
-        const maPqRender = 'DK' + getIdpdkxtMax;
+        // const maPqRender = 'DK' + getIdpdkxtMax;
 
         phieudkxettuyen.push({
           MAPHIEUDK: 'indexFor',
@@ -264,20 +258,6 @@ export class FileService {
           SDTZALO: item?.zalo || null,
           NGANHDK: null,
         });
-    const dataTableLop = await this.dataService.dataTableLop();
-
-    console.log('dataTableLop', dataTableLop);
-    const dulieukhachhang: CustomerDto[] = [];
-    const chucvukhachhang: PositionDto[] = [];
-
-    students.forEach((item) => {
-      // dư liệu khách hàng
-      dulieukhachhang.push({
-        SDT: item.dienThoai,
-        SDTBA: item.dienThoaiBa,
-        SDTME: item.dienThoaiMe,
-        SDTZALO: item.zalo,
-        FACEBOOK: item.facebook,
       });
 
       // await this.customerService.createCustomerArr({ data: khachhang });
