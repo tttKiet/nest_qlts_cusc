@@ -2,16 +2,8 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { CreateFileDto } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import * as XLSX from 'xlsx';
+import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
-import { log } from 'console';
-import {
-  CreateCustomerArrDto,
-  CustomerDto,
-  PositionDto,
-} from 'src/dto/get-customer.dto';
-import { lop } from 'src/entites/lop';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { DataService } from 'src/data/data.service';
 import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
 import { nghenghiep } from 'src/entites/nghenghiep.entity';
@@ -19,6 +11,8 @@ import { nganh } from 'src/entites/nganh.entity';
 import { phieudkxettuyen } from 'src/entites/phieudkxettuyen.entity';
 import { CustomerService } from 'src/customer/customer.service';
 import { CleanPlugin } from 'webpack';
+import { CustomerDto, PositionDto } from 'src/dto/get-customer.dto';
+import * as XLSX from 'xlsx';
 
 @Injectable()
 export class FileService {
@@ -40,7 +34,7 @@ export class FileService {
   }
 
   filterObject(ar: any[], column: string, value: string) {
-    const a = ar.find((item, index) => {
+    const a = ar.find((item) => {
       const keys = Object.keys(item);
 
       if (keys.includes(column)) {
@@ -270,6 +264,20 @@ export class FileService {
           SDTZALO: item?.zalo || null,
           NGANHDK: null,
         });
+    const dataTableLop = await this.dataService.dataTableLop();
+
+    console.log('dataTableLop', dataTableLop);
+    const dulieukhachhang: CustomerDto[] = [];
+    const chucvukhachhang: PositionDto[] = [];
+
+    students.forEach((item) => {
+      // dư liệu khách hàng
+      dulieukhachhang.push({
+        SDT: item.dienThoai,
+        SDTBA: item.dienThoaiBa,
+        SDTME: item.dienThoaiMe,
+        SDTZALO: item.zalo,
+        FACEBOOK: item.facebook,
       });
 
       // await this.customerService.createCustomerArr({ data: khachhang });

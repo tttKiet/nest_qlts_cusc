@@ -1,4 +1,4 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateAccountDto {
   @IsNotEmpty({ message: 'Bạn chưa gửi họ và tên.' })
@@ -26,15 +26,33 @@ export class CreateAccountDto {
 }
 
 export class EditAccountDto {
-  HOVATEN: string;
-  MATKHAU: string;
-  SDT: string;
   @IsNotEmpty({ message: 'Bạn chưa gửi TENDANGNHAP.' })
   TENDANGNHAP: string;
+
+  @IsOptional()
+  SDT: string;
+
+  @IsOptional()
+  HOVATEN: string;
+
+  @IsOptional()
+  MATKHAU: string;
+
+  @IsOptional()
   ROLE: string;
+
+  @IsOptional()
   GIOITINH: string;
+
+  @IsOptional()
   EMAIL: string;
+
+  @IsOptional()
   DIACHI: string;
+
+  @IsOptional()
   MAADMIN: string;
+
+  @IsOptional()
   TRANGTHAIADMIN: number;
 }

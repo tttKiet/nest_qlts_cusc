@@ -49,6 +49,9 @@ export class DataService {
     @InjectRepository(nhatkythaydoi)
     private nhatkythaydoiRepository: Repository<nhatkythaydoi>,
 
+    @InjectRepository(truong)
+    private truongRepository: Repository<truong>,
+
     @InjectRepository(lop)
     private lopRepository: Repository<lop>,
 
@@ -182,7 +185,26 @@ export class DataService {
           ])
           .groupBy('ng.MANGANH');
 
-        return queryNganh.getRawMany();
+        // let all count
+        // const allCount = await this.customerRepository.count({
+        //   where: {
+        //     MATRUONG: schoolCode,
+        //   },
+        // });
+
+        const queryCustomer = this.customerRepository.createQueryBuilder('kh');
+        queryCustomer
+          .where(`kh.SDT NOT IN (${subQuery.getQuery()})`)
+          .andWhere('kh.MATRUONG = :schoolCode', {
+            schoolCode,
+          });
+
+        const data = await queryNganh.getRawMany();
+        const allCount = await queryCustomer.getRawMany();
+        return {
+          data: data,
+          allCount: allCount.length,
+        };
       }
 
       queryNganh
@@ -321,7 +343,10 @@ export class DataService {
         const pqDoc = this.segmentRepository.create({
           MaPQ: maPqRender,
           MATRUONG: body.MATRUONG,
-          Sodong: body.SODONG,
+          Sodong:
+            body.SODONG < customerLengthAvailable
+              ? body.SODONG
+              : customerLengthAvailable,
         });
 
         await this.segmentRepository.save(pqDoc);
@@ -376,17 +401,19 @@ export class DataService {
     type?: 'doing' | 'done' | undefined;
   }) {
     const query = this.segmentRepository.createQueryBuilder('pd');
-    query.leftJoinAndSelect('pd.truong', 'truong');
+    query
+      .leftJoinAndSelect('pd.truong', 'truong')
+      .leftJoinAndSelect('pd.usermanager', 'usermanager');
 
     if (schoolCode) {
-      query.where('pd.MATRUONG = :schoolCode', { schoolCode });
+      query.where('truong.MATRUONG = :schoolCode', { schoolCode });
     }
 
     if (type == 'doing') {
-      query.where('pd.SDT IS NULL ');
+      query.andWhere('pd.SDT IS NULL ');
     }
     if (type == 'done') {
-      query.where('pd.SDT IS NOT NULL ');
+      query.andWhere('pd.SDT IS NOT NULL ');
     }
 
     const data = await query.getMany();

@@ -1,5 +1,12 @@
-import { Transform } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
 
 export class CreateSegmentDto {
   @IsNotEmpty({ message: 'Bạn chưa gửi MATRUONG.' })
@@ -58,4 +65,123 @@ export class StoryDto {
 
   @IsNotEmpty({ message: 'Bạn chưa gửi hanhdong.' })
   hanhdong: string;
+}
+
+// Infor Customer Dto
+export class CustomerDto {
+  @IsNotEmpty({ message: 'Bạn chưa gửi SDT khách hàng.' })
+  SDT: string;
+
+  @IsOptional()
+  MATINH: string;
+
+  @IsOptional()
+  MANGHENGHIEP: string;
+
+  @IsOptional()
+  MAHINHTHUC: string;
+
+  @IsOptional()
+  MATRUONG: string;
+
+  @IsOptional()
+  HOTEN: string;
+
+  @IsOptional()
+  EMAIL: string;
+}
+
+export class CustomerDataDto {
+  @IsOptional()
+  SDTBA: string;
+
+  @IsOptional()
+  SDTME: string;
+
+  @IsOptional()
+  FACEBOOK: string;
+
+  @IsOptional()
+  SDTZALO: string;
+}
+
+export class InforCustomerDto {
+  @IsObject()
+  @ValidateNested()
+  @Type(() => CustomerDto)
+  customer: CustomerDto;
+
+  @IsObject()
+  @ValidateNested()
+  @Type(() => CustomerDataDto)
+  data: CustomerDataDto;
+}
+
+// doi tuong
+export class ChuyenDeThamGiaDto {
+  @IsOptional()
+  MACHUYENDE: number;
+
+  @IsNotEmpty({ message: 'Bạn chưa gửi SDT khách hàng.' })
+  SDT: string;
+
+  @IsOptional()
+  TRANGTHAI: string;
+}
+
+export class NganhYeuThichDto {
+  @IsOptional()
+  @IsArray()
+  data: string[];
+}
+
+export class InforObjectDto {
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ChuyenDeThamGiaDto)
+  chuyendethamgia: ChuyenDeThamGiaDto;
+
+  @IsObject()
+  @ValidateNested()
+  @Type(() => NganhYeuThichDto)
+  nganhyeuthich: NganhYeuThichDto;
+}
+
+// phieudanhky
+export class RegistrationFormEditDto {
+  @IsOptional()
+  MALOAIKHOAHOC: string;
+
+  @IsOptional()
+  MAKENH: string;
+
+  @IsOptional()
+  MAKETQUA: string;
+
+  @IsNotEmpty({ message: 'Bạn chưa gửi SDT.' })
+  SDT: string;
+
+  @IsOptional()
+  SDTZALO: string;
+
+  @IsOptional()
+  NGANHDK: string;
+}
+
+// lienhe
+export class CreateContactDto {
+  @IsNotEmpty({ message: 'Bạn chưa gửi SDT khách hàng.' })
+  SDT_KH: string;
+
+  @IsNotEmpty({ message: 'Bạn chưa gửi MATRANGTHAI.' })
+  MATRANGTHAI: string;
+
+  @IsOptional()
+  CHITIETTRANGTHAI: string;
+
+  @IsNotEmpty({ message: 'Bạn chưa gửi LAN liên hệ.' })
+  LAN: string;
+
+  @IsNotEmpty({ message: 'Bạn chưa gửi KETQUA liên hệ.' })
+  KETQUA: string;
 }

@@ -1,7 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { join } from 'path';
 
 declare const module: any;
 
@@ -18,6 +17,7 @@ async function bootstrap() {
     }),
   );
   app.setGlobalPrefix('/api/v1');
+  // app.useGlobalGuards(new JwtGuards());
   await app.listen(port, () => {
     console.log(`Backend listenning http://127.0.0.1:${port}`);
   });
