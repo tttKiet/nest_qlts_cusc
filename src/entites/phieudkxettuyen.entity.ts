@@ -1,6 +1,10 @@
 import {
+  AfterInsert,
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
+  InsertEvent,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -79,4 +83,25 @@ export class phieudkxettuyen {
   // hoso
   @OneToMany(() => hoso, (hoso) => hoso.phieudkxettuyen)
   hoso: hoso[];
+
+  @BeforeInsert()
+  async renderId(event: InsertEvent<phieudkxettuyen>) {
+    console.log('\n\n\n\nBeforeInsert: ');
+
+    const maphieuDKAll = await event.connection
+      .getRepository(phieudkxettuyen)
+      .find({
+        select: ['MAPHIEUDK'],
+      });
+    console.log('\n\n\n\n\n\nmaphieuDKAll: ', maphieuDKAll);
+
+    const maxNumber = maphieuDKAll
+      .map((row) => parseInt(row.MAPHIEUDK.replace(/\D/g, ''), 10))
+      .filter((num) => !isNaN(num))
+      .reduce((max, current) => (current > max ? current : max), 0);
+    const code = maxNumber + 1;
+    const maPqRender = 'DK' + code;
+
+    this.MAPHIEUDK = maPqRender;
+  }
 }

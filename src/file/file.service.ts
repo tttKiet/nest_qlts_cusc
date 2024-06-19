@@ -18,12 +18,16 @@ import { nghenghiep } from 'src/entites/nghenghiep.entity';
 import { nganh } from 'src/entites/nganh.entity';
 import { phieudkxettuyen } from 'src/entites/phieudkxettuyen.entity';
 import { CustomerService } from 'src/customer/customer.service';
+import { CleanPlugin } from 'webpack';
 
 @Injectable()
 export class FileService {
   constructor(
     private dataService: DataService,
     private customerService: CustomerService,
+
+    @InjectRepository(phieudkxettuyen)
+    private phieudkxettuyenRepository: Repository<phieudkxettuyen>,
   ) {}
 
   removeAccentsAndLowerCase(str: string) {
@@ -56,6 +60,22 @@ export class FileService {
     return a;
   }
 
+  async getIdMaxTablePhieudkxettuyen() {
+    // render maphanquyen
+    const maphieuDKAll = await this.phieudkxettuyenRepository.find({
+      select: ['MAPHIEUDK'],
+    });
+
+    const maxNumber = maphieuDKAll
+      .map((row) => parseInt(row.MAPHIEUDK.replace(/\D/g, ''), 10))
+      .filter((num) => !isNaN(num))
+      .reduce((max, current) => (current > max ? current : max), 0);
+    // const code = maxNumber + 1;
+    // const maPqRender = 'DK' + code;
+
+    return maxNumber;
+  }
+
   async readExcelFile(filePath: string) {
     try {
       const fileBuffer = fs.readFileSync(filePath);
@@ -79,7 +99,14 @@ export class FileService {
 
         nganhColumns.forEach((col, index) => {
           if (row[14 + index] && row[14 + index] !== '') {
-            nganhYeuThich.push(col === 'NGÀNH KHÁC' ? row[14 + index] : col);
+            nganhYeuThich.push(
+              col === 'NGÀNH KHÁC'
+                ? {
+                    title: col,
+                    chitiet: row[14 + index],
+                  }
+                : col,
+            );
           }
         });
 
@@ -106,9 +133,10 @@ export class FileService {
 
       let khachhang = [];
       let dulieukhachhang = [];
-      let chucvukhachhang: PositionDto[] = [];
-      let nganhyeuthich: nganhyeuthich[] = [];
-      let phieudkxettuyen: {}[] = [];
+      let chucvukhachhang = [];
+      let nganhyeuthich = [];
+      let phieudkxettuyen = [];
+      let getIdpdkxtMax = await this.getIdMaxTablePhieudkxettuyen();
 
       const getTableLop = await this.dataService.getTableLop();
       const getTableNganh = await this.dataService.getTableNghanh();
@@ -124,7 +152,7 @@ export class FileService {
       const getTableHinhthucthuthap =
         await this.dataService.getTableHinhthucthuthap();
 
-      students.forEach((item) => {
+      students.forEach((item, indexFor) => {
         // khách hàng
         const dataNghenghiepItem = this.filterObject(
           getTableNghenghiep,
@@ -160,10 +188,10 @@ export class FileService {
         // dư liệu khách hàng
         dulieukhachhang.push({
           SDT: item.dienThoai,
-          SDTBA: item.dienThoaiBa,
-          SDTME: item.dienThoaiMe,
-          SDTZALO: item.zalo,
-          FACEBOOK: item.facebook,
+          SDTBA: item.dienThoaiBa || null,
+          SDTME: item.dienThoaiMe || null,
+          SDTZALO: item.zalo || null,
+          FACEBOOK: item.facebook || null,
         });
         // chức vụ khách hàng
         const dataLop = this.filterObject(getTableLop, 'LOP', `${item.lop}`);
@@ -178,16 +206,35 @@ export class FileService {
         const nganhyth = item?.nganhYeuThich || [];
 
         nganhyth.forEach((nganhItem) => {
-          const a = this.filterObject(getTableNganh, 'TENNGANH', nganhItem);
+          if (typeof nganhItem === 'object') {
+            const a = this.filterObject(
+              getTableNganh,
+              'TENNGANH',
+              nganhItem.title,
+            );
+            if (a) {
+              const b: nganhyeuthich = {
+                SDT: item?.dienThoai,
+                MANGANH: a?.MANGANH,
+                CHITIET:
+                  typeof nganhItem === 'object' ? nganhItem.chitiet : null,
+              } as nganhyeuthich;
 
-          if (a) {
-            const b: nganhyeuthich = {
-              SDT: item?.dienThoai,
-              MANGANH: a?.MANGANH,
-              CHITIET: null,
-            } as nganhyeuthich;
+              nganhyeuthich.push(b);
+            }
+          } else {
+            const a = this.filterObject(getTableNganh, 'TENNGANH', nganhItem);
 
-            nganhyeuthich.push(b);
+            if (a) {
+              const b: nganhyeuthich = {
+                SDT: item?.dienThoai,
+                MANGANH: a?.MANGANH,
+                CHITIET:
+                  typeof nganhItem === 'object' ? nganhItem.chitiet : null,
+              } as nganhyeuthich;
+
+              nganhyeuthich.push(b);
+            }
           }
         });
 
@@ -211,36 +258,35 @@ export class FileService {
           item.ketQuaDaiHocCaoDang,
         );
 
+        getIdpdkxtMax++;
+        const maPqRender = 'DK' + getIdpdkxtMax;
+
         phieudkxettuyen.push({
+          MAPHIEUDK: 'indexFor',
           SDT: item.dienThoai,
           MAKENH: kntbItem?.MAKENH,
           MALOAIKHOAHOC: khqtItem?.MALOAIKHOAHOC,
-          MAKETQUA: kqtnItem?.MAKETQUA,
-          SDTZALO: item?.zalo,
+          MAKETQUA: kqtnItem?.MAKETQUA || 3,
+          SDTZALO: item?.zalo || null,
           NGANHDK: null,
         });
       });
 
-      // thêm data vào bảng dulieukhachhang
+      // await this.customerService.createCustomerArr({ data: khachhang });
+      // await this.customerService.createCustomeDatarArr({
+      //   data: dulieukhachhang,
+      // });
+      // await this.customerService.createJobLikeArr({
+      //   data: nganhyeuthich,
+      // });
+      await this.customerService.registrationFormArr({
+        data: phieudkxettuyen,
+      });
 
-      await this.customerService.createCustomerArr({ data: khachhang });
-      await this.customerService.createCustomeDatarArr({
-        data: dulieukhachhang,
-      });
-      return true;
+      return phieudkxettuyen;
     } catch (err) {
-      console.log('kjhkjhkjh////nnnnn       \n\n\n\n\n\n\n\nerr>>>\n\n\n', {
-        err,
-      });
-      // if (err?.code) {
-      //   if (err.code.includes('ER_NO_REFERENCED')) {
-      //     const row = err.code.split('_ROW_')?.[1] || '';
-      //     throw new HttpException(
-      //       'Ràng buộc dữ liệu ở dòng ' + row + ' bị sai.',
-      //       400,
-      //     );
-      //   }
-      // }
+      console.log(err);
+
       throw new HttpException(err?.code || 'Loi server', 400);
     }
   }
