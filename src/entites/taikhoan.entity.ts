@@ -1,6 +1,8 @@
 import { Entity, Column, PrimaryColumn, OneToOne, JoinColumn } from 'typeorm';
 import { admin } from './admin.entity';
 import { usermanager } from './usermanager.entity';
+import { khachhang } from './khachhang.entity';
+import { flatten } from '@nestjs/common';
 
 @Entity()
 export class taikhoan {
@@ -11,6 +13,23 @@ export class taikhoan {
     primaryKeyConstraintName: 'ten_dang_nhap',
   })
   TENDANGNHAP: string;
+
+  @Column({
+    nullable: true,
+    type: 'char',
+    length: 11,
+    name: 'SDT_KH',
+    default: null,
+  })
+  SDT_KH: string;
+
+  @OneToOne(() => khachhang, (khachhang) => khachhang.taikhoan)
+  @JoinColumn({
+    name: 'SDT_KH',
+    foreignKeyConstraintName: 'fk_SDT_KH',
+    referencedColumnName: 'SDT',
+  })
+  khachhang: khachhang;
 
   @OneToOne(() => admin, (admin) => admin.taikhoan)
   @JoinColumn({ name: 'MAADMIN' })
