@@ -1,12 +1,22 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { CreateFileDto } from './dto/create-file.dto';
+import { UpdateFileDto } from './dto/update-file.dto';
+import * as XLSX from 'xlsx';
 import * as fs from 'fs';
-import { CustomerService } from 'src/customer/customer.service';
+import { log } from 'console';
+import {
+  CreateCustomerArrDto,
+  CustomerDto,
+  PositionDto,
+} from 'src/dto/get-customer.dto';
+import { lop } from 'src/entites/lop';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { DataService } from 'src/data/data.service';
 import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
 import { phieudkxettuyen } from 'src/entites/phieudkxettuyen.entity';
-import { Repository } from 'typeorm';
-import * as XLSX from 'xlsx';
+import { CustomerService } from 'src/customer/customer.service';
+import { CleanPlugin } from 'webpack';
 
 @Injectable()
 export class FileService {
@@ -28,7 +38,7 @@ export class FileService {
   }
 
   filterObject(ar: any[], column: string, value: string) {
-    const a = ar.find((item) => {
+    const a = ar.find((item, index) => {
       const keys = Object.keys(item);
 
       if (keys.includes(column)) {

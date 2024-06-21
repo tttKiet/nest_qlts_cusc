@@ -10,6 +10,11 @@ import { CustomerModule } from './customer/customer.module';
 import { ThematicModule } from './thematic/thematic.module';
 import { FileModule } from './file/file.module';
 import * as moment from 'moment';
+import { admin } from './entites/admin.entity';
+import { taikhoan } from './entites/taikhoan.entity';
+import { tinh } from './entites/tinh.entity';
+import { usermanager } from './entites/usermanager.entity';
+import { nhomnganh } from './entites/nhomnganh.entity';
 
 @Module({
   imports: [
@@ -27,7 +32,7 @@ import * as moment from 'moment';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    // TypeOrmModule.forFeature([taikhoan, admin, usermanager, tinh]),
+    TypeOrmModule.forFeature([taikhoan, nhomnganh, admin, usermanager, tinh]),
     DataModule,
     ThematicModule,
     FileModule,

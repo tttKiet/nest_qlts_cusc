@@ -18,6 +18,7 @@ import { chitietchuyende } from './chitietchuyende.entity';
 import { lienhe } from './lienhe.entity';
 import { chuyende } from './chuyende.entity';
 import { chucvu } from './chucvu.entity';
+import { taikhoan } from './taikhoan.entity';
 
 @Entity()
 export class khachhang {
@@ -34,6 +35,12 @@ export class khachhang {
 
   @Column({ nullable: true, type: 'char', length: 10 })
   MANGHENGHIEP: string;
+
+  @Column({ nullable: false, type: 'char', length: 12 })
+  CCCD: string;
+
+  @OneToOne(() => taikhoan, (taikhoan) => taikhoan.khachhang)
+  taikhoan: taikhoan;
 
   @ManyToOne(() => truong, (truong) => truong.khachhang)
   @JoinColumn({ name: 'MATRUONG' })
@@ -83,7 +90,7 @@ export class khachhang {
 
   @OneToMany(() => nganhyeuthich, (nganhyeuthich) => nganhyeuthich.khachhang)
   nganhyeuthich: nganhyeuthich[];
-  
+
   //chitietchuyende
   @OneToMany(
     () => chitietchuyende,
@@ -91,7 +98,7 @@ export class khachhang {
   )
   chitietchuyende: chitietchuyende[];
 
-  @OneToMany(() => lienhe, (lienhe) => lienhe.khachhang) 
+  @OneToMany(() => lienhe, (lienhe) => lienhe.khachhang)
   lienhe: lienhe[];
   // chucvu
   @OneToMany(() => chucvu, (chucvu) => chucvu.khachhang)
