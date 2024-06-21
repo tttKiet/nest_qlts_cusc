@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { khachhang } from './khachhang.entity';
 import { nganh } from './nganh.entity';
+import { nhomnganh } from './nhomnganh.entity';
 
 @Entity()
 export class nganhyeuthich {
@@ -22,6 +23,13 @@ export class nganhyeuthich {
 
   @Column({ nullable: true, type: 'varchar', length: 255 })
   CHITIET: string;
+
+  @Column({ nullable: true, type: 'int' })
+  MANHOMNGANH: number;
+
+  @ManyToOne(() => nhomnganh, (nhomnganh) => nhomnganh.nganhyeuthich)
+  @JoinColumn({ name: 'MANHOMNGANH' })
+  nhomnganh: nhomnganh;
 
   @ManyToOne(() => khachhang, (khachhang) => khachhang.nganhyeuthich)
   @JoinColumn({ name: 'SDT' })

@@ -8,6 +8,7 @@ import { khachhang } from 'src/entites/khachhang.entity';
 import { nghenghiep } from 'src/entites/nghenghiep.entity';
 import { hinhthucthuthap } from 'src/entites/hinhthucthuthap.entity';
 import { nganh } from 'src/entites/nganh.entity';
+import { nhomnganh } from 'src/entites/nhomnganh.entity';
 import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
 import { phanquyen } from 'src/entites/phanquyen.entity';
 import { chitietpq } from 'src/entites/chitietpq.entity';
@@ -49,6 +50,7 @@ import { ketquatotnghiep } from 'src/entites/ketquatotnghiep.entity';
       khoahocquantam,
       kenhnhanthongbao,
       ketquatotnghiep,
+      nhomnganh,
     ]),
   ],
 })
