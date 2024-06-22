@@ -1,7 +1,20 @@
-import { Body, Controller, Get, Patch, Post, Req, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Post,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { UserService } from './user.service';
-import { CreateAccountDto, EditAccountDto } from 'src/dto/edit-account.dto';
+import {
+  CreateAccountDto,
+  DeleteAccountDto,
+  EditAccountDto,
+} from 'src/dto/edit-account.dto';
 
 @Controller('user')
 export class UserController {
@@ -68,6 +81,23 @@ export class UserController {
       return res.status(200).json({
         statusCode: 200,
         message: 'Đã tạo người dùng.',
+        data: data,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        statusCode: 500,
+        message: error?.message || 'Lỗi server.',
+      });
+    }
+  }
+
+  @Delete('/account')
+  async deleteAccount(@Body() body: DeleteAccountDto, @Res() res: Response) {
+    try {
+      const data = await this.userService.deleteUser(body.TENDANGNHAP);
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Đã xóa người dùng.',
         data: data,
       });
     } catch (error) {

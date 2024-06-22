@@ -490,7 +490,7 @@ export class DataService {
   async opentContactSegment(data: OpentContactSegmentDto) {
     // check
     if (data.TRANGTHAILIENHE > 3) {
-      throw new HttpException('Trạng thái phải <= 3', 400);
+      throw new HttpException('Trạng thái phải <= 7', 400);
     }
     // Edit contact
     const segmentUpdateResult = await this.segmentRepository.update(

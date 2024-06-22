@@ -366,4 +366,12 @@ export class UserService {
       await queryRunner.release();
     }
   }
+
+  async deleteUser(TENDANGNHAP: string) {
+    const rl = await this.taiKhoanRepository.delete({
+      TENDANGNHAP,
+    });
+
+    return rl;
+  }
 }

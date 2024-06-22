@@ -56,3 +56,8 @@ export class EditAccountDto {
   @IsOptional()
   TRANGTHAIADMIN: number;
 }
+
+export class DeleteAccountDto {
+  @IsNotEmpty({ message: 'Bạn chưa gửi TENDANGNHAP.' })
+  TENDANGNHAP: string;
+}

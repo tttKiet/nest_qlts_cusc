@@ -2,7 +2,6 @@ import { Entity, Column, PrimaryColumn, OneToOne, JoinColumn } from 'typeorm';
 import { admin } from './admin.entity';
 import { usermanager } from './usermanager.entity';
 import { khachhang } from './khachhang.entity';
-import { flatten } from '@nestjs/common';
 
 @Entity()
 export class taikhoan {
@@ -23,7 +22,10 @@ export class taikhoan {
   })
   SDT_KH: string;
 
-  @OneToOne(() => khachhang, (khachhang) => khachhang.taikhoan)
+  @OneToOne(() => khachhang, (khachhang) => khachhang.taikhoan, {
+    onDelete: 'CASCADE',
+    cascade: true,
+  })
   @JoinColumn({
     name: 'SDT_KH',
     foreignKeyConstraintName: 'fk_SDT_KH',

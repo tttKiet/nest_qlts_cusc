@@ -22,6 +22,7 @@ export class AccountService {
       relations: {
         admin: true,
         usermanager: true,
+        khachhang: true,
       },
     });
 
