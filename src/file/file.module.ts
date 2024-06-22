@@ -30,6 +30,7 @@ import { FileController } from './file.controller';
 import { FileService } from './file.service';
 import { MulterConfigService } from './multer.config';
 import { chitietchuyende } from 'src/entites/chitietchuyende.entity';
+import { nhomnganh } from 'src/entites/nhomnganh.entity';
 
 @Module({
   controllers: [FileController],
@@ -68,6 +69,7 @@ import { chitietchuyende } from 'src/entites/chitietchuyende.entity';
       lienhe,
       phieudkxettuyen,
       chitietchuyende,
+      nhomnganh,
     ]),
   ],
 })

@@ -16,6 +16,7 @@ import { khachhang } from 'src/entites/khachhang.entity';
 import { khoahocquantam } from 'src/entites/khoahocquantam.entity';
 import { lop } from 'src/entites/lop';
 import { nganh } from 'src/entites/nganh.entity';
+import { nhomnganh } from 'src/entites/nhomnganh.entity';
 import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
 import { nghenghiep } from 'src/entites/nghenghiep.entity';
 import { nhatkythaydoi } from 'src/entites/nhatkythaydoi.entity';
@@ -54,6 +55,9 @@ export class DataService {
 
     @InjectRepository(nganh)
     private nganhRepository: Repository<nganh>,
+
+    @InjectRepository(nhomnganh)
+    private nhomnganhRepository: Repository<nhomnganh>,
 
     @InjectRepository(tinh)
     private tinhRepository: Repository<tinh>,
@@ -551,6 +555,10 @@ export class DataService {
 
   async getTableNghanh() {
     return await this.nganhRepository.find();
+  }
+
+  async getTableNhomNghanh() {
+    return await this.nhomnganhRepository.find();
   }
 
   async getTableTinh() {

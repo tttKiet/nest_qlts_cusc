@@ -23,13 +23,9 @@ export class nganh {
   @Column({ nullable: true, type: 'varchar', length: 128 })
   TENNGANH: string;
 
-  @Column({ nullable: true, type: 'int' })
-  MANHOMNGANH: number;
-
   @OneToMany(() => nganhyeuthich, (nganhyeuthich) => nganhyeuthich.nganh)
   nganhyeuthich: nganhyeuthich[];
 
-  @ManyToOne(() => nhomnganh, (nhomnganh) => nhomnganh.nganh)
-  @JoinColumn({ name: 'MANHOMNGANH' })
-  nhomnganh: nhomnganh;
-}
+
+ 
+} 
