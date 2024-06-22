@@ -83,6 +83,12 @@ export class FileService {
       const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
       const students = jsonData.slice(2).map((row) => {
+        if (!row[2]) {
+          return;
+        }
+
+        console.log('row', row);
+
         const nganhYeuThich = [];
         const nganhColumns = [
           'APTECH',
@@ -96,12 +102,13 @@ export class FileService {
         ];
 
         nganhColumns.forEach((col, index) => {
-          if (row[14 + index] && row[14 + index] !== '') {
+          if (row[15 + index] && row[15 + index] !== '') {
             nganhYeuThich.push(
               col === 'NGÀNH KHÁC'
                 ? {
                     title: col,
-                    chitiet: row[14 + index],
+                    chitiet: row[15 + index],
+                    tenloainganh: row[23],
                   }
                 : col,
             );
@@ -110,22 +117,23 @@ export class FileService {
 
         return {
           hoVaTen: row[1],
-          tinhThanh: row[2],
-          truong: row[3],
-          dienThoai: row[4],
-          dienThoaiBa: row[5] || '',
-          dienThoaiMe: row[6] || '',
-          zalo: row[7] || '',
-          facebook: row[8] || '',
-          email: row[9] || '',
-          ngheNghiep: row[10] || '',
-          hinhThucThuNhap: row[11] || '',
-          lop: row[12] || '',
-          chucVu: row[13] || '',
+          CCCD: row[2],
+          tinhThanh: row[3],
+          truong: row[4],
+          dienThoai: row[5],
+          dienThoaiBa: row[6],
+          dienThoaiMe: row[7],
+          zalo: row[8],
+          facebook: row[9],
+          email: row[10],
+          ngheNghiep: row[11],
+          hinhThucThuNhap: row[12],
+          lop: row[13],
+          chucVu: row[14],
           nganhYeuThich: nganhYeuThich,
-          kenhNhanThongBao: row[22] || '',
-          khoaHocQuanTam: row[23] || '',
-          ketQuaDaiHocCaoDang: row[24] || '',
+          kenhNhanThongBao: row[24],
+          khoaHocQuanTam: row[25],
+          ketQuaDaiHocCaoDang: row[26],
         };
       });
 
@@ -138,6 +146,7 @@ export class FileService {
 
       const getTableLop = await this.dataService.getTableLop();
       const getTableNganh = await this.dataService.getTableNghanh();
+      const getTableNhomNganh = await this.dataService.getTableNhomNghanh();
       const getTableKhoahocquantam =
         await this.dataService.getTableKhoahocquantam();
       const getTableKenhnhanthongbao =
@@ -155,49 +164,50 @@ export class FileService {
         const dataNghenghiepItem = this.filterObject(
           getTableNghenghiep,
           'TENNGHENGHIEP',
-          `${item.ngheNghiep}`,
+          `${item?.ngheNghiep}`,
         );
         const dataTruongItem = this.filterObject(
           getTableTruong,
           'TENTRUONG',
-          `${item.truong}`,
+          `${item?.truong}`,
         );
         const dataTinhItem = this.filterObject(
           getTableTinh,
           'TENTINH',
-          `${item.tinhThanh}`,
+          `${item?.tinhThanh}`,
         );
         const dataMahinhthucItem = this.filterObject(
           getTableHinhthucthuthap,
           'TENHINHTHUC',
-          `${item.hinhThucThuNhap}`,
+          `${item?.hinhThucThuNhap}`,
         );
 
         khachhang.push({
-          SDT: item.dienThoai,
+          SDT: item?.dienThoai,
           MANGHENGHIEP: dataNghenghiepItem?.MANGHENGHIEP,
           MATRUONG: dataTruongItem?.MATRUONG,
           MATINH: dataTinhItem?.MATINH,
           MAHINHTHUC: dataMahinhthucItem?.MAHINHTHUC,
-          HOTEN: item.hoVaTen,
-          EMAIL: item.email,
+          HOTEN: item?.hoVaTen,
+          EMAIL: item?.email,
+          CCCD: item?.CCCD,
           TRANGTHAIKHACHHANG: 1,
         });
         // dư liệu khách hàng
         dulieukhachhang.push({
-          SDT: item.dienThoai,
-          SDTBA: item.dienThoaiBa || null,
-          SDTME: item.dienThoaiMe || null,
-          SDTZALO: item.zalo || null,
-          FACEBOOK: item.facebook || null,
+          SDT: item?.dienThoai,
+          SDTBA: item?.dienThoaiBa || null,
+          SDTME: item?.dienThoaiMe || null,
+          SDTZALO: item?.zalo || null,
+          FACEBOOK: item?.facebook || null,
         });
         // chức vụ khách hàng
-        const dataLop = this.filterObject(getTableLop, 'LOP', `${item.lop}`);
+        const dataLop = this.filterObject(getTableLop, 'LOP', `${item?.lop}`);
 
         chucvukhachhang.push({
           SDT: item?.dienThoai,
           STT: dataLop?.STT,
-          tenchucvu: item.chucVu,
+          tenchucvu: item?.chucVu,
         });
 
         // nghành yêu thích
@@ -205,21 +215,26 @@ export class FileService {
 
         nganhyth.forEach((nganhItem) => {
           if (typeof nganhItem === 'object') {
-            const a = this.filterObject(
+            const idMaNganh = this.filterObject(
               getTableNganh,
               'TENNGANH',
-              nganhItem.title,
+              nganhItem?.title,
             );
-            if (a) {
-              const b: nganhyeuthich = {
-                SDT: item?.dienThoai,
-                MANGANH: a?.MANGANH,
-                CHITIET:
-                  typeof nganhItem === 'object' ? nganhItem.chitiet : null,
-              } as nganhyeuthich;
+            const idMaNhomNganh = this.filterObject(
+              getTableNhomNganh,
+              'TENNHOMNGANH',
+              nganhItem?.tenloainganh,
+            );
 
-              nganhyeuthich.push(b);
-            }
+            const b: nganhyeuthich = {
+              SDT: item?.dienThoai,
+              MANGANH: idMaNganh?.MANGANH,
+              CHITIET:
+                typeof nganhItem === 'object' ? nganhItem?.chitiet : null,
+              MANHOMNGANH: idMaNhomNganh?.MANHOMNGANH || null,
+            } as nganhyeuthich;
+
+            nganhyeuthich.push(b);
           } else {
             const a = this.filterObject(getTableNganh, 'TENNGANH', nganhItem);
 
@@ -228,7 +243,8 @@ export class FileService {
                 SDT: item?.dienThoai,
                 MANGANH: a?.MANGANH,
                 CHITIET:
-                  typeof nganhItem === 'object' ? nganhItem.chitiet : null,
+                  typeof nganhItem === 'object' ? nganhItem?.chitiet : null,
+                MANHOMNGANH: null,
               } as nganhyeuthich;
 
               nganhyeuthich.push(b);
@@ -241,19 +257,19 @@ export class FileService {
         const kntbItem = this.filterObject(
           getTableKenhnhanthongbao,
           'TENKENH',
-          item.kenhNhanThongBao,
+          item?.kenhNhanThongBao,
         );
 
         const khqtItem = this.filterObject(
           getTableKhoahocquantam,
           'TENLOAIKHOAHOC',
-          item.khoaHocQuanTam,
+          item?.khoaHocQuanTam,
         );
 
         const kqtnItem = this.filterObject(
           getTableKetquatotnghiep,
           'KETQUA',
-          item.ketQuaDaiHocCaoDang,
+          item?.ketQuaDaiHocCaoDang,
         );
 
         getIdpdkxtMax++;
@@ -261,7 +277,7 @@ export class FileService {
 
         phieudkxettuyen.push({
           MAPHIEUDK: maPqRender,
-          SDT: item.dienThoai,
+          SDT: item?.dienThoai,
           MAKENH: kntbItem?.MAKENH,
           MALOAIKHOAHOC: khqtItem?.MALOAIKHOAHOC,
           MAKETQUA: kqtnItem?.MAKETQUA || 3,
@@ -281,7 +297,7 @@ export class FileService {
         data: phieudkxettuyen,
       });
 
-      return phieudkxettuyen;
+      return true;
     } catch (err) {
       console.log(err);
 

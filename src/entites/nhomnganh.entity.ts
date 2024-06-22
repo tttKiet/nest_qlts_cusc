@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { nganh } from './nganh.entity';
+import { nganhyeuthich } from './nganhyeuthich.entity';
 
 @Entity()
 export class nhomnganh {
@@ -15,6 +16,6 @@ export class nhomnganh {
   @Column({ nullable: false, type: 'varchar', length: 255 })
   TENNHOMNGANH: string;
 
-  @OneToMany(() => nganh, (nganh) => nganh.nhomnganh)
-  nganh: nganh[];
+  @OneToMany(() => nganhyeuthich, (nganhyeuthich) => nganhyeuthich.nhomnganh)
+  nganhyeuthich: nganhyeuthich[];
 }
