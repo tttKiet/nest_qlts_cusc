@@ -79,9 +79,10 @@ export class CustomerService {
         .leftJoinAndSelect('khachhang.nghenghiep', 'nghenghiep')
         .leftJoinAndSelect('khachhang.dulieukhachhang', 'dulieukhachhang')
         .leftJoinAndSelect('khachhang.chitietchuyende', 'chitietchuyende')
+        .leftJoinAndSelect('chitietchuyende.chuyende', 'chuyende')
+        .leftJoinAndSelect('chuyende.usermanager', 'usermanager')
         .leftJoinAndSelect('khachhang.lienhe', 'lienhe')
         .leftJoinAndSelect('lienhe.trangthai', 'trangthai')
-        .leftJoinAndSelect('chitietchuyende.chuyende', 'chuyende')
         .leftJoinAndSelect(
           'phieudkxettuyen.kenhnhanthongbao',
           'kenhnhanthongbao',
