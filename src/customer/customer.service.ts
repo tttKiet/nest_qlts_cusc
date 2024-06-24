@@ -25,6 +25,7 @@ import {
 } from 'src/dto';
 import { chitietchuyende } from 'src/entites/chitietchuyende.entity';
 import * as moment from 'moment';
+import { taikhoan } from 'src/entites/taikhoan.entity';
 
 @Injectable()
 export class CustomerService {
@@ -45,6 +46,8 @@ export class CustomerService {
     private chitietchuyendeRepository: Repository<chitietchuyende>,
     @InjectRepository(chucvu)
     private chucvuRepository: Repository<chucvu>,
+    @InjectRepository(taikhoan)
+    private taikhoanRepository: Repository<taikhoan>,
   ) {}
 
   async getContactNumber(SDT: string, number: number) {
@@ -211,6 +214,14 @@ export class CustomerService {
       );
       return result;
     }
+  }
+
+  async createAccountArr(data: any) {
+    const dataResult = await this.taikhoanRepository.upsert(data.data, [
+      'SDT_KH',
+    ]);
+
+    return dataResult;  
   }
 
   async editInfoCustomer(data: InforCustomerDto) {

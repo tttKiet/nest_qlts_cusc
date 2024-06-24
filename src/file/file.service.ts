@@ -18,11 +18,14 @@ import { phieudkxettuyen } from 'src/entites/phieudkxettuyen.entity';
 import { CustomerService } from 'src/customer/customer.service';
 import { CleanPlugin } from 'webpack';
 
+import { AccountService } from 'src/auth/account.service';
+
 @Injectable()
 export class FileService {
   constructor(
     private dataService: DataService,
     private customerService: CustomerService,
+    private accountService: AccountService,
 
     @InjectRepository(phieudkxettuyen)
     private phieudkxettuyenRepository: Repository<phieudkxettuyen>,
@@ -87,8 +90,6 @@ export class FileService {
           return;
         }
 
-        console.log('row', row);
-
         const nganhYeuThich = [];
         const nganhColumns = [
           'APTECH',
@@ -142,6 +143,7 @@ export class FileService {
       const chucvukhachhang = [];
       const nganhyeuthich = [];
       const phieudkxettuyen = [];
+      const taikhoan = [];
       let getIdpdkxtMax = await this.getIdMaxTablePhieudkxettuyen();
 
       const getTableLop = await this.dataService.getTableLop();
@@ -159,7 +161,156 @@ export class FileService {
       const getTableHinhthucthuthap =
         await this.dataService.getTableHinhthucthuthap();
 
-      students.forEach((item) => {
+      // students.forEach(async (item) => {
+      //   // khách hàng
+      //   const dataNghenghiepItem = this.filterObject(
+      //     getTableNghenghiep,
+      //     'TENNGHENGHIEP',
+      //     `${item?.ngheNghiep}`,
+      //   );
+      //   const dataTruongItem = this.filterObject(
+      //     getTableTruong,
+      //     'TENTRUONG',
+      //     `${item?.truong}`,
+      //   );
+      //   const dataTinhItem = this.filterObject(
+      //     getTableTinh,
+      //     'TENTINH',
+      //     `${item?.tinhThanh}`,
+      //   );
+      //   const dataMahinhthucItem = this.filterObject(
+      //     getTableHinhthucthuthap,
+      //     'TENHINHTHUC',
+      //     `${item?.hinhThucThuNhap}`,
+      //   );
+
+      //   khachhang.push({
+      //     SDT: item?.dienThoai,
+      //     MANGHENGHIEP: dataNghenghiepItem?.MANGHENGHIEP,
+      //     MATRUONG: dataTruongItem?.MATRUONG,
+      //     MATINH: dataTinhItem?.MATINH,
+      //     MAHINHTHUC: dataMahinhthucItem?.MAHINHTHUC,
+      //     HOTEN: item?.hoVaTen,
+      //     EMAIL: item?.email,
+      //     CCCD: item?.CCCD,
+      //     TRANGTHAIKHACHHANG: 1,
+      //   });
+      //   // dư liệu khách hàng
+      //   dulieukhachhang.push({
+      //     SDT: item?.dienThoai,
+      //     SDTBA: item?.dienThoaiBa || null,
+      //     SDTME: item?.dienThoaiMe || null,
+      //     SDTZALO: item?.zalo || null,
+      //     FACEBOOK: item?.facebook || null,
+      //   });
+      //   // chức vụ khách hàng
+      //   const dataLop = this.filterObject(getTableLop, 'LOP', `${item?.lop}`);
+
+      //   chucvukhachhang.push({
+      //     SDT: item?.dienThoai,
+      //     STT: dataLop?.STT,
+      //     tenchucvu: item?.chucVu,
+      //   });
+
+      //   // nghành yêu thích
+      //   const nganhyth = item?.nganhYeuThich || [];
+
+      //   nganhyth.forEach((nganhItem) => {
+      //     if (typeof nganhItem === 'object') {
+      //       const idMaNganh = this.filterObject(
+      //         getTableNganh,
+      //         'TENNGANH',
+      //         nganhItem?.title,
+      //       );
+      //       const idMaNhomNganh = this.filterObject(
+      //         getTableNhomNganh,
+      //         'TENNHOMNGANH',
+      //         nganhItem?.tenloainganh,
+      //       );
+
+      //       const b: nganhyeuthich = {
+      //         SDT: item?.dienThoai,
+      //         MANGANH: idMaNganh?.MANGANH,
+      //         CHITIET:
+      //           typeof nganhItem === 'object' ? nganhItem?.chitiet : null,
+      //         MANHOMNGANH: idMaNhomNganh?.MANHOMNGANH || null,
+      //       } as nganhyeuthich;
+
+      //       nganhyeuthich.push(b);
+      //     } else {
+      //       const a = this.filterObject(getTableNganh, 'TENNGANH', nganhItem);
+
+      //       if (a) {
+      //         const b: nganhyeuthich = {
+      //           SDT: item?.dienThoai,
+      //           MANGANH: a?.MANGANH,
+      //           CHITIET:
+      //             typeof nganhItem === 'object' ? nganhItem?.chitiet : null,
+      //           MANHOMNGANH: null,
+      //         } as nganhyeuthich;
+
+      //         nganhyeuthich.push(b);
+      //       }
+      //     }
+      //   });
+
+      //   // phieudkxettuyen
+
+      //   const kntbItem = this.filterObject(
+      //     getTableKenhnhanthongbao,
+      //     'TENKENH',
+      //     item?.kenhNhanThongBao,
+      //   );
+
+      //   const khqtItem = this.filterObject(
+      //     getTableKhoahocquantam,
+      //     'TENLOAIKHOAHOC',
+      //     item?.khoaHocQuanTam,
+      //   );
+
+      //   const kqtnItem = this.filterObject(
+      //     getTableKetquatotnghiep,
+      //     'KETQUA',
+      //     item?.ketQuaDaiHocCaoDang,
+      //   );
+
+      //   getIdpdkxtMax++;
+      //   const maPqRender = 'DK' + getIdpdkxtMax;
+
+      //   phieudkxettuyen.push({
+      //     MAPHIEUDK: maPqRender,
+      //     SDT: item?.dienThoai,
+      //     MAKENH: kntbItem?.MAKENH,
+      //     MALOAIKHOAHOC: khqtItem?.MALOAIKHOAHOC,
+      //     MAKETQUA: kqtnItem?.MAKETQUA || 3,
+      //     SDTZALO: item?.zalo || null,
+      //     NGANHDK: null,
+      //   });
+
+      //   // Tai Khoan
+      //   let hashPass = await this.accountService.hashPassword(item?.dienThoai);
+
+      //   taikhoan.push({
+      //     TENDANGNHAP: item?.CCCD,
+      //     MAADMIN: null,
+      //     MATKHAU: hashPass || null,
+      //     SDT_KH: item?.dienThoai,
+      //     SDT: null,
+      //   });
+      // });
+
+      // await this.customerService.createCustomerArr({ data: khachhang });
+      // await this.customerService.createCustomeDatarArr({
+      //   data: dulieukhachhang,
+      // });
+      // await this.customerService.createJobLikeArr({
+      //   data: nganhyeuthich,
+      // });
+      // await this.customerService.registrationFormArr({
+      //   data: phieudkxettuyen,
+      // });
+
+      for (const item of students) {
         // khách hàng
         const dataNghenghiepItem = this.filterObject(
           getTableNghenghiep,
@@ -284,7 +435,20 @@ export class FileService {
           SDTZALO: item?.zalo || null,
           NGANHDK: null,
         });
-      });
+
+        // Tai Khoan
+        const hashPass = await this.accountService.hashPassword(
+          item?.dienThoai,
+        );
+
+        taikhoan.push({
+          TENDANGNHAP: item?.CCCD,
+          MAADMIN: null,
+          MATKHAU: hashPass || null,
+          SDT_KH: item?.dienThoai,
+          SDT: null,
+        });
+      }
 
       await this.customerService.createCustomerArr({ data: khachhang });
       await this.customerService.createCustomeDatarArr({
@@ -296,11 +460,13 @@ export class FileService {
       await this.customerService.registrationFormArr({
         data: phieudkxettuyen,
       });
+      await this.customerService.createAccountArr({
+        data: taikhoan,
+      });
 
       return true;
     } catch (err) {
       console.log(err);
-
       throw new HttpException(err?.code || 'Loi server', 400);
     }
   }

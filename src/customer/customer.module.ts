@@ -19,6 +19,7 @@ import { lienhe } from 'src/entites/lienhe.entity';
 import { trangthai } from 'src/entites/trangthai.entity';
 import { usermanager } from 'src/entites/usermanager.entity';
 import { chucvu } from 'src/entites/chucvu.entity';
+import { taikhoan } from 'src/entites/taikhoan.entity';
 
 @Module({
   providers: [CustomerService],
@@ -42,6 +43,7 @@ import { chucvu } from 'src/entites/chucvu.entity';
       trangthai,
       usermanager,
       chucvu,
+      taikhoan,
     ]),
   ],
 })
