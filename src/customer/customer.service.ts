@@ -221,7 +221,7 @@ export class CustomerService {
       'SDT_KH',
     ]);
 
-    return dataResult;  
+    return dataResult;
   }
 
   async editInfoCustomer(data: InforCustomerDto) {
