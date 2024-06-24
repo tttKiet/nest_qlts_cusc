@@ -26,6 +26,7 @@ import {
 import { chitietchuyende } from 'src/entites/chitietchuyende.entity';
 import * as moment from 'moment';
 import { taikhoan } from 'src/entites/taikhoan.entity';
+import { khachhangcu } from 'src/entites/khachhangcu.entit';
 
 @Injectable()
 export class CustomerService {
@@ -48,6 +49,8 @@ export class CustomerService {
     private chucvuRepository: Repository<chucvu>,
     @InjectRepository(taikhoan)
     private taikhoanRepository: Repository<taikhoan>,
+    @InjectRepository(khachhangcu)
+    private khachhangcuRepository: Repository<khachhangcu>,
   ) {}
 
   async getContactNumber(SDT: string, number: number) {
@@ -221,7 +224,15 @@ export class CustomerService {
       'SDT_KH',
     ]);
 
-    return dataResult;  
+    return dataResult;
+  }
+
+  async createCustomerOldArr(data: any) {
+    const dataResult = await this.khachhangcuRepository.upsert(data.data, [
+      'SDT',
+    ]);
+
+    return dataResult;
   }
 
   async editInfoCustomer(data: InforCustomerDto) {
