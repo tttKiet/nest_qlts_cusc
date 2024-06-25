@@ -12,5 +12,5 @@ export class nam {
 
   //dot tuyen dung
   @OneToMany(() => dottuyendung, (dottuyendung) => dottuyendung.nam)
-  dottuyendung: dottuyendung[]; 
+  dottuyendung: dottuyendung[];
 }

@@ -185,3 +185,12 @@ export class CreateContactDto {
   @IsNotEmpty({ message: 'Bạn chưa gửi KETQUA liên hệ.' })
   KETQUA: string;
 }
+
+// chart
+export class ChartAdmin {
+  @IsNotEmpty({ message: 'Vui lòng truyền index.' })
+  index: number;
+
+  @IsNotEmpty({ message: 'Vui lòng truyền page.' })
+  page: 'home';
+}

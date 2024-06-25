@@ -15,12 +15,14 @@ import { taikhoan } from './entites/taikhoan.entity';
 import { tinh } from './entites/tinh.entity';
 import { usermanager } from './entites/usermanager.entity';
 import { nhomnganh } from './entites/nhomnganh.entity';
+import { ChartModule } from './chart/chart.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     AuthModule,
     UserModule,
+    ChartModule,
     CustomerModule,
     TypeOrmModule.forRoot({
       type: 'mysql',
