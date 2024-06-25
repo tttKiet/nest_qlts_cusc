@@ -23,7 +23,7 @@ export class phieudkxettuyen {
   })
   MAPHIEUDK: string;
 
-  @Column({ nullable: false, type: 'int' })
+  @Column({ nullable: false, type: 'int' }) 
   MALOAIKHOAHOC: string;
 
   @Column({ nullable: false, type: 'char', length: 10 })
