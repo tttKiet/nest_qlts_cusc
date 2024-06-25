@@ -27,6 +27,7 @@ import { truong } from 'src/entites/truong.entity';
 import { UserService } from 'src/user/user.service';
 import { DataSource, In, Repository } from 'typeorm';
 import { chuyende } from 'src/entites/chuyende.entity';
+import moment from 'moment';
 
 @Injectable()
 export class DataService {
@@ -295,7 +296,6 @@ export class DataService {
       schoolCode: MATRUONG,
       limit: SODONG,
     });
-    console.log('customerNotInSegment: ', customerNotInSegment);
 
     // create data
     const data: chitietpq[] = customerNotInSegment.map((c) =>
@@ -545,9 +545,12 @@ export class DataService {
     if (!data.maadmin && !data.sdt) {
       throw new HttpException('Vui lòng truyền người tạo.', 400);
     }
+    const timestamp = moment().format('YYYY[-]DD[-]MM h:mm:ss');
+
     // create
     const story = this.nhatkythaydoiRepository.create({
       ...data,
+      thoigian: timestamp,
     });
     const storyDoc = await this.nhatkythaydoiRepository.save(story);
     return storyDoc;
@@ -582,7 +585,7 @@ export class DataService {
   }
 
   async getTableKetquatotnghiep() {
-    return await this.ketquatotnghiepRepository.find(); 
+    return await this.ketquatotnghiepRepository.find();
   }
 
   async getTableNghenghiep() {

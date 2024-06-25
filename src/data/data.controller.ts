@@ -8,9 +8,11 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { DataService } from './data.service';
 import {
   CreateSegmentDto,
@@ -20,6 +22,8 @@ import {
   PatchPermisionSegmentDto,
   RefundSegmentDto,
 } from 'src/dto';
+import { JwtGuards } from 'src/auth/guards/jwt.guard';
+import { taikhoan } from 'src/entites/taikhoan.entity';
 
 @Controller('data')
 export class DataController {
@@ -131,14 +135,33 @@ export class DataController {
     }
   }
 
+  @UseGuards(JwtGuards)
   @Patch('/segment/open-contact')
   async openContact(
     @Body() body: OpentContactSegmentDto,
     @Res() res: Response,
+    @Req() req: Request,
   ) {
     try {
+      const user: Partial<taikhoan> = req.user;
+
+      if (!user.admin) {
+        throw new HttpException(
+          'Dữ liệu admin bị sai trong database, vui lòng kiểm tra lại.',
+          500,
+        );
+      }
+
       const deleteResult = await this.dataService.opentContactSegment(body);
 
+      if (deleteResult.affected > 0) {
+        await this.dataService.addStory({
+          hanhdong: `Admin ${user.admin.HOTEN} đã mở trạng thái liên hệ ${body.TRANGTHAILIENHE} cho đoạn ${body.MAPQ}`,
+          maadmin: user.MAADMIN,
+          sdt: null,
+        });
+      }
+
       return res.status(200).json({
         statusCode: 200,
         message:
@@ -155,10 +178,29 @@ export class DataController {
     }
   }
 
+  @UseGuards(JwtGuards)
   @Patch('/segment/refund-permision')
-  async refundPermission(@Body() body: RefundSegmentDto, @Res() res: Response) {
+  async refundPermission(
+    @Body() body: RefundSegmentDto,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
     try {
+      const user: Partial<taikhoan> = req.user;
+      if (!user.admin) {
+        throw new HttpException(
+          'Dữ liệu admin bị sai trong database, vui lòng kiểm tra lại.',
+          500,
+        );
+      }
       const deleteResult = await this.dataService.refundPermisionSegment(body);
+      if (deleteResult.affected > 0) {
+        await this.dataService.addStory({
+          hanhdong: `Admin ${user.admin.HOTEN} đã thu hồi quyền cho đoạn ${body.MAPQ}`,
+          maadmin: user.MAADMIN,
+          sdt: null,
+        });
+      }
 
       return res.status(200).json({
         statusCode: 200,
@@ -176,14 +218,32 @@ export class DataController {
     }
   }
 
+  @UseGuards(JwtGuards)
   @Patch('/segment')
   async permisionSegment(
     @Body() body: PatchPermisionSegmentDto,
     @Res() res: Response,
+    @Req() req: Request,
   ) {
     try {
+      const user: Partial<taikhoan> = req.user;
+
+      if (!user.admin) {
+        throw new HttpException(
+          'Dữ liệu admin bị sai trong database, vui lòng kiểm tra lại.',
+          500,
+        );
+      }
+
       const data = await this.dataService.updatePermistionSegment(body);
 
+      if (data.affected > 0) {
+        await this.dataService.addStory({
+          hanhdong: `Admin ${user.admin.HOTEN} đã phân chia dữ liệu đoạn ${body.MAPQ} cho Usermanager có SDT: ${body.SDT_USERMANAGER}.`,
+          maadmin: user.MAADMIN,
+          sdt: null,
+        });
+      }
       return res.status(200).json({
         statusCode: 200,
         message:
@@ -200,12 +260,35 @@ export class DataController {
     }
   }
 
+  @UseGuards(JwtGuards)
   @Delete('/segment')
-  async deleteSegment(@Body() body: DeleteSegmentDto, @Res() res: Response) {
+  async deleteSegment(
+    @Body() body: DeleteSegmentDto,
+    @Res() res: Response,
+    @Req() req: Request,
+  ) {
     try {
+      const user: Partial<taikhoan> = req.user;
+
+      if (!user.admin) {
+        throw new HttpException(
+          'Dữ liệu admin bị sai trong database, vui lòng kiểm tra lại.',
+          500,
+        );
+      }
+
       const deleteResult = await this.dataService.deleteSegment(
         Array.isArray(body.MaPQArray) ? body.MaPQArray : [body.MaPQArray],
       );
+
+      if (deleteResult.affected > 0) {
+        const re = await this.dataService.addStory({
+          hanhdong: `Admin ${user.admin.HOTEN} đã xóa đoạn ${body.MaPQArray}.`,
+          maadmin: user.MAADMIN,
+          sdt: null,
+        });
+        console.log(re);
+      }
 
       return res.status(200).json({
         statusCode: 200,
