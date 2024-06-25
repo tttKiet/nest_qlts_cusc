@@ -261,4 +261,146 @@ export class DataController {
       );
     }
   }
+
+  // get data that select     
+  @Get('/table-thematic')
+  async getTablethematic(@Query() query, @Res() res: Response) {
+    try {
+      const data = await this.dataService.getTableChuyende();
+
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Lấy data thành công.',
+        data,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
+  }
+
+  @Get('/table-job')
+  async getTableJob(@Query() query, @Res() res: Response) {
+    try {
+      const data = await this.dataService.getTableNghenghiep();
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Lấy data thành công.',
+        data,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
+  }
+
+  @Get('/table-majors')
+  async getTableMajors(@Query() query, @Res() res: Response) {
+    try {
+      const data = await this.dataService.getTableNghanh();
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Lấy data thành công.',
+        data,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
+  }
+
+  @Get('/table-type-majors')
+  async getTableTypejob(@Query() query, @Res() res: Response) {
+    try {
+      const data = await this.dataService.getTableNhomNghanh();
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Lấy data thành công.',
+        data,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
+  }
+
+  @Get('/table-collection')
+  async getTableCollection(@Query() query, @Res() res: Response) {
+    try {
+      const data = await this.dataService.getTableHinhthucthuthap();
+
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Lấy data thành công.',
+        data,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
+  }
+
+  @Get('/table-notification-channel')
+  async getTableNotificationChannel(@Query() query, @Res() res: Response) {
+    try {
+      const data = await this.dataService.getTableKenhnhanthongbao();
+
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Lấy data thành công.',
+        data,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
+  }
+
+  @Get('/table-course')
+  async getTableCourse(@Query() query, @Res() res: Response) {
+    try {
+      const data = await this.dataService.getTableKhoahocquantam();
+
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Lấy data thành công.',
+        data,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
+  }
+
+  @Get('/table-graduation')
+  async getTableGraduation(@Query() query, @Res() res: Response) {
+    try {
+      const data = await this.dataService.getTableKetquatotnghiep();
+
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Lấy data thành công.',
+        data,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
+  }
 }

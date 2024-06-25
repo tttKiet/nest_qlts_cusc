@@ -24,6 +24,7 @@ import { nhatkythaydoi } from 'src/entites/nhatkythaydoi.entity';
 import { khoahocquantam } from 'src/entites/khoahocquantam.entity';
 import { kenhnhanthongbao } from 'src/entites/kenhnhanthongbao.entity';
 import { ketquatotnghiep } from 'src/entites/ketquatotnghiep.entity';
+import { chuyende } from 'src/entites/chuyende.entity';
 
 @Module({
   providers: [DataService, UserService, AccountService],
@@ -51,6 +52,7 @@ import { ketquatotnghiep } from 'src/entites/ketquatotnghiep.entity';
       kenhnhanthongbao,
       ketquatotnghiep,
       nhomnganh,
+      chuyende,
     ]),
   ],
 })
