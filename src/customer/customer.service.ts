@@ -26,6 +26,7 @@ import {
 import { chitietchuyende } from 'src/entites/chitietchuyende.entity';
 import * as moment from 'moment';
 import { taikhoan } from 'src/entites/taikhoan.entity';
+import { khachhangcu } from 'src/entites/khachhangcu.entit';
 
 @Injectable()
 export class CustomerService {
@@ -48,6 +49,8 @@ export class CustomerService {
     private chucvuRepository: Repository<chucvu>,
     @InjectRepository(taikhoan)
     private taikhoanRepository: Repository<taikhoan>,
+    @InjectRepository(khachhangcu)
+    private khachhangcuRepository: Repository<khachhangcu>,
   ) {}
 
   async getContactNumber(SDT: string, number: number) {
@@ -76,9 +79,10 @@ export class CustomerService {
         .leftJoinAndSelect('khachhang.nghenghiep', 'nghenghiep')
         .leftJoinAndSelect('khachhang.dulieukhachhang', 'dulieukhachhang')
         .leftJoinAndSelect('khachhang.chitietchuyende', 'chitietchuyende')
+        .leftJoinAndSelect('chitietchuyende.chuyende', 'chuyende')
+        .leftJoinAndSelect('chuyende.usermanager', 'usermanager')
         .leftJoinAndSelect('khachhang.lienhe', 'lienhe')
         .leftJoinAndSelect('lienhe.trangthai', 'trangthai')
-        .leftJoinAndSelect('chitietchuyende.chuyende', 'chuyende')
         .leftJoinAndSelect(
           'phieudkxettuyen.kenhnhanthongbao',
           'kenhnhanthongbao',
@@ -219,6 +223,14 @@ export class CustomerService {
   async createAccountArr(data: any) {
     const dataResult = await this.taikhoanRepository.upsert(data.data, [
       'SDT_KH',
+    ]);
+
+    return dataResult;
+  }
+
+  async createCustomerOldArr(data: any) {
+    const dataResult = await this.khachhangcuRepository.upsert(data.data, [
+      'SDT',
     ]);
 
     return dataResult;
