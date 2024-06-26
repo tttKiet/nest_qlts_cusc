@@ -597,6 +597,8 @@ export class DataService {
   }
 
   async getTableChuyende() {
-    return await this.chuyendeRepository.find();
+    return await this.chuyendeRepository.find({
+      relations: { usermanager: true },
+    });
   }
 }
