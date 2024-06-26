@@ -26,7 +26,8 @@ import { tinh } from 'src/entites/tinh.entity';
 import { truong } from 'src/entites/truong.entity';
 import { UserService } from 'src/user/user.service';
 import { DataSource, In, Repository } from 'typeorm';
-import * as moment from 'moment';
+import { chuyende } from 'src/entites/chuyende.entity';
+import moment from 'moment';
 
 @Injectable()
 export class DataService {
@@ -80,6 +81,9 @@ export class DataService {
 
     @InjectRepository(nghenghiep)
     private nghenghiepRepository: Repository<nghenghiep>,
+
+    @InjectRepository(chuyende)
+    private chuyendeRepository: Repository<chuyende>,
 
     private userService: UserService,
   ) {}
@@ -590,5 +594,9 @@ export class DataService {
 
   async getTableHinhthucthuthap() {
     return await this.hinhthucthuthapRepository.find();
+  }
+
+  async getTableChuyende() {
+    return await this.chuyendeRepository.find();
   }
 }

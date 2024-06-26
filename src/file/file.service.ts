@@ -19,6 +19,7 @@ import { CustomerService } from 'src/customer/customer.service';
 import { CleanPlugin } from 'webpack';
 
 import { AccountService } from 'src/auth/account.service';
+import { hoso } from 'src/entites/hoso.entity';
 
 @Injectable()
 export class FileService {
@@ -29,6 +30,8 @@ export class FileService {
 
     @InjectRepository(phieudkxettuyen)
     private phieudkxettuyenRepository: Repository<phieudkxettuyen>,
+    @InjectRepository(hoso)
+    private hosoRepository: Repository<hoso>,
   ) {}
 
   removeAccentsAndLowerCase(str: string) {
@@ -357,6 +360,38 @@ export class FileService {
       }
 
       return true;
+    } catch (err) {
+      console.log(err);
+      throw new HttpException(err?.code || 'Loi server', 400);
+    }
+  }
+
+  async upLoadFileByCustomer(file: Express.Multer.File, body: CreateFileDto) {
+    const { MAPHIEUDK } = body;
+    const { originalname, path } = file;
+    try {
+      const fullPath = file.path;
+      const baseDir = 'store';
+      let relativePath = '';
+
+      const storeIndex = fullPath.indexOf(baseDir);
+      if (storeIndex !== -1) {
+        relativePath = fullPath.substring(storeIndex);
+        console.log(relativePath);
+      } else {
+        console.log("Không tìm thấy thư mục 'store' trong đường dẫn."); 
+      }
+
+      const data = this.hosoRepository.create({
+        MAPHIEUDK: MAPHIEUDK,
+        HOSO: relativePath,
+      });
+
+      await this.hosoRepository.save(data, {
+        reload: true,
+      });
+
+      return data;
     } catch (err) {
       console.log(err);
       throw new HttpException(err?.code || 'Loi server', 400);
