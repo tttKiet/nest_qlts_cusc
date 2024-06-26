@@ -379,7 +379,7 @@ export class FileService {
         relativePath = fullPath.substring(storeIndex);
         console.log(relativePath);
       } else {
-        console.log("Không tìm thấy thư mục 'store' trong đường dẫn.");
+        console.log("Không tìm thấy thư mục 'store' trong đường dẫn."); 
       }
 
       const data = this.hosoRepository.create({

@@ -18,6 +18,7 @@ import { CreateFileDto, DownLoadFile } from './dto/create-file.dto';
 
 import * as fs from 'fs';
 import * as path from 'path';
+import * as mime from 'mime-types';
 
 @Controller('file')
 export class FileController {
@@ -94,9 +95,9 @@ export class FileController {
   async uploadDataFileCustomer(
     @UploadedFile(
       new ParseFilePipeBuilder()
-        .addFileTypeValidator({
-          fileType: 'pdf',
-        })
+        // .addFileTypeValidator({
+        //   fileType: 'pdf',
+        // })
         .addMaxSizeValidator({
           maxSize: 1000000,
         })
@@ -127,33 +128,33 @@ export class FileController {
   async downLoadFile(@Body() body: { TENHOSO: string }, @Res() res: Response) {
     try {
       const { TENHOSO } = body;
-      const filePath = path.join(
-        'D:\\THỰC TẬP 2024\\Code\\HeThongQuanLyTuyenSinh\\nest_qlts_cusc\\store\\hosoPhieudkxettuyen', // Đường dẫn tuyệt đối đến thư mục chứa file
-        TENHOSO,
-      );
+      const currentDir = __dirname;
+      const parentDir = path.resolve(currentDir, '..');
+      const filePath = parentDir + '\\' + TENHOSO;
 
-      console.log('>>>>>', __dirname);
+      if (!fs.existsSync(filePath)) {
+        return res.status(HttpStatus.NOT_FOUND).json({
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'File không tồn tại.',
+        });
+      }
 
-      // if (!fs.existsSync(filePath)) {
-      //   return res.status(HttpStatus.NOT_FOUND).json({
-      //     statusCode: HttpStatus.NOT_FOUND,
-      //     message: 'File không tồn tại.',
-      //   });
-      // }
+      fs.readFile(filePath, (err, data) => {
+        if (err) {
+          console.error(err);
+          return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: 'Lỗi khi đọc file.',
+          });
+        }
 
-      // fs.readFile(filePath, (err, data) => {
-      //   if (err) {
-      //     console.error(err);
-      //     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      //       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-      //       message: 'Lỗi khi đọc file.',
-      //     });
-      //   }
+        // Xác định loại MIME dựa trên phần mở rộng của tệp
+        const mimeType = mime.lookup(TENHOSO) || 'application/octet-stream';
 
-      //   res.setHeader('Content-Type', 'application/pdf');
-      //   res.setHeader('Content-Disposition', `attachment; filename=${TENHOSO}`);
-      //   res.send(data);
-      // });
+        res.setHeader('Content-Type', mimeType);
+        res.setHeader('Content-Disposition', `attachment; filename=${TENHOSO}`);
+        res.send(data);
+      });
     } catch (error) {
       console.error(error);
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
