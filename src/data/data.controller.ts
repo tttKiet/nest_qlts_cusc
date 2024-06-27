@@ -344,22 +344,4 @@ export class DataController {
       );
     }
   }
-
-  @Get('/status')
-  async getStatus(@Res() res: Response) {
-    try {
-      const data = await this.dataService.getStatus();
-
-      return res.status(200).json({
-        statusCode: 200,
-        message: 'Lấy thành công.',
-        data,
-      });
-    } catch (error) {
-      throw new HttpException(
-        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
-        500,
-      );
-    }
-  }
 }
