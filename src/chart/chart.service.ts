@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ChartAdmin } from 'src/dto';
 import { chitietpq } from 'src/entites/chitietpq.entity';
@@ -22,6 +22,7 @@ import { tinh } from 'src/entites/tinh.entity';
 import { truong } from 'src/entites/truong.entity';
 import { UserService } from 'src/user/user.service';
 import { DataSource, Repository } from 'typeorm';
+import * as moment from 'moment';
 
 @Injectable()
 export class ChartService {
@@ -102,8 +103,24 @@ export class ChartService {
           const data = await this.getChartAdminIndex_3();
           return data;
         }
+      }
 
-        return null;
+      case 'data': {
+        if (query.index == 1) {
+          const data = await this.getChartDataIndex_1({
+            start: query?.startDate,
+            end: query.endDate,
+          });
+          return data;
+        }
+
+        if (query.index == 2) {
+          const data = await this.getChartDataIndex_2({
+            MATINH: query?.MATINH,
+            MATRUONG: query?.MATRUONG,
+          });
+          return data;
+        }
       }
 
       default: {
@@ -128,7 +145,7 @@ export class ChartService {
     };
   }
 
-  async getChartAdminIndex_2() {
+  async getChartAdminIndex_2(phoneArray?: string[], lan?: string) {
     const query = this.lienheRepository.createQueryBuilder('lienhe');
 
     query
@@ -137,15 +154,35 @@ export class ChartService {
         'lienhe.MATRANGTHAI as MATRANGTHAI',
         'trangthai.TENTRANGTHAI as TENTRANGTHAI',
       ])
-      .addSelect('count(lienhe.MATRANGTHAI)', 'count')
-      .groupBy('lienhe.MATRANGTHAI');
+      .addSelect('count(lienhe.MATRANGTHAI)', 'count');
+
+    if (lan) {
+      query.addSelect('lienhe.LAN as LAN');
+    }
+
+    if (phoneArray?.length > 0) {
+      query.where('lienhe.SDT_KH IN (:...phoneArray)', {
+        phoneArray,
+      });
+    }
+    if (lan) {
+      query.andWhere('lienhe.LAN = :lan', {
+        lan,
+      });
+    }
+
+    query.groupBy('lienhe.MATRANGTHAI');
 
     const data = await query.getRawMany();
+
     const sum = data.reduce((init, d) => init + parseInt(d.count), 0);
 
     return data.map((d) => ({
       ...d,
-      percent: ((d.count * 100) / sum).toPrecision(2),
+      percent:
+        d.count == sum
+          ? '100'
+          : ((parseInt(d.count) * 100) / sum).toPrecision(2),
     }));
   }
 
@@ -221,5 +258,99 @@ export class ChartService {
     const result = await Promise.all(dataUmDistintMap);
 
     return result;
+  }
+
+  // data
+  async getChartDataIndex_1({
+    start = moment().subtract(15, 'day').toISOString(),
+    end = moment().toISOString(),
+  }: {
+    start?: string;
+    end?: string;
+  }) {
+    if (moment(start).isAfter(moment(end))) {
+      throw new HttpException('Ngày bắt đầu phải nhỏ hơn ngày kết thúc.', 400);
+    } else if (moment(end).diff(moment(start), 'day') > 15) {
+      throw new HttpException('Chỉ thống kê trong 15 ngày.', 400);
+    }
+
+    const queryContact = this.lienheRepository.createQueryBuilder('lh');
+    queryContact
+      .select(['count(*) as solan', 'lh.THOIGIAN as thoigian'])
+      .where(`thoigian BETWEEN '${start}' AND '${end}'`)
+      .groupBy('lh.THOIGIAN');
+
+    const result = await queryContact.getRawMany();
+
+    return { data: result };
+  }
+
+  async getChartDataIndex_2({
+    MATINH,
+    MATRUONG,
+  }: {
+    MATINH?: string;
+    MATRUONG?: string;
+  }) {
+    const query = this.lienheRepository.createQueryBuilder('lienhe');
+
+    const dataCustomer = await this.customerRepository.find({
+      where: {
+        MATINH,
+        MATRUONG,
+      },
+    });
+    // console.log(dataCustomer);
+
+    if (dataCustomer.length == 0) {
+      return {
+        data: [],
+        dataTotal: 0,
+        contactStatus: {
+          lan_1: [],
+          lan_2: [],
+          lan_3: [],
+          lan_4: [],
+          lan_5: [],
+          lan_6: [],
+          lan_7: [],
+        },
+      };
+    }
+
+    // contact
+    query.select(['lienhe.LAN as LAN', 'COUNT(*) as SOLAN']);
+    const phoneArray = dataCustomer.map((c) => c.SDT);
+
+    if (MATINH) {
+      query.where('lienhe.SDT_KH IN (:...phoneArray)', {
+        phoneArray,
+      });
+    }
+    query.groupBy('lienhe.LAN');
+    const data = await query.getRawMany();
+
+    // status
+    const lan_1 = await this.getChartAdminIndex_2(phoneArray, '1');
+    const lan_2 = await this.getChartAdminIndex_2(phoneArray, '2');
+    const lan_3 = await this.getChartAdminIndex_2(phoneArray, '3');
+    const lan_4 = await this.getChartAdminIndex_2(phoneArray, '4');
+    const lan_5 = await this.getChartAdminIndex_2(phoneArray, '5');
+    const lan_6 = await this.getChartAdminIndex_2(phoneArray, '6');
+    const lan_7 = await this.getChartAdminIndex_2(phoneArray, '7');
+
+    return {
+      data,
+      dataTotal: dataCustomer.length,
+      contactStatus: {
+        lan_1,
+        lan_2,
+        lan_3,
+        lan_4,
+        lan_5,
+        lan_6,
+        lan_7,
+      },
+    };
   }
 }

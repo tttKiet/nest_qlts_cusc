@@ -27,6 +27,7 @@ import { truong } from 'src/entites/truong.entity';
 import { UserService } from 'src/user/user.service';
 import { DataSource, In, Repository } from 'typeorm';
 import * as moment from 'moment';
+import { trangthai } from 'src/entites/trangthai.entity';
 
 @Injectable()
 export class DataService {
@@ -77,7 +78,8 @@ export class DataService {
 
     @InjectRepository(hinhthucthuthap)
     private hinhthucthuthapRepository: Repository<hinhthucthuthap>,
-
+    @InjectRepository(trangthai)
+    private trangthaiRepository: Repository<trangthai>,
     @InjectRepository(nghenghiep)
     private nghenghiepRepository: Repository<nghenghiep>,
 
@@ -590,5 +592,9 @@ export class DataService {
 
   async getTableHinhthucthuthap() {
     return await this.hinhthucthuthapRepository.find();
+  }
+
+  async getStatus() {
+    return await this.trangthaiRepository.find();
   }
 }

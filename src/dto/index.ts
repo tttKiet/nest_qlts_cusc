@@ -192,5 +192,20 @@ export class ChartAdmin {
   index: number;
 
   @IsNotEmpty({ message: 'Vui lòng truyền page.' })
-  page: 'home';
+  page: 'home' | 'data';
+
+  @IsOptional()
+  startDate: string;
+
+  @IsOptional()
+  endDate: string;
+
+  @IsOptional()
+  MATINH: string;
+
+  @IsOptional()
+  MATRUONG: string;
+
+  @IsOptional()
+  SDT_UM: string;
 }
