@@ -362,4 +362,22 @@ export class DataController {
       );
     }
   }
+
+  @Get('/story')
+  async getStory(@Res() res: Response) {
+    try {
+      const data = await this.dataService.getStory();
+
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Lấy thành công.',
+        data,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
+  }
 }

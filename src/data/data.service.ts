@@ -558,6 +558,11 @@ export class DataService {
     return storyDoc;
   }
 
+  async getStory() {
+    const storyDoc = await this.nhatkythaydoiRepository.find();
+    return storyDoc;
+  }
+
   async getTableLop() {
     return await this.lopRepository.find();
   }

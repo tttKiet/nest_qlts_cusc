@@ -121,6 +121,13 @@ export class ChartService {
           });
           return data;
         }
+
+        if (query.index == 3) {
+          const data = await this.getChartDataIndex_3({
+            SDT_UM: query?.SDT_UM,
+          });
+          return data;
+        }
       }
 
       default: {
@@ -342,6 +349,94 @@ export class ChartService {
     return {
       data,
       dataTotal: dataCustomer.length,
+      contactStatus: {
+        lan_1,
+        lan_2,
+        lan_3,
+        lan_4,
+        lan_5,
+        lan_6,
+        lan_7,
+      },
+    };
+  }
+
+  // Lấy thông kê phân đoạn UM
+  async getChartDataIndex_3({ SDT_UM }: { SDT_UM: string }) {
+    if (!SDT_UM) {
+      throw new HttpException('Chưa truyền SDT_UM.', 400);
+    }
+    const segmentForUM = await this.segmentRepository.find({
+      where: {
+        SDT: SDT_UM,
+      },
+    });
+    if (segmentForUM.length == 0) {
+      return {
+        data: [],
+        dataTotal: 0,
+        contactStatus: {
+          lan_1: [],
+          lan_2: [],
+          lan_3: [],
+          lan_4: [],
+          lan_5: [],
+          lan_6: [],
+          lan_7: [],
+        },
+      };
+    }
+
+    const _KH = await Promise.all(
+      segmentForUM.map(
+        async (s) =>
+          await this.segmentDetailsRepository.findOne({
+            where: {
+              MaPQ: s.MaPQ,
+            },
+          }),
+      ),
+    );
+
+    const query = this.lienheRepository.createQueryBuilder('lienhe');
+
+    const phoneArray = _KH.map((k) => k.SDT);
+    // console.log(phoneArray);
+
+    if (phoneArray.length == 0) {
+      return {
+        data: [],
+        dataTotal: 0,
+        contactStatus: {
+          lan_1: [],
+          lan_2: [],
+          lan_3: [],
+          lan_4: [],
+          lan_5: [],
+          lan_6: [],
+          lan_7: [],
+        },
+      };
+    }
+
+    // contact
+    query.select(['lienhe.LAN as LAN', 'COUNT(*) as SOLAN']);
+    query.groupBy('lienhe.LAN');
+
+    const data = await query.getRawMany();
+
+    // status
+    const lan_1 = await this.getChartAdminIndex_2(phoneArray, '1');
+    const lan_2 = await this.getChartAdminIndex_2(phoneArray, '2');
+    const lan_3 = await this.getChartAdminIndex_2(phoneArray, '3');
+    const lan_4 = await this.getChartAdminIndex_2(phoneArray, '4');
+    const lan_5 = await this.getChartAdminIndex_2(phoneArray, '5');
+    const lan_6 = await this.getChartAdminIndex_2(phoneArray, '6');
+    const lan_7 = await this.getChartAdminIndex_2(phoneArray, '7');
+
+    return {
+      data,
+      dataTotal: phoneArray.length,
       contactStatus: {
         lan_1,
         lan_2,
