@@ -16,6 +16,7 @@ import { tinh } from './entites/tinh.entity';
 import { usermanager } from './entites/usermanager.entity';
 import { nhomnganh } from './entites/nhomnganh.entity';
 import { ChartModule } from './chart/chart.module';
+import { NoteModule } from './note/note.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { ChartModule } from './chart/chart.module';
     DataModule,
     ThematicModule,
     FileModule,
+    NoteModule,
   ],
   controllers: [AppController],
   providers: [
