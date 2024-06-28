@@ -29,6 +29,7 @@ import { DataSource, In, Repository } from 'typeorm';
 import * as moment from 'moment';
 import { trangthai } from 'src/entites/trangthai.entity';
 import { chuyende } from 'src/entites/chuyende.entity';
+import { lienhe } from 'src/entites/lienhe.entity';
 
 @Injectable()
 export class DataService {
@@ -83,6 +84,8 @@ export class DataService {
     private trangthaiRepository: Repository<trangthai>,
     @InjectRepository(nghenghiep)
     private nghenghiepRepository: Repository<nghenghiep>,
+    @InjectRepository(lienhe)
+    private lienheRepository: Repository<lienhe>,
 
     @InjectRepository(chuyende)
     private chuyendeRepository: Repository<chuyende>,
@@ -447,6 +450,7 @@ export class DataService {
           SODONG: body.SODONG,
           MANGANH: body.MANGANH,
           MATRUONG: body.MATRUONG,
+          jobDirCode: body.NHOMNGANH,
         });
 
         const customerNotInSegment = await this.getCustomerNotInSegment({
@@ -517,8 +521,18 @@ export class DataService {
     const data = await query.getMany();
     return data;
   }
+  async getOneSegmentDetail(id: string, lan: string) {
+    let sdtLan = [];
+    if (lan) {
+      const lienheDoc = await this.lienheRepository.find({
+        where: {
+          LAN: lan,
+        },
+      });
+      sdtLan = lienheDoc.map((l) => l.SDT_KH);
+      console.log(sdtLan);
+    }
 
-  async getOneSegmentDetail(id: string) {
     const query = this.segmentDetailsRepository.createQueryBuilder('ct');
     query
       // .select(['ct.SDT', 'ct.MaPQ', 'khachhang'])

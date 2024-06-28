@@ -308,11 +308,15 @@ export class DataController {
 
   @Get('/segment/:id')
   async getOneSegmentDetail(
-    @Param() param: { id: string },
+    @Param() param: { id: string; lan?: string },
+    @Query() query: { lan?: string },
     @Res() res: Response,
   ) {
     try {
-      const data = await this.dataService.getOneSegmentDetail(param.id);
+      const data = await this.dataService.getOneSegmentDetail(
+        param.id,
+        query.lan,
+      );
 
       return res.status(200).json({
         statusCode: 200,
