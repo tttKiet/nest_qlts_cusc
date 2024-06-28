@@ -358,8 +358,8 @@ export class DataService {
     }
 
     const data = await query.getMany();
-    console.log('data getCustomerNotInSegment: ', data);
-    return [];
+    // console.log('data getCustomerNotInSegment: ', data);
+    return data;
   }
 
   async createSegmentDetails({
