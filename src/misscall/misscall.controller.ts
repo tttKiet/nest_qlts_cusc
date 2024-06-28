@@ -9,22 +9,23 @@ import {
   Res,
   Query,
 } from '@nestjs/common';
-import { NoteService } from './note.service';
-import { CreateNoteDto } from './dto/create-note.dto';
-import { UpdateNoteDto } from './dto/update-note.dto';
 import { Request, Response, query } from 'express';
 
-@Controller('note')
-export class NoteController {
-  constructor(private readonly noteService: NoteService) {}
+import { MisscallService } from './misscall.service';
+import { CreateMisscallDto } from './dto/create-misscall.dto';
+import { UpdateMisscallDto } from './dto/update-misscall.dto';
+
+@Controller('misscall')
+export class MisscallController {
+  constructor(private readonly misscallService: MisscallService) {}
 
   @Post('create')
-  async create(@Body() body: CreateNoteDto, @Res() res: Response) {
+  async create(@Body() body: CreateMisscallDto, @Res() res: Response) {
     try {
-      const data = await this.noteService.create(body);
+      const data = await this.misscallService.create(body);
       return res.status(200).json({
         statusCode: 200,
-        message: 'Tạo ghi chú thành công.',
+        message: 'Tạo gọi nhỡ thành công.',
         data: data,
       });
     } catch (error) {
@@ -36,9 +37,12 @@ export class NoteController {
   }
 
   @Get('readAll')
-  async findAll(@Query() query: Partial<CreateNoteDto>, @Res() res: Response) {
+  async findAll(
+    @Query() query: Partial<CreateMisscallDto>,
+    @Res() res: Response,
+  ) {
     try {
-      const data = await this.noteService.findAll(query);
+      const data = await this.misscallService.findAll(query);
       return res.status(200).json({
         statusCode: 200,
         message: 'Đọc ghi chú thành công.',
@@ -53,9 +57,9 @@ export class NoteController {
   }
 
   @Patch('update')
-  async update(@Body() body: UpdateNoteDto, @Res() res: Response) {
+  async update(@Body() body: UpdateMisscallDto, @Res() res: Response) {
     try {
-      const data = await this.noteService.update(body);
+      const data = await this.misscallService.update(body);
       return res.status(200).json({
         statusCode: 200,
         message: 'Cập nhật ghi chú thành công.',
@@ -70,9 +74,9 @@ export class NoteController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') STT: string, @Res() res: Response) {
+  async remove(@Param('id') MAMISSCALL: number, @Res() res: Response) {
     try {
-      const data = await this.noteService.remove(+STT);
+      const data = await this.misscallService.remove(+MAMISSCALL);
       return res.status(200).json({
         statusCode: 200,
         message: 'Xóa ghi chú thành công.',
@@ -81,7 +85,7 @@ export class NoteController {
     } catch (error) {
       return res.status(500).json({
         statusCode: 500,
-        message: error?.message || 'Lỗi server.', 
+        message: error?.message || 'Lỗi server.',
       });
     }
   }
