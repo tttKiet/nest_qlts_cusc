@@ -2,6 +2,7 @@ import { Entity, Column, PrimaryColumn, OneToMany, OneToOne } from 'typeorm';
 import { phanquyen } from './phanquyen.entity';
 import { taikhoan } from './taikhoan.entity';
 import { chuyende } from './chuyende.entity';
+import { ghichu } from './ghichu.entity';
 // import { phanquyen } from './phanquyen.entity';
 
 @Entity()
@@ -9,7 +10,7 @@ export class usermanager {
   @PrimaryColumn({
     type: 'char',
     length: 11,
-    nullable: false,
+    nullable: false, 
     name: 'SDT',
   })
   @OneToOne(() => taikhoan, (taikhoan) => taikhoan.usermanager)
@@ -35,4 +36,7 @@ export class usermanager {
 
   @OneToMany(() => chuyende, (chuyende) => chuyende.usermanager)
   chuyende: chuyende[];
+
+  @OneToMany(() => ghichu, (ghichu) => ghichu.usermanager)
+  ghichu: ghichu[]; 
 }

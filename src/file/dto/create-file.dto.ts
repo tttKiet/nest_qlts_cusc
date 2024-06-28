@@ -10,8 +10,6 @@ export class CreateFileDto {
 }
 
 export class DownLoadFile {
-  @IsString()
   @IsNotEmpty()
-  @Expose()
-  TENHOSO: string;
+  MAHOSO: number;
 }

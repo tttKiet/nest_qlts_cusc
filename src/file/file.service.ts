@@ -1,5 +1,5 @@
 import { HttpException, Injectable } from '@nestjs/common';
-import { CreateFileDto } from './dto/create-file.dto';
+import { CreateFileDto, DownLoadFile } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import * as XLSX from 'xlsx';
 import * as fs from 'fs';
@@ -379,7 +379,7 @@ export class FileService {
         relativePath = fullPath.substring(storeIndex);
         console.log(relativePath);
       } else {
-        console.log("Không tìm thấy thư mục 'store' trong đường dẫn."); 
+        console.log("Không tìm thấy thư mục 'store' trong đường dẫn.");
       }
 
       const data = this.hosoRepository.create({
@@ -396,5 +396,16 @@ export class FileService {
       console.log(err);
       throw new HttpException(err?.code || 'Loi server', 400);
     }
+  }
+
+  async findHoSo(body) {
+    const { MAHOSO } = body;
+    const data = await this.hosoRepository.findOne({
+      where: {
+        MAHOSO: MAHOSO,
+      },
+    });
+
+    return data;
   }
 }

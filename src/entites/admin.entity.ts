@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryColumn, OneToOne } from 'typeorm';
+import { Entity, Column, PrimaryColumn, OneToOne, OneToMany } from 'typeorm';
 import { taikhoan } from './taikhoan.entity';
+import { ghichu } from './ghichu.entity';
 
 @Entity()
 export class admin {
@@ -35,4 +36,7 @@ export class admin {
 
   @Column({ nullable: false, type: 'tinyint', default: 1 })
   TRANGTHAIADMIN: number;
+
+  @OneToMany(() => ghichu, (ghichu) => ghichu.admin)
+  ghichu: ghichu[];
 }

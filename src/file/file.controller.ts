@@ -48,6 +48,8 @@ export class FileController {
       return res.status(200).json({
         fileName: file.originalname,
         data: data,
+        statusCode: 200,
+        message: 'Upload file thành công nhé',
       });
     } catch (error) {
       return res.status(500).json({
@@ -81,6 +83,8 @@ export class FileController {
       return res.status(200).json({
         fileName: file.originalname,
         data: data,
+        statusCode: 200,
+        message: 'Upload file thành công nhé',
       });
     } catch (error) {
       return res.status(500).json({
@@ -115,6 +119,7 @@ export class FileController {
       return res.status(200).json({
         fileName: file.originalname,
         data: data,
+        statusCode: 200,
       });
     } catch (error) {
       return res.status(500).json({
@@ -125,12 +130,22 @@ export class FileController {
   }
 
   @Post('downLoadFile')
-  async downLoadFile(@Body() body: { TENHOSO: string }, @Res() res: Response) {
+  async downLoadFile(
+    @Body() body: Partial<DownLoadFile>,
+    @Res() res: Response,
+  ) {
     try {
-      const { TENHOSO } = body;
-      const currentDir = __dirname;
-      const parentDir = path.resolve(currentDir, '..');
-      const filePath = parentDir + '\\' + TENHOSO;
+      // Tìm hồ sơ trong cơ sở dữ liệu
+      const hoSo: any = await this.fileService.findHoSo(body);
+
+      if (!hoSo) {
+        return res.status(HttpStatus.NOT_FOUND).json({
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'Hồ sơ không tồn tại.',
+        });
+      }
+
+      const filePath = path.join(__dirname, '..', hoSo?.HOSO);
 
       if (!fs.existsSync(filePath)) {
         return res.status(HttpStatus.NOT_FOUND).json({
@@ -139,22 +154,18 @@ export class FileController {
         });
       }
 
-      fs.readFile(filePath, (err, data) => {
-        if (err) {
-          console.error(err);
-          return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-            message: 'Lỗi khi đọc file.',
-          });
-        }
+      const data = fs.readFileSync(filePath);
 
-        // Xác định loại MIME dựa trên phần mở rộng của tệp
-        const mimeType = mime.lookup(TENHOSO) || 'application/octet-stream';
+      const mimeType = mime.lookup(hoSo?.HOSO) || 'application/octet-stream';
+      console.log('mimeType', mimeType);
 
-        res.setHeader('Content-Type', mimeType);
-        res.setHeader('Content-Disposition', `attachment; filename=${TENHOSO}`);
-        res.send(data);
-      });
+      res.setHeader('Content-Type', mimeType);
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename=${hoSo?.HOSO}`,
+      );
+
+      res.send(data);
     } catch (error) {
       console.error(error);
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
