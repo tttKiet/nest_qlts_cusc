@@ -4,6 +4,7 @@ import { UpdateMisscallDto } from './dto/update-misscall.dto';
 import { misscall } from 'src/entites/misscall.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { relative } from 'path';
 
 @Injectable()
 export class MisscallService {
@@ -52,7 +53,10 @@ export class MisscallService {
       condition.TRANGTHAI = TRANGTHAI;
     }
 
-    return await this.misscallRepository.find({ where: condition });
+    return await this.misscallRepository.find({
+      where: condition,
+      relations: ['khachhang'],
+    });
   }
 
   async update(body: UpdateMisscallDto) {
