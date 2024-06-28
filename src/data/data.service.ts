@@ -193,13 +193,6 @@ export class DataService {
           ])
           .groupBy('ng.MANGANH');
 
-        // let all count
-        // const allCount = await this.customerRepository.count({
-        //   where: {
-        //     MATRUONG: schoolCode,
-        //   },
-        // });
-
         const queryCustomer = this.customerRepository.createQueryBuilder('kh');
         queryCustomer
           .where(`kh.SDT NOT IN (${subQuery.getQuery()})`)
@@ -209,9 +202,38 @@ export class DataService {
 
         const data = await queryNganh.getRawMany();
         const allCount = await queryCustomer.getRawMany();
+
+        // get nganhkhac
+        const queryDir = this.joblikeRepository
+          .createQueryBuilder('ng')
+          .leftJoinAndSelect('ng.khachhang', 'khachhang')
+          .leftJoinAndSelect('ng.nhomnganh', 'nhomnganh')
+          .leftJoinAndSelect('ng.nganh', 'nganh')
+          .leftJoinAndSelect('khachhang.truong', 'truong');
+
+        queryDir
+          .where(`ng.SDT NOT IN (${subQuery.getQuery()})`)
+          .andWhere('truong.MATRUONG = :schoolCode', {
+            schoolCode,
+          })
+          .andWhere('ng.MANHOMNGANH IS NOT NULL')
+          .select([
+            'nganh.TENNGANH as TENNGANH',
+            'nhomnganh.MANHOMNGANH as MANHOMNGANH',
+            'nhomnganh.TENNHOMNGANH as TENNHOMNGANH',
+            'truong.MATRUONG as MATRUONG',
+            'ng.MANGANH as MANGANH',
+            'COUNT(ng.SDT) as count',
+          ])
+          .groupBy('ng.MANGANH')
+          .addGroupBy('ng.MANHOMNGANH');
+
+        const dataDir = await queryDir.getRawMany();
+
         return {
           data: data,
           allCount: allCount.length,
+          dataDir,
         };
       }
 
@@ -249,13 +271,69 @@ export class DataService {
     }
   }
 
+  async getTypeJob({ schoolCode }: FilterJobLikeDto) {
+    const subQuery = this.customerRepository
+      .createQueryBuilder('kh')
+      .subQuery()
+      .select('ctpq.SDT')
+      .from('chitietpq', 'ctpq');
+
+    const queryNganh = this.joblikeRepository
+      .createQueryBuilder('ng')
+      .leftJoinAndSelect('ng.khachhang', 'khachhang')
+      .leftJoinAndSelect('ng.nganh', 'nganh')
+      .leftJoinAndSelect('khachhang.truong', 'truong');
+
+    queryNganh.where(`ng.SDT NOT IN (${subQuery.getQuery()})`);
+
+    if (schoolCode) {
+      queryNganh.andWhere('truong.MATRUONG = :schoolCode', {
+        schoolCode,
+      });
+      queryNganh
+        .select([
+          'nganh.TENNGANH as TENNGANH',
+          'truong.MATRUONG as MATRUONG',
+          'ng.MANGANH as MANGANH',
+          'COUNT(ng.SDT) as count',
+        ])
+        .groupBy('ng.MANGANH');
+
+      const queryCustomer = this.customerRepository.createQueryBuilder('kh');
+      queryCustomer
+        .where(`kh.SDT NOT IN (${subQuery.getQuery()})`)
+        .andWhere('kh.MATRUONG = :schoolCode', {
+          schoolCode,
+        });
+
+      const data = await queryNganh.getRawMany();
+      const allCount = await queryCustomer.getRawMany();
+      return {
+        data: data,
+        allCount: allCount.length,
+      };
+    }
+
+    queryNganh
+      .select([
+        'nganh.TENNGANH as TENNGANH',
+        'ng.MANGANH as MANGANH',
+        'COUNT(ng.SDT) as count',
+      ])
+      .groupBy('ng.MANGANH');
+
+    return queryNganh.getRawMany();
+  }
+
   async getCustomerNotInSegment({
     schoolCode,
     jobCode,
+    jobDirCode,
     limit,
   }: {
     schoolCode?: string;
     jobCode?: string;
+    jobDirCode?: string;
     limit?: number;
   }) {
     const subQuery = this.customerRepository
@@ -273,13 +351,15 @@ export class DataService {
 
     if (jobCode)
       query.andWhere('nganhyeuthich.MANGANH = :jobCode', { jobCode });
+    if (jobDirCode)
+      query.andWhere('nganhyeuthich.MANHOMNGANH = :jobDirCode', { jobDirCode });
     if (limit) {
       query.skip(0).take(limit);
     }
 
     const data = await query.getMany();
     console.log('data getCustomerNotInSegment: ', data);
-    return data;
+    return [];
   }
 
   async createSegmentDetails({
@@ -287,16 +367,19 @@ export class DataService {
     MANGANH,
     MATRUONG,
     SODONG,
+    jobDirCode,
   }: {
     MaPQ: string;
     MANGANH: string;
     MATRUONG: string;
     SODONG: number;
+    jobDirCode?: string;
   }) {
     const customerNotInSegment = await this.getCustomerNotInSegment({
       jobCode: MANGANH,
       schoolCode: MATRUONG,
       limit: SODONG,
+      jobDirCode,
     });
 
     // create data
@@ -323,6 +406,7 @@ export class DataService {
       const customerNotInSegment = await this.getCustomerNotInSegment({
         jobCode: body.MANGANH,
         schoolCode: body.MATRUONG,
+        jobDirCode: body.NHOMNGANH,
       });
 
       // check so dong
@@ -368,6 +452,7 @@ export class DataService {
         const customerNotInSegment = await this.getCustomerNotInSegment({
           jobCode: body.MANGANH,
           schoolCode: body.MATRUONG,
+          jobDirCode: body.NHOMNGANH,
         });
 
         // check so dong
@@ -403,8 +488,10 @@ export class DataService {
   async getSegment({
     schoolCode,
     type,
+    SDT_UM,
   }: {
     schoolCode?: string;
+    SDT_UM?: string;
     type?: 'doing' | 'done' | undefined;
   }) {
     const query = this.segmentRepository.createQueryBuilder('pd');
@@ -414,6 +501,10 @@ export class DataService {
 
     if (schoolCode) {
       query.where('truong.MATRUONG = :schoolCode', { schoolCode });
+    }
+
+    if (SDT_UM) {
+      query.where('usermanager.SDT = :SDT_UM', { SDT_UM });
     }
 
     if (type == 'doing') {
@@ -499,7 +590,7 @@ export class DataService {
 
   async opentContactSegment(data: OpentContactSegmentDto) {
     // check
-    if (data.TRANGTHAILIENHE > 3) {
+    if (data.TRANGTHAILIENHE > 7) {
       throw new HttpException('Trạng thái phải <= 7', 400);
     }
     // Edit contact
