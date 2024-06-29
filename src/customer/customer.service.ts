@@ -27,6 +27,7 @@ import { chitietchuyende } from 'src/entites/chitietchuyende.entity';
 import * as moment from 'moment';
 import { taikhoan } from 'src/entites/taikhoan.entity';
 import { khachhangcu } from 'src/entites/khachhangcu.entit';
+import { phanquyen } from 'src/entites/phanquyen.entity';
 
 @Injectable()
 export class CustomerService {
@@ -51,6 +52,8 @@ export class CustomerService {
     private taikhoanRepository: Repository<taikhoan>,
     @InjectRepository(khachhangcu)
     private khachhangcuRepository: Repository<khachhangcu>,
+    @InjectRepository(phanquyen)
+    private phanquyenRepository: Repository<phanquyen>,
   ) {}
 
   async getContactNumber(SDT: string, number: number) {
@@ -110,7 +113,19 @@ export class CustomerService {
         },
       };
 
-      return { data: combinedData };
+      const segment = await this.phanquyenRepository.findOne({
+        where: {
+          chitietpq: {
+            SDT,
+          },
+        },
+        relations: {
+          chitietpq: true,
+        },
+      });
+      console.log('segment', segment);
+
+      return { data: { ...combinedData, segment } };
     } catch (error) {
       throw new Error(`Lỗi khi truy vấn khách hàng: ${error.message}`);
     }

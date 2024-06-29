@@ -5,7 +5,7 @@ import {
   HttpException,
   Param,
   Post,
-  Req, 
+  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -24,7 +24,7 @@ import {
   JobLikeDtoArrDto,
   PositionArrDto,
 } from 'src/dto/get-customer.dto';
-import { taikhoan } from 'src/entites/taikhoan.entity'; 
+import { taikhoan } from 'src/entites/taikhoan.entity';
 
 @Controller('customer')
 export class CustomerController {
