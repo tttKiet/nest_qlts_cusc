@@ -212,4 +212,7 @@ export class ChartAdmin {
 
   @IsOptional()
   SDT_UM: string;
+
+  @IsOptional()
+  MACHUYENDE;
 }
