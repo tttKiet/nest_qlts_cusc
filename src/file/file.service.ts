@@ -398,7 +398,7 @@ export class FileService {
     }
   }
 
-  async findHoSo(body) {
+  async findHoSo(body: any) {
     const { MAHOSO } = body;
     const data = await this.hosoRepository.findOne({
       where: {

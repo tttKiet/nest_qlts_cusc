@@ -12,7 +12,11 @@ export class CreateSegmentDto {
   @IsNotEmpty({ message: 'Bạn chưa gửi MATRUONG.' })
   MATRUONG: string;
 
+  @IsOptional()
   MANGANH: string;
+
+  @IsOptional()
+  NHOMNGANH: string;
 
   @IsNotEmpty({ message: 'Bạn chưa gửi SODONG.' })
   SODONG: number;
@@ -208,4 +212,7 @@ export class ChartAdmin {
 
   @IsOptional()
   SDT_UM: string;
+
+  @IsOptional()
+  MACHUYENDE;
 }

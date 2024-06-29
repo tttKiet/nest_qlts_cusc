@@ -128,6 +128,13 @@ export class ChartService {
           });
           return data;
         }
+
+        if (query.index == 4) {
+          const data = await this.getChartDataIndex_4({
+            MACHUYENDE: query?.MACHUYENDE,
+          });
+          return data;
+        }
       }
 
       default: {
@@ -447,5 +454,21 @@ export class ChartService {
         lan_7,
       },
     };
+  }
+
+  // Lấy thông kê chuyên đề
+  async getChartDataIndex_4({ MACHUYENDE }: { MACHUYENDE?: string }) {
+    const query = this.chuyendeRepository.createQueryBuilder('cd');
+    query
+      .leftJoinAndSelect('cd.chitietchuyende', 'ct')
+      .select(['ct.TRANGTHAI as TRANGTHAI', 'count(cd.MACHUYENDE) as count']);
+
+    if (MACHUYENDE) {
+      query.where('cd.MACHUYENDE = :MACHUYENDE', { MACHUYENDE });
+    }
+    query.groupBy('ct.TRANGTHAI');
+
+    const data = await query.getRawMany();
+    return { data };
   }
 }
