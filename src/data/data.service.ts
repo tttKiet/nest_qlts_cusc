@@ -521,6 +521,7 @@ export class DataService {
     const data = await query.getMany();
     return data;
   }
+
   async getOneSegmentDetail(id: string, lan: string) {
     let sdtLan = [];
     if (lan) {
@@ -530,7 +531,6 @@ export class DataService {
         },
       });
       sdtLan = lienheDoc.map((l) => l.SDT_KH);
-      console.log(sdtLan);
     }
 
     const query = this.segmentDetailsRepository.createQueryBuilder('ct');
@@ -561,6 +561,10 @@ export class DataService {
         'dulieukhachhang.FACEBOOK as FACEBOOK',
       ])
       .where('ct.MaPQ = :id', { id });
+
+    if (sdtLan.length > 0) {
+      query.andWhere('ct.SDT NOT IN (:...sdtLan)', { sdtLan });
+    }
     const data = await query.getRawMany();
     return data;
   }

@@ -5,20 +5,21 @@ import {
   HttpStatus,
   ParseFilePipeBuilder,
   Post,
-  Req,
+  Query,
   Res,
+  StreamableFile,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 
 import { FileInterceptor } from '@nestjs/platform-express';
+import { CreateFileDto } from './dto/create-file.dto';
 import { FileService } from './file.service';
-import { CreateFileDto, DownLoadFile } from './dto/create-file.dto';
 
 import * as fs from 'fs';
-import * as path from 'path';
 import * as mime from 'mime-types';
+import * as path from 'path';
 
 @Controller('file')
 export class FileController {
@@ -129,14 +130,14 @@ export class FileController {
     }
   }
 
-  @Post('downLoadFile')
+  @Get('downLoadFile')
   async downLoadFile(
-    @Body() body: Partial<DownLoadFile>,
-    @Res() res: Response,
+    @Query() query,
+    @Res({ passthrough: true }) res: Response,
   ) {
     try {
       // Tìm hồ sơ trong cơ sở dữ liệu
-      const hoSo: any = await this.fileService.findHoSo(body);
+      const hoSo: any = await this.fileService.findHoSo(query);
 
       if (!hoSo) {
         return res.status(HttpStatus.NOT_FOUND).json({
@@ -145,7 +146,10 @@ export class FileController {
         });
       }
 
+      console.log('hoSo', hoSo);
+
       const filePath = path.join(__dirname, '..', hoSo?.HOSO);
+      console.log('filePath', filePath);
 
       if (!fs.existsSync(filePath)) {
         return res.status(HttpStatus.NOT_FOUND).json({
@@ -154,10 +158,8 @@ export class FileController {
         });
       }
 
-      const data = fs.readFileSync(filePath);
-
       const mimeType = mime.lookup(hoSo?.HOSO) || 'application/octet-stream';
-      console.log('mimeType', mimeType);
+      const file = fs.createReadStream(filePath);
 
       res.setHeader('Content-Type', mimeType);
       res.setHeader(
@@ -165,7 +167,7 @@ export class FileController {
         `attachment; filename=${hoSo?.HOSO}`,
       );
 
-      res.send(data);
+      return new StreamableFile(file);
     } catch (error) {
       console.error(error);
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
