@@ -19,12 +19,14 @@ import { lienhe } from './lienhe.entity';
 import { chuyende } from './chuyende.entity';
 import { chucvu } from './chucvu.entity';
 import { taikhoan } from './taikhoan.entity';
+import { misscall } from './misscall.entity';
 
 @Entity()
 export class khachhang {
   @PrimaryColumn({
     type: 'char',
     length: 11,
+    name: 'SDT',
     nullable: false,
   })
   SDT: string;
@@ -103,4 +105,7 @@ export class khachhang {
   // chucvu
   @OneToMany(() => chucvu, (chucvu) => chucvu.khachhang)
   chucvu: chucvu[];
+
+  @OneToMany(() => misscall, (misscall) => misscall.khachhang)
+  misscall: misscall[];
 }

@@ -111,7 +111,7 @@ export class FileController {
         }),
     )
     file: Express.Multer.File,
-    @Body() body: CreateFileDto,
+    @Body() body: any,
     @Res() res: Response,
   ) {
     try {

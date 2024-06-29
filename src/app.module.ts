@@ -17,6 +17,7 @@ import { usermanager } from './entites/usermanager.entity';
 import { nhomnganh } from './entites/nhomnganh.entity';
 import { ChartModule } from './chart/chart.module';
 import { NoteModule } from './note/note.module';
+import { MisscallModule } from './misscall/misscall.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { NoteModule } from './note/note.module';
     ThematicModule,
     FileModule,
     NoteModule,
+    MisscallModule,
   ],
   controllers: [AppController],
   providers: [
