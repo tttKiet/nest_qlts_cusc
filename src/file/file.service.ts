@@ -88,58 +88,61 @@ export class FileService {
       const sheet = workbook.Sheets[sheetName];
       const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-      const students = jsonData.slice(2).map((row) => {
-        if (!row[2]) {
-          return;
-        }
-
-        const nganhYeuThich = [];
-        const nganhColumns = [
-          'APTECH',
-          'APTECH + CAO ĐẲNG',
-          'APTECH + ĐH CẦN THƠ',
-          'ACN Pro',
-          'ARENA',
-          'ARENA + CAO ĐẲNG',
-          'ARENA + LIÊN THÔNG',
-          'NGÀNH KHÁC',
-        ];
-
-        nganhColumns.forEach((col, index) => {
-          if (row[15 + index] && row[15 + index] !== '') {
-            nganhYeuThich.push(
-              col === 'NGÀNH KHÁC'
-                ? {
-                    title: col,
-                    chitiet: row[15 + index],
-                    tenloainganh: row[23],
-                  }
-                : col,
-            );
+      const students = jsonData
+        .slice(2)
+        .map((row) => {
+          if (!row[2]) {
+            return null;
           }
-        });
 
-        return {
-          hoVaTen: row[1],
-          CCCD: row[2],
-          tinhThanh: row[3],
-          truong: row[4],
-          dienThoai: row[5],
-          dienThoaiBa: row[6],
-          dienThoaiMe: row[7],
-          zalo: row[8],
-          facebook: row[9],
-          email: row[10],
-          ngheNghiep: row[11],
-          hinhThucThuNhap: row[12],
-          lop: row[13],
-          chucVu: row[14],
-          nganhYeuThich: nganhYeuThich,
-          kenhNhanThongBao: row[24],
-          khoaHocQuanTam: row[25],
-          ketQuaDaiHocCaoDang: row[26],
-        };
-      });
+          const nganhYeuThich = [];
+          const nganhColumns = [
+            'APTECH',
+            'APTECH + CAO ĐẲNG',
+            'APTECH + ĐH CẦN THƠ',
+            'ACN Pro',
+            'ARENA',
+            'ARENA + CAO ĐẲNG',
+            'ARENA + LIÊN THÔNG',
+            'NGÀNH KHÁC',
+          ];
+
+          nganhColumns.forEach((col, index) => {
+            if (row[15 + index] && row[15 + index] !== '') {
+              nganhYeuThich.push(
+                col === 'NGÀNH KHÁC'
+                  ? {
+                      title: col,
+                      chitiet: row[15 + index],
+                      tenloainganh: row[23],
+                    }
+                  : col,
+              );
+            }
+          });
+
+          return {
+            hoVaTen: row[1],
+            CCCD: row[2],
+            tinhThanh: row[3],
+            truong: row[4],
+            dienThoai: row[5],
+            dienThoaiBa: row[6],
+            dienThoaiMe: row[7],
+            zalo: row[8],
+            facebook: row[9],
+            email: row[10],
+            ngheNghiep: row[11],
+            hinhThucThuNhap: row[12],
+            lop: row[13],
+            chucVu: row[14],
+            nganhYeuThich: nganhYeuThich,
+            kenhNhanThongBao: row[24],
+            khoaHocQuanTam: row[25],
+            ketQuaDaiHocCaoDang: row[26],
+          };
+        })
+        .filter((student) => student !== null);
 
       const khachhang = [];
       const dulieukhachhang = [];
@@ -198,7 +201,9 @@ export class FileService {
           CCCD: item?.CCCD,
           TRANGTHAIKHACHHANG: 1,
         });
+
         // dư liệu khách hàng
+
         dulieukhachhang.push({
           SDT: item?.dienThoai,
           SDTBA: item?.dienThoaiBa || null,
@@ -206,7 +211,9 @@ export class FileService {
           SDTZALO: item?.zalo || null,
           FACEBOOK: item?.facebook || null,
         });
+
         // chức vụ khách hàng
+
         const dataLop = this.filterObject(getTableLop, 'LOP', `${item?.lop}`);
 
         chucvukhachhang.push({
@@ -216,6 +223,7 @@ export class FileService {
         });
 
         // nghành yêu thích
+
         const nganhyth = item?.nganhYeuThich || [];
 
         nganhyth.forEach((nganhItem) => {
@@ -304,23 +312,35 @@ export class FileService {
         });
       }
 
-      await this.customerService.createCustomerArr({ data: khachhang });
-      await this.customerService.createCustomeDatarArr({
+      const kh = await this.customerService.createCustomerArr({
+        data: khachhang,
+      });
+
+      const dtkh = await this.customerService.createCustomeDatarArr({
         data: dulieukhachhang,
       });
-      await this.customerService.createJobLikeArr({
+
+      const job = await this.customerService.createJobLikeArr({
         data: nganhyeuthich,
       });
-      await this.customerService.registrationFormArr({
-        data: phieudkxettuyen,
-      });
-      await this.customerService.createAccountArr({
+
+      const account = await this.customerService.createAccountArr({
         data: taikhoan,
       });
 
-      return true;
+      const formreg = await this.customerService.registrationFormArr({
+        data: phieudkxettuyen,
+      });
+
+      return {
+        kh: kh?.raw,
+        dtkh: dtkh?.raw,
+        job: job?.raw,
+        account: account?.raw,
+        formreg: formreg?.length,
+      };
     } catch (err) {
-      console.log(err);
+      console.log('>>>> err', err);
       throw new HttpException(err?.code || 'Loi server', 400);
     }
   }
@@ -407,5 +427,18 @@ export class FileService {
     });
 
     return data;
+  }
+
+  async remove(MAHOSO: any) {
+    const hoso = await this.hosoRepository.findOne({
+      where: {
+        MAHOSO: MAHOSO,
+      },
+    });
+    if (!hoso) {
+      throw new Error(`Không tìm thấy hồ sơ có id ${MAHOSO} để xóa`);
+    }
+
+    return await this.hosoRepository.remove(hoso);
   }
 }

@@ -164,7 +164,6 @@ export class CustomerService {
     const dataResult = await this.dulieukhachhangRepository.upsert(data.data, [
       'SDT',
     ]);
-    console.log('dataResult: ', dataResult);
 
     return dataResult;
   }
@@ -182,7 +181,6 @@ export class CustomerService {
       'SDT',
       'STT',
     ]);
-    console.log('dataResult: ', dataResult);
   }
 
   async createJobLikeArr(data: JobLikeDtoArrDto) {
@@ -195,52 +193,53 @@ export class CustomerService {
   }
 
   async registrationFormArr(data: RegistrationFormArrDto) {
-    const dataResult = await Promise.all(
-      data.data.map((d) => this.createRegistrationForm(d)),
-    );
+    const dataResult = [];
+    for (const d of data.data) {
+      const result = await this.createRegistrationForm(d);
+      dataResult.push(result);
+    }
 
     return dataResult;
   }
 
   async createRegistrationForm(data: RegistrationFormDto) {
-    // filter
-    const filter = await this.phieudkxettuyenRepository.findOne({
-      where: {
-        SDT: data.SDT,
-      },
-    });
-
-    const dataUp: any = data;
-    // create
-    if (!filter) {
-      const doc = this.phieudkxettuyenRepository.create(dataUp);
-      const result = await this.phieudkxettuyenRepository.save(doc);
-      return result;
-    } else {
-      // update
-
-      const result = await this.phieudkxettuyenRepository.update(
-        {
+    try {
+      // Tìm kiếm bản ghi dựa trên SDT
+      const existingRecord = await this.phieudkxettuyenRepository.findOne({
+        where: {
           SDT: data.SDT,
         },
-        {
-          MALOAIKHOAHOC: data.MALOAIKHOAHOC,
-          MAKENH: data.MAKENH,
-          MAKETQUA: data.MAKETQUA,
-          SDTZALO: data.SDTZALO,
-          NGANHDK: data.NGANHDK,
-        },
+      });
+
+      if (!!existingRecord) {
+        // Nếu đã tồn tại bản ghi, cập nhật thông tin
+        console.log(
+          `Bản ghi với SDT ${data.SDT} đã tồn tại, cập nhật thông tin...`,
+        );
+        const result = await this.phieudkxettuyenRepository.update(
+          { SDT: data.SDT },
+          {
+            MALOAIKHOAHOC: data.MALOAIKHOAHOC,
+            MAKENH: data.MAKENH,
+            MAKETQUA: data.MAKETQUA,
+            SDTZALO: data.SDTZALO,
+            NGANHDK: data.NGANHDK,
+          },
+        );
+        return result;
+      } else {
+        // Nếu không tìm thấy bản ghi, tạo mới
+        const doc = this.phieudkxettuyenRepository.create(data);
+        const result = await this.phieudkxettuyenRepository.save(doc);
+        return result;
+      }
+    } catch (error) {
+      console.error(
+        'Lỗi khi thực hiện thao tác tạo mới/cập nhật bản ghi:',
+        error.message,
       );
-      return result;
+      throw error;
     }
-  }
-
-  async createAccountArr(data: any) {
-    const dataResult = await this.taikhoanRepository.upsert(data.data, [
-      'SDT_KH',
-    ]);
-
-    return dataResult;
   }
 
   async createCustomerOldArr(data: any) {
@@ -366,5 +365,13 @@ export class CustomerService {
       );
       return result;
     }
+  }
+
+  async createAccountArr(data: any) {
+    const dataResult = await this.taikhoanRepository.upsert(data.data, [
+      'SDT_KH',
+    ]);
+
+    return dataResult;
   }
 }

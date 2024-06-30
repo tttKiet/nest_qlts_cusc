@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
+  Param,
   ParseFilePipeBuilder,
   Post,
   Query,
@@ -20,6 +22,7 @@ import { FileService } from './file.service';
 import * as fs from 'fs';
 import * as mime from 'mime-types';
 import * as path from 'path';
+import { log } from 'console';
 
 @Controller('file')
 export class FileController {
@@ -44,7 +47,7 @@ export class FileController {
     @Res() res: Response,
   ) {
     try {
-      const data = await this.fileService.readExcelFile(file.path);
+      const data = await this.fileService.readExcelFile(file.path); 
 
       return res.status(200).json({
         fileName: file.originalname,
@@ -167,12 +170,31 @@ export class FileController {
         `attachment; filename=${hoSo?.HOSO}`,
       );
 
+      file.pipe(res);
+
       return new StreamableFile(file);
     } catch (error) {
       console.error(error);
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: 'Lỗi server.',
+      });
+    }
+  }
+
+  @Delete(':id')
+  async remove(@Param('id') MAHOSO: number, @Res() res: Response) {
+    try {
+      const data = await this.fileService.remove(+MAHOSO);
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Xóa hồ sơ thành công.',
+        data: data,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        statusCode: 500,
+        message: error?.message || 'Lỗi server.',
       });
     }
   }
