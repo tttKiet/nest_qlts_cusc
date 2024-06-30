@@ -213,9 +213,7 @@ export class CustomerService {
 
       if (!!existingRecord) {
         // Nếu đã tồn tại bản ghi, cập nhật thông tin
-        console.log(
-          `Bản ghi với SDT ${data.SDT} đã tồn tại, cập nhật thông tin...`,
-        );
+
         const result = await this.phieudkxettuyenRepository.update(
           { SDT: data.SDT },
           {

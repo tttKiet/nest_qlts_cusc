@@ -315,6 +315,15 @@ export class FileService {
       const kh = await this.customerService.createCustomerArr({
         data: khachhang,
       });
+      // Kiểm tra số điện thoại (SDT) trùng nhau
+      const sdtCount = {};
+      khachhang.forEach((item) => {
+        sdtCount[item.SDT] = (sdtCount[item.SDT] || 0) + 1;
+      });
+
+      const dupKH_Excel = Object.keys(sdtCount).filter(
+        (sdt) => sdtCount[sdt] > 1,
+      );
 
       const dtkh = await this.customerService.createCustomeDatarArr({
         data: dulieukhachhang,
@@ -333,7 +342,10 @@ export class FileService {
       });
 
       return {
-        kh: kh?.raw,
+        kh: {
+          raw: kh?.raw,
+          excel: dupKH_Excel,
+        },
         dtkh: dtkh?.raw,
         job: job?.raw,
         account: account?.raw,
