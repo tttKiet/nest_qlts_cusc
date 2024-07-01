@@ -63,7 +63,6 @@ import { trangthai } from 'src/entites/trangthai.entity';
       phanquyen,
       chitietpq,
       dulieukhachhang,
-      khachhang,
       chucvu,
       lop,
       nhatkythaydoi,

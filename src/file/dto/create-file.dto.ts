@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateFileDto {
   @IsString()
@@ -12,4 +12,19 @@ export class CreateFileDto {
 export class DownLoadFile {
   @IsNotEmpty()
   MAHOSO: number;
+}
+
+export class readFileDto {
+  @IsOptional()
+  MAHOSO: number;
+  @IsOptional()
+  MAPHIEUDK: string;
+  @IsOptional()
+  HOSO: string;
+  @IsOptional()
+  SDT: string;
+  @IsOptional()
+  page: number;
+  @IsOptional()
+  pageSize: number;
 }

@@ -16,7 +16,7 @@ import {
 import { Response } from 'express';
 
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CreateFileDto } from './dto/create-file.dto';
+import { CreateFileDto, readFileDto } from './dto/create-file.dto';
 import { FileService } from './file.service';
 
 import * as fs from 'fs';
@@ -202,26 +202,20 @@ export class FileController {
     }
   }
 
-  @Get('download')
-  async download(@Res() res: Response) {
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('My Sheet');
-
-    worksheet.columns = [
-      { header: 'Id', key: 'id', width: 10 },
-      { header: 'Name', key: 'name', width: 32 },
-      { header: 'Date of Birth', key: 'dob', width: 15 },
-    ];
-
-    worksheet.addRow({ id: 1, name: 'John Doe', dob: new Date(1970, 1, 1) });
-    worksheet.addRow({ id: 2, name: 'Jane Doe', dob: new Date(1965, 1, 7) });
-
-    res.setHeader('Content-Disposition', `attachment; filename=example.xlsx`);
-    res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    );
-
-    return await workbook.xlsx.write(res);
+  @Get('readAll')
+  async findAll(@Query() query: Partial<readFileDto>, @Res() res: Response) {
+    try {
+      const data = await this.fileService.readAll(query);
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Đọc hồ sơ thành công.',
+        data: data,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        statusCode: 500,
+        message: error?.message || 'Lỗi server.',
+      });
+    }
   }
 }

@@ -1,5 +1,9 @@
 import { HttpException, Injectable, Res } from '@nestjs/common';
-import { CreateFileDto, DownLoadFile } from './dto/create-file.dto';
+import {
+  CreateFileDto,
+  DownLoadFile,
+  readFileDto,
+} from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import * as XLSX from 'xlsx';
 const Excel = require('exceljs');
@@ -15,7 +19,7 @@ import {
 } from 'src/dto/get-customer.dto';
 import { lop } from 'src/entites/lop';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { DataService } from 'src/data/data.service';
 import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
 import { phieudkxettuyen } from 'src/entites/phieudkxettuyen.entity';
@@ -24,7 +28,8 @@ import { CleanPlugin } from 'webpack';
 import { AccountService } from 'src/auth/account.service';
 import { hoso } from 'src/entites/hoso.entity';
 import { updateCustomerDTO } from 'src/customer/dto/update-customer.dto';
-import path from 'path';
+import path, { relative } from 'path';
+import { khachhang } from 'src/entites/khachhang.entity';
 
 @Injectable()
 export class FileService {
@@ -37,6 +42,8 @@ export class FileService {
     private phieudkxettuyenRepository: Repository<phieudkxettuyen>,
     @InjectRepository(hoso)
     private hosoRepository: Repository<hoso>,
+    @InjectRepository(khachhang)
+    private khachhangRepository: Repository<khachhang>,
   ) {}
 
   removeAccentsAndLowerCase(str: string) {
@@ -532,5 +539,46 @@ export class FileService {
       console.error('Error generating Excel:', error);
       res.status(500).send('Internal Server Error');
     }
+  }
+
+  async readAll(query: Partial<readFileDto>) {
+    const { SDT, MAHOSO, MAPHIEUDK, HOSO, page, pageSize } = query;
+    const condition: Partial<readFileDto> = {};
+
+    const queryBuilder = this.khachhangRepository
+      .createQueryBuilder('khachhang')
+      .leftJoinAndSelect('khachhang.phieudkxettuyen', 'phieudkxettuyen')
+      .leftJoinAndSelect('phieudkxettuyen.hoso', 'hoso')
+      .where('hoso IS NOT NULL');
+
+    if (SDT) {
+      queryBuilder.andWhere('khachhang.SDT = :SDT', { SDT });
+    }
+    if (MAHOSO) {
+      queryBuilder.andWhere('hoso.MAHOSO = :MAHOSO', {
+        MAHOSO,
+      });
+    }
+    if (MAPHIEUDK) {
+      queryBuilder.andWhere('phieudkxettuyen.MAPHIEUDK = :MAPHIEUDK', {
+        MAPHIEUDK,
+      });
+    }
+    if (HOSO) {
+      queryBuilder.andWhere('hoso.HOSO = :HOSO', { HOSO });
+    }
+
+    // Count total rows
+    const totalRows = await queryBuilder.getCount();
+
+    // Pagination
+    if (page !== undefined && pageSize !== undefined) {
+      queryBuilder.skip((page - 1) * pageSize).take(pageSize);
+    }
+
+    // Get paginated results
+    const results = await queryBuilder.getMany();
+
+    return { totalRows, results };
   }
 }
