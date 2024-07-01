@@ -23,6 +23,7 @@ import * as fs from 'fs';
 import * as mime from 'mime-types';
 import * as path from 'path';
 import { log } from 'console';
+import * as ExcelJS from 'exceljs';
 
 @Controller('file')
 export class FileController {
@@ -47,7 +48,7 @@ export class FileController {
     @Res() res: Response,
   ) {
     try {
-      const data = await this.fileService.readExcelFile(file.path); 
+      const data = await this.fileService.readExcelFile(file.path);
 
       return res.status(200).json({
         fileName: file.originalname,
@@ -91,6 +92,8 @@ export class FileController {
         message: 'Upload file thành công nhé',
       });
     } catch (error) {
+      console.log('error', error);
+
       return res.status(500).json({
         statusCode: 500,
         message: error?.message || 'Lỗi server.',
@@ -197,5 +200,28 @@ export class FileController {
         message: error?.message || 'Lỗi server.',
       });
     }
+  }
+
+  @Get('download')
+  async download(@Res() res: Response) {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('My Sheet');
+
+    worksheet.columns = [
+      { header: 'Id', key: 'id', width: 10 },
+      { header: 'Name', key: 'name', width: 32 },
+      { header: 'Date of Birth', key: 'dob', width: 15 },
+    ];
+
+    worksheet.addRow({ id: 1, name: 'John Doe', dob: new Date(1970, 1, 1) });
+    worksheet.addRow({ id: 2, name: 'Jane Doe', dob: new Date(1965, 1, 7) });
+
+    res.setHeader('Content-Disposition', `attachment; filename=example.xlsx`);
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+
+    return await workbook.xlsx.write(res);
   }
 }

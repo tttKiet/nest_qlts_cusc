@@ -1,9 +1,13 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Res } from '@nestjs/common';
 import { CreateFileDto, DownLoadFile } from './dto/create-file.dto';
 import { UpdateFileDto } from './dto/update-file.dto';
 import * as XLSX from 'xlsx';
+const Excel = require('exceljs');
 import * as fs from 'fs';
+import { Workbook, Worksheet } from 'exceljs';
+import express, { Request, Response } from 'express';
 import { log } from 'console';
+const tmp = require('tmp');
 import {
   CreateCustomerArrDto,
   CustomerDto,
@@ -17,9 +21,10 @@ import { nganhyeuthich } from 'src/entites/nganhyeuthich.entity';
 import { phieudkxettuyen } from 'src/entites/phieudkxettuyen.entity';
 import { CustomerService } from 'src/customer/customer.service';
 import { CleanPlugin } from 'webpack';
-
 import { AccountService } from 'src/auth/account.service';
 import { hoso } from 'src/entites/hoso.entity';
+import { updateCustomerDTO } from 'src/customer/dto/update-customer.dto';
+import path from 'path';
 
 @Injectable()
 export class FileService {
@@ -315,15 +320,6 @@ export class FileService {
       const kh = await this.customerService.createCustomerArr({
         data: khachhang,
       });
-      // Kiểm tra số điện thoại (SDT) trùng nhau
-      const sdtCount = {};
-      khachhang.forEach((item) => {
-        sdtCount[item.SDT] = (sdtCount[item.SDT] || 0) + 1;
-      });
-
-      const dupKH_Excel = Object.keys(sdtCount).filter(
-        (sdt) => sdtCount[sdt] > 1,
-      );
 
       const dtkh = await this.customerService.createCustomeDatarArr({
         data: dulieukhachhang,
@@ -340,6 +336,19 @@ export class FileService {
       const formreg = await this.customerService.registrationFormArr({
         data: phieudkxettuyen,
       });
+
+      // Kiểm tra số điện thoại (SDT) trùng nhau
+      const sdtCount = {};
+      khachhang.forEach((item) => {
+        sdtCount[item.SDT] = (sdtCount[item.SDT] || 0) + 1;
+      });
+
+      const dupKH_Excel = Object.keys(sdtCount)
+        .filter((sdt) => sdtCount[sdt] > 1)
+        .map((sdt) => ({
+          SDT: sdt,
+          count: sdtCount[sdt],
+        }));
 
       return {
         kh: {
@@ -385,13 +394,48 @@ export class FileService {
           SDT: item?.dienThoai,
           HOTEN: item?.hoVaTen,
         });
-
-        await this.customerService.createCustomerOldArr({
-          data: khachhangcu,
-        });
       }
 
-      return true;
+      const resultUploadExcel = await this.customerService.createCustomerOldArr(
+        {
+          data: khachhangcu,
+        },
+      );
+
+      // Kiểm tra trong table khách hàng mới nếu có thì disable nó và trả vế số lượng khách đã được update trong bảng khách hàng mới
+      const updateCusPromise = await Promise.all(
+        khachhangcu.map(async (item) => {
+          const ex = await this.customerService.findSDT(item?.SDT);
+          if (ex) {
+            return await this.customerService.update({
+              SDT: item?.SDT,
+              TRANGTHAIKHACHHANG: 0,
+            } as updateCustomerDTO);
+          }
+        }),
+      );
+      const updateCusPromiseFilter = updateCusPromise.filter(
+        (item) => item != null,
+      )?.length;
+
+      // Kiểm tra file excel SDT trùng nhau trả về số SDT trùng nhé
+      const sdtCount = {};
+      khachhangcu.forEach((item) => {
+        sdtCount[item.SDT] = (sdtCount[item.SDT] || 0) + 1;
+      });
+
+      const dupKH_Excel = Object.keys(sdtCount)
+        .filter((sdt) => sdtCount[sdt] > 1)
+        .map((sdt) => ({
+          SDT: sdt,
+          count: sdtCount[sdt],
+        }));
+
+      return {
+        tableCusOld: resultUploadExcel?.raw,
+        updateTableCusNew: updateCusPromiseFilter,
+        excel: dupKH_Excel,
+      };
     } catch (err) {
       console.log(err);
       throw new HttpException(err?.code || 'Loi server', 400);
@@ -452,5 +496,41 @@ export class FileService {
     }
 
     return await this.hosoRepository.remove(hoso);
+  }
+
+  async exportDuplicatesToExcel(
+    duplicates: { SDT: string; count: number }[],
+    res: Response,
+  ) {
+    try {
+      // Create a new workbook and add a worksheet
+      const workbook = new Workbook();
+      const worksheet: Worksheet = workbook.addWorksheet(
+        'Duplicate Phone Numbers',
+      );
+
+      // Define headers for the worksheet
+      worksheet.columns = [
+        { header: 'Phone Number', key: 'SDT', width: 20 },
+        { header: 'Count', key: 'count', width: 10 },
+      ];
+
+      // Populate worksheet with data
+      duplicates.forEach((item) => {
+        worksheet.addRow({ SDT: item.SDT, count: item.count });
+      });
+
+      // Set response headers for Excel file download
+      res.setHeader('Content-Disposition', `attachment; filename=example.xlsx`);
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      );
+
+      return await workbook.xlsx.write(res);
+    } catch (error) {
+      console.error('Error generating Excel:', error);
+      res.status(500).send('Internal Server Error');
+    }
   }
 }

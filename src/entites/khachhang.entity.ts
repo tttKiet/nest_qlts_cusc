@@ -75,7 +75,7 @@ export class khachhang {
   EMAIL: string;
 
   @Column({ nullable: false, type: 'tinyint' })
-  TRANGTHAIKHACHHANG: string;
+  TRANGTHAIKHACHHANG: number;
 
   @OneToOne(
     () => dulieukhachhang,

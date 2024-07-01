@@ -133,7 +133,7 @@ export class CustomerDto {
   EMAIL: string;
 
   @IsOptional()
-  TRANGTHAIKHACHHANG: string;
+  TRANGTHAIKHACHHANG: number;
 }
 
 export class CreateCustomerArrDto {

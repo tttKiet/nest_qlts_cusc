@@ -28,6 +28,7 @@ import * as moment from 'moment';
 import { taikhoan } from 'src/entites/taikhoan.entity';
 import { khachhangcu } from 'src/entites/khachhangcu.entit';
 import { phanquyen } from 'src/entites/phanquyen.entity';
+import { updateCustomerDTO } from './dto/update-customer.dto';
 
 @Injectable()
 export class CustomerService {
@@ -371,5 +372,82 @@ export class CustomerService {
     ]);
 
     return dataResult;
+  }
+
+  async remove(SDT: any) {
+    const kh = await this.khachhangRepository.findOne({
+      where: {
+        SDT: SDT,
+      },
+    });
+    if (!kh) {
+      throw new Error(`Không tìm thấy khách hàng có ${SDT} để xóa`);
+    }
+
+    return await this.khachhangRepository.remove(kh);
+  }
+
+  async update(body: updateCustomerDTO) {
+    const {
+      SDT,
+      MANGHENGHIEP,
+      MATRUONG,
+      MATINH,
+      MAHINHTHUC,
+      HOTEN,
+      EMAIL,
+      TRANGTHAIKHACHHANG,
+      CCCD,
+    } = body;
+
+    let condition: Partial<updateCustomerDTO> = {};
+
+    if (MANGHENGHIEP) {
+      condition.MANGHENGHIEP = MANGHENGHIEP;
+    }
+    if (MATRUONG) {
+      condition.MATRUONG = MATRUONG;
+    }
+    if (MATINH) {
+      condition.MATINH = MATINH;
+    }
+    if (MAHINHTHUC) {
+      condition.MAHINHTHUC = MAHINHTHUC;
+    }
+    if (HOTEN) {
+      condition.HOTEN = HOTEN;
+    }
+    if (EMAIL) {
+      condition.EMAIL = EMAIL;
+    }
+    if (TRANGTHAIKHACHHANG != undefined) {
+      condition.TRANGTHAIKHACHHANG = TRANGTHAIKHACHHANG;
+    }
+    if (CCCD) {
+      condition.CCCD = CCCD;
+    }
+
+    const kh = await this.khachhangRepository.update(
+      {
+        SDT: SDT,
+      },
+      condition,
+    );
+
+    if (!kh) {
+      throw new Error(`Không tìm thấy khách hàng có ${SDT} để xóa`);
+    }
+
+    return kh;
+  }
+
+  async findSDT(SDT: string) {
+    const kh = await this.khachhangRepository.findOne({
+      where: {
+        SDT: SDT,
+      },
+    });
+
+    return kh;
   }
 }
