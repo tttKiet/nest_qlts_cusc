@@ -8,12 +8,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
 import 'dotenv/config';
 import { JwtStategy } from './strategies/jwt.strategy';
+import { thoigiandangnhap } from 'src/entites/thoigiandangnhap.entity';
 
 const privateKey = process.env.JWT_SECRET;
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([taikhoan]),
+    TypeOrmModule.forFeature([taikhoan, thoigiandangnhap]),
     PassportModule,
     JwtModule.register({
       global: true,

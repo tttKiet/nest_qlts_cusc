@@ -17,7 +17,6 @@ import { usermanager } from './entites/usermanager.entity';
 import { nhomnganh } from './entites/nhomnganh.entity';
 import { ChartModule } from './chart/chart.module';
 import { NoteModule } from './note/note.module';
-
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),

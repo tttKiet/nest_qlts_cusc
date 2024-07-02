@@ -526,4 +526,28 @@ export class DataController {
       );
     }
   }
+
+  @Get('data-available')
+  async getDataAvailabel(
+    @Query() query: QueryDataAvailable,
+    @Res() res: Response,
+  ) {
+    try {
+      const data = await this.dataService.getDataAvailable(query);
+      const result = {
+        total: data.length,
+        data: data,
+      };
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Lấy data thành công.',
+        data: result,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
+  }
 }
