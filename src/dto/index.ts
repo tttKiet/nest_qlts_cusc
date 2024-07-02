@@ -9,7 +9,6 @@ import {
 } from 'class-validator';
 
 export class CreateSegmentDto {
-  @IsNotEmpty({ message: 'Bạn chưa gửi MATRUONG.' })
   MATRUONG: string;
 
   @IsOptional()
@@ -18,8 +17,14 @@ export class CreateSegmentDto {
   @IsOptional()
   NHOMNGANH: string;
 
+  @IsOptional()
+  provinceCode: string;
+
   @IsNotEmpty({ message: 'Bạn chưa gửi SODONG.' })
   SODONG: number;
+
+  @IsOptional()
+  phoneArray: string[];
 }
 
 export class DeleteSegmentDto {

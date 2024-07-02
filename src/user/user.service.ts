@@ -103,6 +103,7 @@ export class UserService {
         userMangerName: `%${userMangerName}%`,
       });
     }
+    query.andWhere('tk.SDT_KH IS NULL');
 
     if (status) {
       query.andWhere(
@@ -133,7 +134,7 @@ export class UserService {
       take: take || 6,
       skip: skip || 0,
       total: users[1],
-      data: data,
+      data: data.filter((d) => !d.SDT_KH),
     };
   }
 

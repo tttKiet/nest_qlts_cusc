@@ -20,7 +20,7 @@ export class phanquyen {
   })
   MaPQ: string;
 
-  @Column({ type: 'char', length: 10 })
+  @Column({ type: 'char', length: 10, nullable: true })
   MATRUONG: string;
 
   @Column({ nullable: true, type: 'datetime', default: null })
@@ -45,5 +45,5 @@ export class phanquyen {
 
   @OneToMany(() => chitietpq, (chitietpq) => chitietpq.phanquyen)
   @JoinColumn()
-  chitietpq: chitietpq[]; 
+  chitietpq: chitietpq[];
 }

@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryColumn, OneToOne, OneToMany } from 'typeorm';
-import { taikhoan } from './taikhoan.entity';
+import { Column, Entity, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
 import { ghichu } from './ghichu.entity';
+import { taikhoan } from './taikhoan.entity';
+import { thoigiandangnhap } from './thoigiandangnhap.entity';
 
 @Entity()
 export class admin {
@@ -39,4 +40,10 @@ export class admin {
 
   @OneToMany(() => ghichu, (ghichu) => ghichu.admin)
   ghichu: ghichu[];
+
+  @OneToMany(
+    () => thoigiandangnhap,
+    (thoigiandangnhap) => thoigiandangnhap.admin,
+  )
+  thoigiandangnhap: thoigiandangnhap[];
 }

@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import * as session from 'express-session';
 
 declare const module: any;
 
@@ -9,13 +10,22 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // app.useStaticAssets(join(__dirname, '..', 'public'));
-
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
       whitelist: true,
     }),
   );
+
+  app.use(
+    session({
+      secret: process.env?.SESSION_SECRET || 'SESSION_SECRET',
+      resave: false,
+      saveUninitialized: false,
+      cookie: { maxAge: 0 },
+    }),
+  );
+
   app.setGlobalPrefix('/api/v1');
   // app.useGlobalGuards(new JwtGuards());
   await app.listen(port, () => {

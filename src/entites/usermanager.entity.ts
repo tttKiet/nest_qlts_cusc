@@ -4,6 +4,7 @@ import { taikhoan } from './taikhoan.entity';
 import { chuyende } from './chuyende.entity';
 import { ghichu } from './ghichu.entity';
 import { misscall } from './misscall.entity';
+import { thoigiandangnhap } from './thoigiandangnhap.entity';
 // import { phanquyen } from './phanquyen.entity';
 
 @Entity()
@@ -40,4 +41,9 @@ export class usermanager {
 
   @OneToMany(() => ghichu, (ghichu) => ghichu.usermanager)
   ghichu: ghichu[];
+  @OneToMany(
+    () => thoigiandangnhap,
+    (thoigiandangnhap) => thoigiandangnhap.usermanager,
+  )
+  thoigiandangnhap: thoigiandangnhap[];
 }

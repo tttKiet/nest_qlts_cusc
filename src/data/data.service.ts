@@ -337,11 +337,15 @@ export class DataService {
     jobCode,
     jobDirCode,
     limit,
+    provinceCode,
+    phoneArray,
   }: {
     schoolCode?: string;
     jobCode?: string;
+    provinceCode?: string;
     jobDirCode?: string;
     limit?: number;
+    phoneArray?: string[];
   }) {
     const subQuery = this.customerRepository
       .createQueryBuilder('kh')
@@ -353,13 +357,34 @@ export class DataService {
       .createQueryBuilder('kh')
       .leftJoinAndSelect('kh.truong', 'truong')
       .leftJoinAndSelect('kh.nganhyeuthich', 'nganhyeuthich')
-      .where('truong.MATRUONG = :schoolCode', { schoolCode })
-      .andWhere(`kh.SDT NOT IN (${subQuery.getQuery()})`);
+      .leftJoinAndSelect('nganhyeuthich.nganh', 'nganh')
+      .leftJoinAndSelect('nganhyeuthich.nhomnganh', 'nhom')
+      .where(`kh.SDT NOT IN (${subQuery.getQuery()})`);
 
-    if (jobCode)
-      query.andWhere('nganhyeuthich.MANGANH = :jobCode', { jobCode });
+    if (phoneArray && phoneArray.length > 0) {
+      query.andWhere('kh.SDT IN (:...phoneArray)', {
+        phoneArray,
+      });
+
+      if (limit) {
+        query.skip(0).take(limit);
+      }
+      return await query.getMany();
+    }
+
+    if (provinceCode) {
+      query.andWhere('kh.MATINH = :provinceCode', { provinceCode });
+    }
+
+    if (schoolCode) {
+      query.andWhere('truong.MATRUONG = :schoolCode', { schoolCode });
+    }
+
     if (jobDirCode)
       query.andWhere('nganhyeuthich.MANHOMNGANH = :jobDirCode', { jobDirCode });
+    else if (jobCode)
+      query.andWhere('nganhyeuthich.MANGANH = :jobCode', { jobCode });
+
     if (limit) {
       query.skip(0).take(limit);
     }
@@ -375,18 +400,24 @@ export class DataService {
     MATRUONG,
     SODONG,
     jobDirCode,
+    provinceCode,
+    phoneArray,
   }: {
     MaPQ: string;
     MANGANH: string;
     MATRUONG: string;
     SODONG: number;
     jobDirCode?: string;
+    provinceCode?: string;
+    phoneArray?: string[];
   }) {
     const customerNotInSegment = await this.getCustomerNotInSegment({
       jobCode: MANGANH,
       schoolCode: MATRUONG,
       limit: SODONG,
       jobDirCode,
+      provinceCode,
+      phoneArray,
     });
 
     // create data
@@ -414,6 +445,8 @@ export class DataService {
         jobCode: body.MANGANH,
         schoolCode: body.MATRUONG,
         jobDirCode: body.NHOMNGANH,
+        provinceCode: body.provinceCode,
+        phoneArray: body.phoneArray,
       });
 
       // check so dong
@@ -455,12 +488,16 @@ export class DataService {
           MANGANH: body.MANGANH,
           MATRUONG: body.MATRUONG,
           jobDirCode: body.NHOMNGANH,
+          provinceCode: body.provinceCode,
+          phoneArray: body.phoneArray,
         });
 
         const customerNotInSegment = await this.getCustomerNotInSegment({
           jobCode: body.MANGANH,
           schoolCode: body.MATRUONG,
           jobDirCode: body.NHOMNGANH,
+          provinceCode: body.provinceCode,
+          phoneArray: body.phoneArray,
         });
 
         // check so dong
@@ -726,6 +763,15 @@ export class DataService {
   async getTableChuyende() {
     return await this.chuyendeRepository.find({
       relations: { usermanager: true },
+    });
+  }
+
+  async getDataAvailable(query: QueryDataAvailable) {
+    return await this.getCustomerNotInSegment({
+      provinceCode: query.MATINH,
+      schoolCode: query.MATRUONG,
+      jobCode: query.MANGANH,
+      jobDirCode: query.MANHOM,
     });
   }
 }

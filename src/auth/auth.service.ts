@@ -2,12 +2,17 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { JwtService } from '@nestjs/jwt';
 import { taikhoan } from 'src/entites/taikhoan.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { thoigiandangnhap } from 'src/entites/thoigiandangnhap.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
   constructor(
     private accountService: AccountService,
     private jwtService: JwtService,
+    @InjectRepository(thoigiandangnhap)
+    private thoigiandangnhapRepository: Repository<thoigiandangnhap>,
   ) {}
 
   async login({
@@ -42,6 +47,7 @@ export class AuthService {
       MATKHAU: null,
     };
 
+    // await this.loginTime({ TENDANGNHAP });
     // Render token jwt
     const token = this.jwtService.sign({
       ...dataSign,
@@ -54,5 +60,11 @@ export class AuthService {
       },
       token,
     };
+  }
+
+  async createTime(data: TimeLogin) {
+    const timeDoc = this.thoigiandangnhapRepository.create(data);
+    const saving = await this.thoigiandangnhapRepository.save(timeDoc);
+    return saving;
   }
 }
