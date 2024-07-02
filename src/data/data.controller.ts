@@ -527,6 +527,23 @@ export class DataController {
     }
   }
 
+  @Get('/table-UM')
+  async getTableUMn(@Query() query, @Res() res: Response) {
+    try {
+      const data = await this.dataService.getTableUM();
+
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Lấy data thành công.',
+        data
+    });
+ } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
+
   @Get('data-available')
   async getDataAvailabel(
     @Query() query: QueryDataAvailable,

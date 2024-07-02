@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   Param,
+  Patch,
   Post,
   Req,
   Res,
@@ -25,6 +27,7 @@ import {
   PositionArrDto,
 } from 'src/dto/get-customer.dto';
 import { taikhoan } from 'src/entites/taikhoan.entity';
+import { updateCustomerDTO } from './dto/update-customer.dto';
 
 @Controller('customer')
 export class CustomerController {
@@ -213,6 +216,41 @@ export class CustomerController {
     } catch (error) {
       return res.status(500).json({
         statusCode: 200,
+        message: error?.message || 'Lỗi server.',
+      });
+    }
+  }
+
+  // Xoa khach hang
+  @Delete(':id')
+  async remove(@Param('id') SDT: string, @Res() res: Response) {
+    try {
+      const data = await this.customerService.remove(SDT);
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Xóa khách hàng thành công.',
+        data: data,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        statusCode: 500,
+        message: error?.message || 'Lỗi server.',
+      });
+    }
+  }
+
+  @Patch('update')
+  async update(@Body() body: updateCustomerDTO, @Res() res: Response) {
+    try {
+      const data = await this.customerService.update(body);
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Cập nhật  khách hàng thành công.',
+        data: data,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        statusCode: 500,
         message: error?.message || 'Lỗi server.',
       });
     }

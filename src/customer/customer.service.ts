@@ -28,6 +28,7 @@ import * as moment from 'moment';
 import { taikhoan } from 'src/entites/taikhoan.entity';
 import { khachhangcu } from 'src/entites/khachhangcu.entit';
 import { phanquyen } from 'src/entites/phanquyen.entity';
+import { updateCustomerDTO } from './dto/update-customer.dto';
 
 @Injectable()
 export class CustomerService {
@@ -164,7 +165,6 @@ export class CustomerService {
     const dataResult = await this.dulieukhachhangRepository.upsert(data.data, [
       'SDT',
     ]);
-    console.log('dataResult: ', dataResult);
 
     return dataResult;
   }
@@ -182,7 +182,6 @@ export class CustomerService {
       'SDT',
       'STT',
     ]);
-    console.log('dataResult: ', dataResult);
   }
 
   async createJobLikeArr(data: JobLikeDtoArrDto) {
@@ -195,52 +194,51 @@ export class CustomerService {
   }
 
   async registrationFormArr(data: RegistrationFormArrDto) {
-    const dataResult = await Promise.all(
-      data.data.map((d) => this.createRegistrationForm(d)),
-    );
+    const dataResult = [];
+    for (const d of data.data) {
+      const result = await this.createRegistrationForm(d);
+      dataResult.push(result);
+    }
 
     return dataResult;
   }
 
   async createRegistrationForm(data: RegistrationFormDto) {
-    // filter
-    const filter = await this.phieudkxettuyenRepository.findOne({
-      where: {
-        SDT: data.SDT,
-      },
-    });
-
-    const dataUp: any = data;
-    // create
-    if (!filter) {
-      const doc = this.phieudkxettuyenRepository.create(dataUp);
-      const result = await this.phieudkxettuyenRepository.save(doc);
-      return result;
-    } else {
-      // update
-
-      const result = await this.phieudkxettuyenRepository.update(
-        {
+    try {
+      // Tìm kiếm bản ghi dựa trên SDT
+      const existingRecord = await this.phieudkxettuyenRepository.findOne({
+        where: {
           SDT: data.SDT,
         },
-        {
-          MALOAIKHOAHOC: data.MALOAIKHOAHOC,
-          MAKENH: data.MAKENH,
-          MAKETQUA: data.MAKETQUA,
-          SDTZALO: data.SDTZALO,
-          NGANHDK: data.NGANHDK,
-        },
+      });
+
+      if (!!existingRecord) {
+        // Nếu đã tồn tại bản ghi, cập nhật thông tin
+
+        const result = await this.phieudkxettuyenRepository.update(
+          { SDT: data.SDT },
+          {
+            MALOAIKHOAHOC: data.MALOAIKHOAHOC,
+            MAKENH: data.MAKENH,
+            MAKETQUA: data.MAKETQUA,
+            SDTZALO: data.SDTZALO,
+            NGANHDK: data.NGANHDK,
+          },
+        );
+        return result;
+      } else {
+        // Nếu không tìm thấy bản ghi, tạo mới
+        const doc = this.phieudkxettuyenRepository.create(data);
+        const result = await this.phieudkxettuyenRepository.save(doc);
+        return result;
+      }
+    } catch (error) {
+      console.error(
+        'Lỗi khi thực hiện thao tác tạo mới/cập nhật bản ghi:',
+        error.message,
       );
-      return result;
+      throw error;
     }
-  }
-
-  async createAccountArr(data: any) {
-    const dataResult = await this.taikhoanRepository.upsert(data.data, [
-      'SDT_KH',
-    ]);
-
-    return dataResult;
   }
 
   async createCustomerOldArr(data: any) {
@@ -366,5 +364,90 @@ export class CustomerService {
       );
       return result;
     }
+  }
+
+  async createAccountArr(data: any) {
+    const dataResult = await this.taikhoanRepository.upsert(data.data, [
+      'SDT_KH',
+    ]);
+
+    return dataResult;
+  }
+
+  async remove(SDT: any) {
+    const kh = await this.khachhangRepository.findOne({
+      where: {
+        SDT: SDT,
+      },
+    });
+    if (!kh) {
+      throw new Error(`Không tìm thấy khách hàng có ${SDT} để xóa`);
+    }
+
+    return await this.khachhangRepository.remove(kh);
+  }
+
+  async update(body: updateCustomerDTO) {
+    const {
+      SDT,
+      MANGHENGHIEP,
+      MATRUONG,
+      MATINH,
+      MAHINHTHUC,
+      HOTEN,
+      EMAIL,
+      TRANGTHAIKHACHHANG,
+      CCCD,
+    } = body;
+
+    let condition: Partial<updateCustomerDTO> = {};
+
+    if (MANGHENGHIEP) {
+      condition.MANGHENGHIEP = MANGHENGHIEP;
+    }
+    if (MATRUONG) {
+      condition.MATRUONG = MATRUONG;
+    }
+    if (MATINH) {
+      condition.MATINH = MATINH;
+    }
+    if (MAHINHTHUC) {
+      condition.MAHINHTHUC = MAHINHTHUC;
+    }
+    if (HOTEN) {
+      condition.HOTEN = HOTEN;
+    }
+    if (EMAIL) {
+      condition.EMAIL = EMAIL;
+    }
+    if (TRANGTHAIKHACHHANG != undefined) {
+      condition.TRANGTHAIKHACHHANG = TRANGTHAIKHACHHANG;
+    }
+    if (CCCD) {
+      condition.CCCD = CCCD;
+    }
+
+    const kh = await this.khachhangRepository.update(
+      {
+        SDT: SDT,
+      },
+      condition,
+    );
+
+    if (!kh) {
+      throw new Error(`Không tìm thấy khách hàng có ${SDT} để xóa`);
+    }
+
+    return kh;
+  }
+
+  async findSDT(SDT: string) {
+    const kh = await this.khachhangRepository.findOne({
+      where: {
+        SDT: SDT,
+      },
+    });
+
+    return kh;
   }
 }

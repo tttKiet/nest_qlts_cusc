@@ -41,6 +41,6 @@ export class chuyende {
   chitietchuyende: chitietchuyende[];
 
   @ManyToOne(() => usermanager, (usermanager) => usermanager.phanquyen)
-  @JoinColumn({ name: 'SDT', foreignKeyConstraintName: 'fk_SDT' })
+  @JoinColumn({ name: 'SDT', foreignKeyConstraintName: 'fk_SDT' }) 
   usermanager: usermanager;
 }
