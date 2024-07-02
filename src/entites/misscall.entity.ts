@@ -8,6 +8,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { khachhang } from './khachhang.entity';
+import { usermanager } from './usermanager.entity';
 
 @Entity()
 export class misscall {
@@ -17,7 +18,7 @@ export class misscall {
   @Column({ type: 'char', length: 11, name: 'SDT' })
   SDT: string;
 
-  @Column({ type: 'datetime' })
+  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   thoigian: Date;
 
   @Column({ type: 'tinyint', default: 0 })

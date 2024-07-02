@@ -24,6 +24,8 @@ export class readFileDto {
   @IsOptional()
   SDT: string;
   @IsOptional()
+  SDT_UM: string;
+  @IsOptional()
   page: number;
   @IsOptional()
   pageSize: number;

@@ -218,4 +218,21 @@ export class FileController {
       });
     }
   }
+
+  @Get('readAll-UM')
+  async findAllUM(@Query() query: Partial<readFileDto>, @Res() res: Response) {
+    try {
+      const data = await this.fileService.readAllUM(query);
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Đọc hồ sơ UM thành công.',
+        data: data,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        statusCode: 500,
+        message: error?.message || 'Lỗi server.',
+      });
+    }
+  }
 }

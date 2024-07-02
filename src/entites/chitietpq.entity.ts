@@ -23,5 +23,5 @@ export class chitietpq {
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'MaPQ' })
-  phanquyen: phanquyen;
+  phanquyen: phanquyen; 
 }

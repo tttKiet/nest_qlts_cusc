@@ -1,13 +1,12 @@
-import { Optional } from '@nestjs/common';
-import { IsEmpty, IsNotEmpty } from 'class-validator';
+import { IsEmpty, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateMisscallDto {
-  @Optional()
+  @IsOptional()
   MAMISSCALL: number;
   @IsNotEmpty()
   SDT: string;
-  @IsNotEmpty()
+  @IsOptional()
   thoigian: Date;
-  @IsNotEmpty()
+  @IsOptional()
   TRANGTHAI: number;
 }

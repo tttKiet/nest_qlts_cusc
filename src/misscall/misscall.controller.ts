@@ -22,9 +22,9 @@ export class MisscallController {
   @Post('create')
   async create(@Body() body: CreateMisscallDto, @Res() res: Response) {
     try {
-      const data = await this.misscallService.create(body);
+      const data = await this.misscallService.create(body); 
       return res.status(200).json({
-        statusCode: 200,
+        statusCode: 200, 
         message: 'Tạo gọi nhỡ thành công.',
         data: data,
       });

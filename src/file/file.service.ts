@@ -30,6 +30,8 @@ import { hoso } from 'src/entites/hoso.entity';
 import { updateCustomerDTO } from 'src/customer/dto/update-customer.dto';
 import path, { relative } from 'path';
 import { khachhang } from 'src/entites/khachhang.entity';
+import { usermanager } from 'src/entites/usermanager.entity';
+import { chitietpq } from 'src/entites/chitietpq.entity';
 
 @Injectable()
 export class FileService {
@@ -44,6 +46,8 @@ export class FileService {
     private hosoRepository: Repository<hoso>,
     @InjectRepository(khachhang)
     private khachhangRepository: Repository<khachhang>,
+    @InjectRepository(usermanager)
+    private usermanagerRepository: Repository<usermanager>,
   ) {}
 
   removeAccentsAndLowerCase(str: string) {
@@ -580,5 +584,55 @@ export class FileService {
     const results = await queryBuilder.getMany();
 
     return { totalRows, results };
+  }
+
+  mergeChitietpq(phanquyenList: any[]): any[] {
+    let mergedChitietpq: any[] = [];
+    phanquyenList.forEach((pq: any) => {
+      if (pq.chitietpq && Array.isArray(pq.chitietpq)) {
+        mergedChitietpq = mergedChitietpq.concat(pq.chitietpq);
+      }
+    });
+    return mergedChitietpq;
+  }
+
+  async readAllUM(query: Partial<readFileDto>) {
+    const { SDT, SDT_UM, MAHOSO, MAPHIEUDK, HOSO, page, pageSize } = query;
+    const condition: Partial<readFileDto> = {};
+
+    const queryBuilder = this.usermanagerRepository
+      .createQueryBuilder('usermanager')
+      .leftJoinAndSelect('usermanager.phanquyen', 'phanquyen')
+      .leftJoinAndSelect('phanquyen.chitietpq', 'chitietpq')
+      .where('usermanager.SDT = :SDT', { SDT: SDT_UM });
+
+    const chiTIetPQList = await queryBuilder.getOne();
+    if (!chiTIetPQList || !chiTIetPQList.phanquyen) {
+      return { total: 0, data: [] };
+    }
+    const mergedChitietpq = this.mergeChitietpq(chiTIetPQList.phanquyen);
+
+    let result = [];
+    let total = 0;
+    for (const item of mergedChitietpq) {
+      const queryBuilder2 = this.khachhangRepository
+        .createQueryBuilder('khachhang')
+        .leftJoinAndSelect('khachhang.phieudkxettuyen', 'phieudkxettuyen')
+        .leftJoinAndSelect('phieudkxettuyen.hoso', 'hoso')
+        .where('khachhang.SDT = :SDT', { SDT: item?.SDT })
+        .andWhere('hoso IS NOT NULL');
+
+      const [hosoData, count] = await queryBuilder2.getManyAndCount();
+      result = result.concat(hosoData);
+      total += count;
+    }
+
+    let paginatedResult = result;
+
+    // Apply pagination only if page and pageSize are provided
+    if (page !== undefined && pageSize !== undefined) {
+      paginatedResult = result.slice((page - 1) * pageSize, page * pageSize);
+    }
+    return { totalRows: total, results: paginatedResult };
   }
 }
