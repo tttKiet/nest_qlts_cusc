@@ -9,4 +9,13 @@ export class CreateMisscallDto {
   thoigian: Date;
   @IsOptional()
   TRANGTHAI: number;
+  @IsNotEmpty()
+  MALIENHE: number;
+}
+
+export class readMisscallDto {
+  @IsNotEmpty()
+  SDT: string;
+  @IsNotEmpty()
+  TRANGTHAI: number;
 }

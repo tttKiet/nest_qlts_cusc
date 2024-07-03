@@ -99,7 +99,7 @@ export class UserController {
         statusCode: 200,
         message: 'Đã xóa người dùng.',
         data: data,
-      });
+      }); 
     } catch (error) {
       return res.status(500).json({
         statusCode: 500,

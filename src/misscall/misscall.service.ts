@@ -1,24 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMisscallDto } from './dto/create-misscall.dto';
+import { CreateMisscallDto, readMisscallDto } from './dto/create-misscall.dto';
 import { UpdateMisscallDto } from './dto/update-misscall.dto';
 import { misscall } from 'src/entites/misscall.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { relative } from 'path';
+import { lienhe } from 'src/entites/lienhe.entity';
+import { khachhang } from 'src/entites/khachhang.entity';
 
 @Injectable()
 export class MisscallService {
   constructor(
     @InjectRepository(misscall)
     private misscallRepository: Repository<misscall>,
+    @InjectRepository(lienhe)
+    private lienheRepository: Repository<lienhe>,
   ) {}
 
   async create(body: CreateMisscallDto) {
-    const { SDT, thoigian, TRANGTHAI } = body;
+    const { SDT, thoigian, TRANGTHAI, MALIENHE } = body;
     const condition: Partial<CreateMisscallDto> = {};
 
     if (SDT) {
       condition.SDT = SDT;
+    }
+
+    if (MALIENHE) {
+      condition.MALIENHE = MALIENHE;
     }
 
     if (thoigian) {
@@ -37,26 +45,28 @@ export class MisscallService {
     return misscall;
   }
 
-  async findAll(query: Partial<CreateMisscallDto>) {
-    const { MAMISSCALL, thoigian, SDT, TRANGTHAI } = query;
-    const condition: Partial<CreateMisscallDto> = {};
-    if (MAMISSCALL) {
-      condition.MAMISSCALL = MAMISSCALL;
-    }
+  async findAll_MS_UM(query: Partial<readMisscallDto>) {
+    const { SDT, TRANGTHAI } = query;
+
+    const queryLH = this.lienheRepository.createQueryBuilder('lh');
+    queryLH
+      .leftJoinAndSelect('lh.misscall', 'misscall')
+      .leftJoinAndSelect('lh.khachhang', 'khachhang');
+
     if (SDT) {
-      condition.SDT = SDT;
-    }
-    if (thoigian) {
-      condition.thoigian = thoigian;
-    }
-    if (TRANGTHAI) {
-      condition.TRANGTHAI = TRANGTHAI;
+      queryLH.where('lh.SDT = :SDT', {
+        SDT: SDT,
+      });
     }
 
-    return await this.misscallRepository.find({
-      where: condition,
-      relations: ['khachhang'],
-    });
+    if (TRANGTHAI) {
+      queryLH.where('misscall.TRANGTHAI = :TRANGTHAI', {
+        TRANGTHAI: TRANGTHAI,
+      });
+    }
+
+    const data = await queryLH.getMany();
+    return data;
   }
 
   async update(body: UpdateMisscallDto) {

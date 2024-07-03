@@ -24,7 +24,6 @@ interface IFThematic {
 }
 
 interface TimeLogin {
-  maadmin?: string;
   sdt?: string;
   dangnhap?: string;
   maadmin?: string;
