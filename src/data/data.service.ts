@@ -534,14 +534,14 @@ export class DataService {
 
   findCommonId(array: khachhang[]): nganhyeuthich[] | undefined {
     let result = undefined;
-    let commonIds = array[0].nganhyeuthich; // [1,2]
+    let commonIds = array[0]?.nganhyeuthich || []; // [1,2]
     // console.log('array => ', array);
     // console.log('commonIds => ', commonIds);
 
     for (let i = 1; i < array.length; i++) {
       // console.log('io => ', i);
 
-      const same = array[i].nganhyeuthich.filter(
+      const same = array[i]?.nganhyeuthich?.filter(
         (jobLike) =>
           !!commonIds.find(
             (c) =>
@@ -551,7 +551,7 @@ export class DataService {
       );
       // console.log('same', same);
 
-      commonIds = same;
+      commonIds = same || [];
       if (commonIds.length === 0) commonIds = [];
     }
 
