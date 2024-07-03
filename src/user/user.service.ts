@@ -373,6 +373,11 @@ export class UserService {
       TENDANGNHAP,
     });
 
+    const up = await this.usermanagerRepository.update(
+      { SDT: TENDANGNHAP }, // Criteria to find the records
+      { TRANGTHAIUM: '0' }, // New values to set
+    );
+
     return rl;
   }
 }

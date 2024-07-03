@@ -4,10 +4,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { khachhang } from './khachhang.entity';
 import { trangthai } from './trangthai.entity';
+import { misscall } from './misscall.entity';
 // import { khachhang } from './khachhang.entity';
 // import { usermanager } from './usermanager.entity';
 
@@ -51,4 +53,7 @@ export class lienhe {
     foreignKeyConstraintName: 'FK_LIENHE_KHACHHANG',
   })
   khachhang: khachhang;
+
+  @OneToOne(() => misscall, (misscall) => misscall.lienhe)
+  misscall: misscall;
 }

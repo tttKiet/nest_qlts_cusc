@@ -6,9 +6,11 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  OneToOne,
 } from 'typeorm';
 import { khachhang } from './khachhang.entity';
 import { usermanager } from './usermanager.entity';
+import { lienhe } from './lienhe.entity';
 
 @Entity()
 export class misscall {
@@ -24,10 +26,17 @@ export class misscall {
   @Column({ type: 'tinyint', default: 0 })
   TRANGTHAI: number;
 
+  @Column({ type: 'int' })
+  MALIENHE: number;
+
   @ManyToOne(() => khachhang, (khachhang) => khachhang.misscall)
   @JoinColumn({
     name: 'SDT',
     referencedColumnName: 'SDT',
   })
   khachhang: khachhang;
-}
+
+  @OneToOne(() => lienhe, (lienhe) => lienhe.misscall)
+  @JoinColumn({ name: 'MALIENHE' })
+  lienhe: lienhe;
+} 

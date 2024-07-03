@@ -12,7 +12,7 @@ import {
 import { Request, Response, query } from 'express';
 
 import { MisscallService } from './misscall.service';
-import { CreateMisscallDto } from './dto/create-misscall.dto';
+import { CreateMisscallDto, readMisscallDto } from './dto/create-misscall.dto';
 import { UpdateMisscallDto } from './dto/update-misscall.dto';
 
 @Controller('misscall')
@@ -22,9 +22,9 @@ export class MisscallController {
   @Post('create')
   async create(@Body() body: CreateMisscallDto, @Res() res: Response) {
     try {
-      const data = await this.misscallService.create(body); 
+      const data = await this.misscallService.create(body);
       return res.status(200).json({
-        statusCode: 200, 
+        statusCode: 200,
         message: 'Tạo gọi nhỡ thành công.',
         data: data,
       });
@@ -37,15 +37,15 @@ export class MisscallController {
   }
 
   @Get('readAll')
-  async findAll(
-    @Query() query: Partial<CreateMisscallDto>,
+  async findAll_MS_UM(
+    @Query() query: Partial<readMisscallDto>,
     @Res() res: Response,
   ) {
     try {
-      const data = await this.misscallService.findAll(query);
+      const data = await this.misscallService.findAll_MS_UM(query);
       return res.status(200).json({
         statusCode: 200,
-        message: 'Đọc ghi chú thành công.',
+        message: 'Đọc gọi nhỡ thành công.',
         data: data,
       });
     } catch (error) {
@@ -85,7 +85,7 @@ export class MisscallController {
     } catch (error) {
       return res.status(500).json({
         statusCode: 500,
-        message: error?.message || 'Lỗi server.', 
+        message: error?.message || 'Lỗi server.',
       });
     }
   }
