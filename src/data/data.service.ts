@@ -471,9 +471,11 @@ export class DataService {
         const code = maxNumber + 1;
         const maPqRender = 'PQ' + code;
         // create QP
+        console.log('body', body);
+
         const pqDoc = this.segmentRepository.create({
           MaPQ: maPqRender,
-          MATRUONG: body.MATRUONG,
+          MATRUONG: body.MATRUONG || null,
           Sodong:
             body.SODONG < customerLengthAvailable
               ? body.SODONG
@@ -530,19 +532,104 @@ export class DataService {
     return rl;
   }
 
+  findCommonId(array: khachhang[]): nganhyeuthich[] | undefined {
+    let result = undefined;
+    let commonIds = array[0].nganhyeuthich; // [1,2]
+    // console.log('array => ', array);
+    // console.log('commonIds => ', commonIds);
+
+    for (let i = 1; i < array.length; i++) {
+      // console.log('io => ', i);
+
+      const same = array[i].nganhyeuthich.filter(
+        (jobLike) =>
+          !!commonIds.find(
+            (c) =>
+              c.MANGANH == jobLike.MANGANH ||
+              (c.nhomnganh && c.nhomnganh == jobLike.nhomnganh),
+          ),
+      );
+      // console.log('same', same);
+
+      commonIds = same;
+      if (commonIds.length === 0) commonIds = [];
+    }
+
+    result = commonIds;
+    return result;
+  }
+
+  async checkTypeSegment(
+    phoneArray: string[],
+  ): Promise<nganhyeuthich[] | undefined> {
+    const query = this.customerRepository
+      .createQueryBuilder('kh')
+      .leftJoinAndSelect('kh.truong', 'truong')
+      .leftJoinAndSelect('kh.nganhyeuthich', 'nganhyeuthich')
+      .leftJoinAndSelect('nganhyeuthich.nganh', 'nganh')
+      .leftJoinAndSelect('nganhyeuthich.nhomnganh', 'nhom')
+      .where('kh.SDT IN (:...phoneArray)', {
+        phoneArray,
+      });
+    const data = await query.getMany();
+
+    const job = this.findCommonId(data);
+    // console.log('job', job);
+
+    return job;
+  }
+
+  async checkTypeSegmentSameProvince(
+    phoneArray: string[],
+  ): Promise<tinh | undefined> {
+    const query = this.customerRepository
+      .createQueryBuilder('kh')
+      .leftJoinAndSelect('kh.truong', 'truong')
+      .leftJoinAndSelect('kh.tinh', 'tinh')
+      .leftJoinAndSelect('kh.nganhyeuthich', 'nganhyeuthich')
+      .leftJoinAndSelect('nganhyeuthich.nganh', 'nganh')
+      .leftJoinAndSelect('nganhyeuthich.nhomnganh', 'nhom')
+      .where('kh.SDT IN (:...phoneArray)', {
+        phoneArray,
+      });
+    const data = await query.getMany();
+
+    let result = undefined;
+
+    // check same province
+    let commonIds = new Set([data[0]?.tinh]);
+
+    for (let i = 1; i < data.length; i++) {
+      if (commonIds.has(data[i].tinh)) {
+        commonIds = new Set([data[i].tinh]);
+      }
+      if (commonIds.size === 0) result = undefined;
+    }
+
+    result = Array.from(commonIds)[0];
+    return result;
+  }
+
   async getSegment({
     schoolCode,
     type,
     SDT_UM,
+    MANHOM,
+    MANGANH,
+    MATINH,
   }: {
     schoolCode?: string;
     SDT_UM?: string;
+    MANHOM?: string;
+    MATINH?: string;
+    MANGANH?: string;
     type?: 'doing' | 'done' | undefined;
   }) {
     const query = this.segmentRepository.createQueryBuilder('pd');
     query
       .leftJoinAndSelect('pd.truong', 'truong')
-      .leftJoinAndSelect('pd.usermanager', 'usermanager');
+      .leftJoinAndSelect('pd.usermanager', 'usermanager')
+      .leftJoinAndSelect('pd.chitietpq', 'chitietpq');
 
     if (schoolCode) {
       query.where('truong.MATRUONG = :schoolCode', { schoolCode });
@@ -555,12 +642,49 @@ export class DataService {
     if (type == 'doing') {
       query.andWhere('pd.SDT IS NULL ');
     }
+
     if (type == 'done') {
       query.andWhere('pd.SDT IS NOT NULL ');
     }
+    query.orderBy('pd.createdAt', 'DESC');
 
     const data = await query.getMany();
-    return data;
+    const resultPromise = data.map(async (d) => {
+      const chitietpq = d.chitietpq || null;
+      if (chitietpq && chitietpq.length > 0) {
+        const phoneArray = chitietpq.map((p) => p.SDT);
+        // console.log('\n\n=>>>>>>>>>>>>>>>>phoneArray', phoneArray);
+        const typeSegment = await this.checkTypeSegment(phoneArray);
+        const typeSegmentProvince =
+          await this.checkTypeSegmentSameProvince(phoneArray);
+
+        return { ...d, typeSegment, typeSegmentProvince };
+      }
+    });
+
+    let result = await Promise.all(resultPromise);
+    // console.log('result', result);
+    // return result;
+
+    // // FILTER;
+    result = result
+      .filter((r) => {
+        return MANGANH
+          ? r.typeSegment.filter((t) => t.MANGANH == MANGANH).length > 0
+          : true;
+      })
+
+      .filter((r) => {
+        return MANHOM
+          ? r.typeSegment.filter((t) => t.MANHOMNGANH?.toString() == MANHOM)
+              .length > 0
+          : true;
+      })
+      .filter((r) => {
+        return MATINH ? r.typeSegmentProvince?.MATINH == MATINH : true;
+      });
+
+    return result;
   }
 
   async getOneSegmentDetail(id: string, lan: string) {
@@ -614,7 +738,7 @@ export class DataService {
     // Check đã phân quyền
     const segmentExisted = await this.segmentRepository.findOne({
       where: {
-        MaPQ: data.MAPQ,
+        MaPQ: In(Array.isArray(data.MAPQ) ? data.MAPQ : [data.MAPQ]),
       },
     });
 
@@ -636,7 +760,7 @@ export class DataService {
     // Phân quyền
     const segmentUpdateResult = await this.segmentRepository.update(
       {
-        MaPQ: data.MAPQ,
+        MaPQ: In(Array.isArray(data.MAPQ) ? data.MAPQ : [data.MAPQ]),
       },
       {
         SDT: data.SDT_USERMANAGER,

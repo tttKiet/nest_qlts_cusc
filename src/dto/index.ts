@@ -9,6 +9,7 @@ import {
 } from 'class-validator';
 
 export class CreateSegmentDto {
+  @IsOptional()
   MATRUONG: string;
 
   @IsOptional()
@@ -37,7 +38,7 @@ export class PatchPermisionSegmentDto {
   SDT_USERMANAGER: string;
 
   @IsNotEmpty({ message: 'Bạn chưa gửi MAPQ.' })
-  MAPQ: string;
+  MAPQ: string[];
 
   @IsNotEmpty({ message: 'Bạn chưa gửi TRANGTHAILIENHE.' })
   TRANGTHAILIENHE: number;

@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  CreateDateColumn,
 } from 'typeorm';
 import { chitietpq } from './chitietpq.entity';
 import { truong } from './truong.entity';
@@ -46,4 +47,7 @@ export class phanquyen {
   @OneToMany(() => chitietpq, (chitietpq) => chitietpq.phanquyen)
   @JoinColumn()
   chitietpq: chitietpq[];
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
 }
