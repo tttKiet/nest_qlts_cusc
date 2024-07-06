@@ -25,12 +25,13 @@ import { phanquyen } from 'src/entites/phanquyen.entity';
 import { tinh } from 'src/entites/tinh.entity';
 import { truong } from 'src/entites/truong.entity';
 import { UserService } from 'src/user/user.service';
-import { DataSource, In, Repository } from 'typeorm';
+import { Brackets, DataSource, In, Repository } from 'typeorm';
 import * as moment from 'moment';
 import { trangthai } from 'src/entites/trangthai.entity';
 import { chuyende } from 'src/entites/chuyende.entity';
 import { usermanager } from 'src/entites/usermanager.entity';
 import { lienhe } from 'src/entites/lienhe.entity';
+import { carrierPrefixes } from 'src/types/export.file';
 
 @Injectable()
 export class DataService {
@@ -339,6 +340,7 @@ export class DataService {
     limit,
     provinceCode,
     phoneArray,
+    DAUSO,
   }: {
     schoolCode?: string;
     jobCode?: string;
@@ -346,6 +348,7 @@ export class DataService {
     jobDirCode?: string;
     limit?: number;
     phoneArray?: string[];
+    DAUSO?: 'viettel' | 'vinaphone' | 'mobifone' | 'other' | undefined;
   }) {
     const subQuery = this.customerRepository
       .createQueryBuilder('kh')
@@ -361,6 +364,56 @@ export class DataService {
       .leftJoinAndSelect('nganhyeuthich.nhomnganh', 'nhom')
       .where(`kh.SDT NOT IN (${subQuery.getQuery()})`);
 
+    if (DAUSO && DAUSO != 'other') {
+      const prefixes = carrierPrefixes[DAUSO];
+
+      const prefixConditions = prefixes.map((prefix, index) => ({
+        condition: `kh.SDT LIKE :prefix${index}`,
+        parameter: { [`prefix${index}`]: `${prefix}%` },
+      }));
+
+      if (prefixes.length > 0) {
+        query.andWhere(
+          new Brackets((qb) => {
+            prefixConditions.forEach((prefixCondition, index) => {
+              if (index === 0) {
+                qb.where(prefixCondition.condition, prefixCondition.parameter);
+              } else {
+                qb.orWhere(
+                  prefixCondition.condition,
+                  prefixCondition.parameter,
+                );
+              }
+            });
+          }),
+        );
+      }
+    } else if (DAUSO === 'other') {
+      const allPrefixes = [
+        ...carrierPrefixes.viettel,
+        ...carrierPrefixes.mobifone,
+        ...carrierPrefixes.vinaphone,
+      ];
+
+      if (allPrefixes.length > 0) {
+        query.andWhere(
+          new Brackets((qb) => {
+            allPrefixes.forEach((prefix, index) => {
+              if (index === 0) {
+                qb.where('kh.SDT NOT LIKE :prefix' + index, {
+                  ['prefix' + index]: `${prefix}%`,
+                });
+              } else {
+                qb.andWhere('kh.SDT NOT LIKE :prefix' + index, {
+                  ['prefix' + index]: `${prefix}%`,
+                });
+              }
+            });
+          }),
+        );
+      }
+    }
+
     if (phoneArray && phoneArray.length > 0) {
       query.andWhere('kh.SDT IN (:...phoneArray)', {
         phoneArray,
@@ -369,6 +422,7 @@ export class DataService {
       if (limit) {
         query.skip(0).take(limit);
       }
+
       return await query.getMany();
     }
 
@@ -390,7 +444,6 @@ export class DataService {
     }
 
     const data = await query.getMany();
-    // console.log('data getCustomerNotInSegment: ', data);
     return data;
   }
 
@@ -402,6 +455,7 @@ export class DataService {
     jobDirCode,
     provinceCode,
     phoneArray,
+    DAUSO,
   }: {
     MaPQ: string;
     MANGANH: string;
@@ -410,6 +464,7 @@ export class DataService {
     jobDirCode?: string;
     provinceCode?: string;
     phoneArray?: string[];
+    DAUSO?: 'viettel' | 'vinaphone' | 'mobifone' | 'other' | undefined;
   }) {
     const customerNotInSegment = await this.getCustomerNotInSegment({
       jobCode: MANGANH,
@@ -418,6 +473,7 @@ export class DataService {
       jobDirCode,
       provinceCode,
       phoneArray,
+      DAUSO,
     });
 
     // create data
@@ -447,6 +503,7 @@ export class DataService {
         jobDirCode: body.NHOMNGANH,
         provinceCode: body.provinceCode,
         phoneArray: body.phoneArray,
+        DAUSO: body.DAUSO,
       });
 
       // check so dong
@@ -471,7 +528,6 @@ export class DataService {
         const code = maxNumber + 1;
         const maPqRender = 'PQ' + code;
         // create QP
-        console.log('body', body);
 
         const pqDoc = this.segmentRepository.create({
           MaPQ: maPqRender,
@@ -492,6 +548,7 @@ export class DataService {
           jobDirCode: body.NHOMNGANH,
           provinceCode: body.provinceCode,
           phoneArray: body.phoneArray,
+          DAUSO: body.DAUSO,
         });
 
         const customerNotInSegment = await this.getCustomerNotInSegment({
@@ -500,6 +557,7 @@ export class DataService {
           jobDirCode: body.NHOMNGANH,
           provinceCode: body.provinceCode,
           phoneArray: body.phoneArray,
+          DAUSO: body.DAUSO,
         });
 
         // check so dong
@@ -579,6 +637,23 @@ export class DataService {
     return job;
   }
 
+  async checkPrefixPhone(phoneArray: string[]) {
+    const result = 'other';
+    for (const key in carrierPrefixes) {
+      const typePhones: string[] = carrierPrefixes[key];
+
+      const isOK = phoneArray.every((p) => {
+        return typePhones.includes(p.slice(0, 3));
+      });
+
+      if (isOK) {
+        return key;
+      }
+    }
+
+    return result;
+  }
+
   async checkTypeSegmentSameProvince(
     phoneArray: string[],
   ): Promise<tinh | undefined> {
@@ -617,12 +692,14 @@ export class DataService {
     MANHOM,
     MANGANH,
     MATINH,
+    DAUSO,
   }: {
     schoolCode?: string;
     SDT_UM?: string;
     MANHOM?: string;
     MATINH?: string;
     MANGANH?: string;
+    DAUSO?: 'viettel' | 'vinaphone' | 'mobifone' | 'other' | undefined;
     type?: 'doing' | 'done' | undefined;
   }) {
     const query = this.segmentRepository.createQueryBuilder('pd');
@@ -657,13 +734,13 @@ export class DataService {
         const typeSegment = await this.checkTypeSegment(phoneArray);
         const typeSegmentProvince =
           await this.checkTypeSegmentSameProvince(phoneArray);
+        const typePhone = await this.checkPrefixPhone(phoneArray);
 
-        return { ...d, typeSegment, typeSegmentProvince };
+        return { ...d, typeSegment, typeSegmentProvince, typePhone };
       }
     });
 
     let result = await Promise.all(resultPromise);
-    // console.log('result', result);
     // return result;
 
     // // FILTER;
@@ -682,6 +759,9 @@ export class DataService {
       })
       .filter((r) => {
         return MATINH ? r.typeSegmentProvince?.MATINH == MATINH : true;
+      })
+      .filter((r) => {
+        return DAUSO ? r.typePhone == DAUSO : true;
       });
 
     return result;
@@ -896,6 +976,7 @@ export class DataService {
       schoolCode: query.MATRUONG,
       jobCode: query.MANGANH,
       jobDirCode: query.MANHOM,
+      DAUSO: query.DAUSO,
     });
   }
 }

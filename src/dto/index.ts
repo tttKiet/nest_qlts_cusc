@@ -26,6 +26,9 @@ export class CreateSegmentDto {
 
   @IsOptional()
   phoneArray: string[];
+
+  @IsOptional()
+  DAUSO?: 'viettel' | 'vinaphone' | 'mobifone' | 'other' | undefined;
 }
 
 export class DeleteSegmentDto {

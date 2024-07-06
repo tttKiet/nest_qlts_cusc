@@ -36,4 +36,5 @@ interface QueryDataAvailable {
   MATRUONG?: string;
   MANGANH?: string;
   MANHOM?: string;
+  DAUSO?: 'viettel' | 'vinaphone' | 'mobifone' | 'other' | undefined;
 }
