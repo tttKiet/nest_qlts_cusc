@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as session from 'express-session';
+import passport from 'passport';
 
 declare const module: any;
 
@@ -22,10 +23,9 @@ async function bootstrap() {
       secret: process.env?.SESSION_SECRET || 'SESSION_SECRET',
       resave: false,
       saveUninitialized: false,
-      cookie: { maxAge: 0 },
+      unset: 'destroy',
     }),
   );
-
   app.setGlobalPrefix('/api/v1');
   // app.useGlobalGuards(new JwtGuards());
   await app.listen(port, () => {

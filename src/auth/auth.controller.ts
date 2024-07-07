@@ -29,7 +29,6 @@ export class AuthController {
     @Res() res: Response,
   ) {
     // console.log('session', session);
-
     const { TENDANGNHAP, MATKHAU } = body;
 
     const data: {
@@ -39,8 +38,11 @@ export class AuthController {
       TENDANGNHAP,
       MATKHAU,
     });
+
     req.session.timeIn = new Date().toUTCString();
     req.session.loginId = TENDANGNHAP;
+
+    // console.log('Login: ', req.session);
 
     return res
       .cookie('access_token', data.token, {
@@ -60,7 +62,14 @@ export class AuthController {
   @Get('/profile')
   @UseGuards(JwtGuards)
   async fetchProfile(@Req() req: Request, @Res() res: Response) {
-    console.log(' req.session', req.session);
+    console.log('profile: ', req.session);
+
+    if (!req.session) {
+      const user: Partial<taikhoan> = req.user;
+      req.session.timeIn = new Date().toUTCString();
+      req.session.loginId = user.TENDANGNHAP;
+    }
+
     return res.status(200).json({
       statusCode: 200,
       message: 'Lấy profile thành công.',
@@ -70,15 +79,16 @@ export class AuthController {
 
   @Get('/logout')
   async logout(@Req() req: Request, @Res() res: Response) {
-    console.log('\n\n\n\n=======================================> out');
+    console.log('logout: ', req.session);
+
     const timeIn = req.session.timeIn;
     const timeOut = new Date().toISOString();
     const TENDANGNHAP = req.session.loginId;
-    req.session.destroy(function (err) {
-      console.log('Err Session Destroy: ', err);
 
-      // cannot access session here
-    });
+    // req.session.destroy(function (err) {
+    //   console.log('Err Session Destroy: ', err);
+    // });
+
     if (TENDANGNHAP && timeIn && timeOut) {
       const acc = await this.accountService.findOne({ TENDANGNHAP });
       const s = moment(timeIn);

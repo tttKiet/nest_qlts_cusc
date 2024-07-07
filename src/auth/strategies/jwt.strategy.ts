@@ -17,7 +17,7 @@ export class JwtStategy extends PassportStrategy(Strategy) {
   }
 
   validate(payload: taikhoan): taikhoan {
-    console.log('payload', payload);
+    // console.log('payload', payload);
 
     return payload;
   }
