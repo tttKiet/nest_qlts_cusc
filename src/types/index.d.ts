@@ -19,8 +19,8 @@ interface IFThematic {
   NOIDUNG?: string;
   MATRUONG?: string;
   SDT?: string;
-  take?: number;
-  skip?: number;
+  page?: number;
+  pageSize?: number;
 }
 
 interface TimeLogin {

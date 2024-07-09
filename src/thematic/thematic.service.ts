@@ -39,19 +39,24 @@ export class ThematicService {
 
     return chuyende;
   }
+
   async readAll(drops: IFThematic) {
     const {
+      MACHUYENDE,
       TENCHUYENDE,
       THOIGIANTHONGBAO,
       THOIGIANTOCHUCCHUYENDE,
       NOIDUNG,
       MATRUONG,
       SDT,
-      take,
-      skip,
+      page,
+      pageSize,
     } = drops;
 
     let condition: Partial<IFThematic> = {};
+    if (MACHUYENDE) {
+      condition.MACHUYENDE = MACHUYENDE;
+    }
     if (TENCHUYENDE) {
       condition.TENCHUYENDE = TENCHUYENDE;
     }
@@ -71,14 +76,22 @@ export class ThematicService {
       condition.SDT = SDT;
     }
 
-    const queryOptions = {
+    const queryOptions: any = {
       where: condition,
-      take: take ?? undefined,
-      skip: skip ?? undefined,
-      relations: ['usermanager'], 
+      relations: ['chitietchuyende'],
     };
 
-    return await this.chuyendeRepository.find(queryOptions);
+    if (page !== undefined && pageSize !== undefined) {
+      queryOptions.take = pageSize;
+      queryOptions.skip = (page - 1) * pageSize;
+    }
+
+    const [data, totalRows] =
+      await this.chuyendeRepository.findAndCount(queryOptions);
+    return {
+      totalRows: totalRows,
+      results: data,
+    };
   }
 
   async update(drops: IFThematic) {

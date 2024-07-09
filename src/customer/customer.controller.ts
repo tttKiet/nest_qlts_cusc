@@ -152,7 +152,7 @@ export class CustomerController {
   @Post('/info-object')
   async editObject(@Body() body: InforObjectDto, @Res() res: Response) {
     try {
-      const data = await this.customerService.editInfoObjectCustomer(body);
+      const data = await this.customerService.editInfoObjectCustomer(body); 
 
       return res.status(200).json({
         statusCode: 200,

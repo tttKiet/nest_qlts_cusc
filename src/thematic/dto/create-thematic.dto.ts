@@ -28,3 +28,5 @@ export class CreateThematicDto {
   @IsOptional()
   skip: number; // offset
 }
+
+ 
