@@ -5,6 +5,7 @@ import {
   Get,
   Patch,
   Post,
+  Query,
   Req,
   Res,
 } from '@nestjs/common';
@@ -12,6 +13,7 @@ import { Request, Response } from 'express';
 import { UserService } from './user.service';
 import {
   CreateAccountDto,
+  Delete_DTO,
   DeleteAccountDto,
   EditAccountDto,
 } from 'src/dto/edit-account.dto';
@@ -99,10 +101,44 @@ export class UserController {
         statusCode: 200,
         message: 'Đã xóa người dùng.',
         data: data,
-      }); 
+      });
     } catch (error) {
       return res.status(500).json({
         statusCode: 500,
+        message: error?.message || 'Lỗi server.',
+      });
+    }
+  }
+
+  @Delete('/delete')
+  async delete(@Body() body: Delete_DTO, @Res() res: Response) {
+    try {
+      const data = await this.userService.deleted(body);
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Đã xóa người dùng.',
+        data: data,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        statusCode: 500,
+        message: error?.message || 'Lỗi server.',
+      });
+    }
+  }
+
+  @Get('/read')
+  async read(@Query() query: Delete_DTO, @Res() res: Response) {
+    try {
+      const data = await this.userService.read(query);
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Lấy danh sách người dùng thành công.',
+        data: data,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        statusCode: 200,
         message: error?.message || 'Lỗi server.',
       });
     }

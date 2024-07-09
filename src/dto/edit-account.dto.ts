@@ -61,3 +61,12 @@ export class DeleteAccountDto {
   @IsNotEmpty({ message: 'Bạn chưa gửi TENDANGNHAP.' })
   TENDANGNHAP: string;
 }
+
+export class Delete_DTO {
+  @IsOptional()
+  MAADMIN: string;
+  @IsOptional()
+  SDT: string;
+  @IsOptional()
+  SDT_KH: string;
+}
