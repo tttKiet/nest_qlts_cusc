@@ -406,32 +406,34 @@ export class FileService {
           HOTEN: item?.hoVaTen,
         });
       }
+      const khachhangcuFiltered = khachhangcu.filter(
+        (item) => item?.SDT != undefined,
+      );
 
       const resultUploadExcel = await this.customerService.createCustomerOldArr(
         {
-          data: khachhangcu,
+          data: khachhangcuFiltered,
         },
       );
 
       // Kiểm tra trong table khách hàng mới nếu có thì disable nó và trả vế số lượng khách đã được update trong bảng khách hàng mới
-      const updateCusPromise = await Promise.all(
-        khachhangcu.map(async (item) => {
-          const ex = await this.customerService.findSDT(item?.SDT);
-          if (ex) {
-            return await this.customerService.update({
-              SDT: item?.SDT,
-              TRANGTHAIKHACHHANG: 0,
-            } as updateCustomerDTO);
-          }
-        }),
-      );
-      const updateCusPromiseFilter = updateCusPromise.filter(
-        (item) => item != null,
-      )?.length;
 
+      let deletedCount = 0;
+      for (const item of khachhangcuFiltered) {
+        let ex = await this.khachhangRepository.findOne({
+          where: {
+            SDT: item?.SDT,
+          },
+        });
+
+        if (ex) {
+          await this.khachhangRepository.remove(ex);
+          deletedCount++;
+        }
+      }
       // Kiểm tra file excel SDT trùng nhau trả về số SDT trùng nhé
       const sdtCount = {};
-      khachhangcu.forEach((item) => {
+      khachhangcuFiltered.forEach((item) => {
         sdtCount[item.SDT] = (sdtCount[item.SDT] || 0) + 1;
       });
 
@@ -444,7 +446,7 @@ export class FileService {
 
       return {
         tableCusOld: resultUploadExcel?.raw,
-        updateTableCusNew: updateCusPromiseFilter,
+        numberDeleteTableCusNew: deletedCount,
         excel: dupKH_Excel,
       };
     } catch (err) {

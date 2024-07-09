@@ -22,7 +22,9 @@ export class dulieukhachhang {
   @Column({ nullable: true, type: 'char', length: 60 })
   FACEBOOK: string;
 
-  @OneToOne(() => khachhang, (khachhang) => khachhang.dulieukhachhang)
+  @OneToOne(() => khachhang, (khachhang) => khachhang.dulieukhachhang, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({
     name: 'SDT',
   })

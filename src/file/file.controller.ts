@@ -76,7 +76,7 @@ export class FileController {
           maxSize: 1000000,
         })
         .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY, 
         }),
     )
     file: Express.Multer.File,
