@@ -78,7 +78,7 @@ export class ThematicService {
 
     const queryOptions: any = {
       where: condition,
-      relations: ['chitietchuyende'],
+      relations: ['chitietchuyende','usermanager'],
     };
 
     if (page !== undefined && pageSize !== undefined) {

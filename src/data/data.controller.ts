@@ -338,7 +338,7 @@ export class DataController {
 
       return res.status(200).json({
         statusCode: 200,
-        message: 'Lấy đoạn thành công.',
+        message: 'Lấy đoạn thành công.', 
         data,
       });
     } catch (error) {
