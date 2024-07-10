@@ -47,7 +47,7 @@ export class lienhe {
   })
   trangthai: trangthai;
 
-  @ManyToOne(() => khachhang, (khachhang) => khachhang.lienhe)
+  @ManyToOne(() => khachhang, (khachhang) => khachhang.lienhe, { onDelete: 'CASCADE' })
   @JoinColumn({
     name: 'SDT_KH',
     foreignKeyConstraintName: 'FK_LIENHE_KHACHHANG',

@@ -12,7 +12,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { ThematicService } from './thematic.service'; 
+import { ThematicService } from './thematic.service';
 import { CreateThematicDto } from './dto/create-thematic.dto';
 import { UpdateThematicDto } from './dto/update-thematic.dto';
 

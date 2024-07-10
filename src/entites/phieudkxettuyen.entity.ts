@@ -23,7 +23,7 @@ export class phieudkxettuyen {
   })
   MAPHIEUDK: string;
 
-  @Column({ nullable: false, type: 'int' }) 
+  @Column({ nullable: false, type: 'int' })
   MALOAIKHOAHOC: string;
 
   @Column({ nullable: false, type: 'char', length: 10 })
@@ -58,7 +58,9 @@ export class phieudkxettuyen {
   kenhnhanthongbao: kenhnhanthongbao;
 
   // khach hang
-  @OneToOne(() => khachhang, (khachhang) => khachhang.phieudkxettuyen)
+  @OneToOne(() => khachhang, (khachhang) => khachhang.phieudkxettuyen, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({
     name: 'SDT',
   })

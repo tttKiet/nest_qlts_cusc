@@ -14,7 +14,7 @@ export class chucvu {
   tenchucvu: string;
 
   // khachhang
-  @ManyToOne(() => khachhang, (khachhang) => khachhang.chucvu)
+  @ManyToOne(() => khachhang, (khachhang) => khachhang.chucvu, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'SDT' })
   khachhang: khachhang;
 

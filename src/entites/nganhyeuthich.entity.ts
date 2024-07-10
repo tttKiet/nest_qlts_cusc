@@ -31,7 +31,9 @@ export class nganhyeuthich {
   @JoinColumn({ name: 'MANHOMNGANH' })
   nhomnganh: nhomnganh;
 
-  @ManyToOne(() => khachhang, (khachhang) => khachhang.nganhyeuthich)
+  @ManyToOne(() => khachhang, (khachhang) => khachhang.nganhyeuthich, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'SDT' })
   khachhang: khachhang;
 
