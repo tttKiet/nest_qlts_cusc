@@ -2,7 +2,9 @@ import {
   Body,
   Controller,
   Get,
+  HttpException,
   Post,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -14,6 +16,7 @@ import { taikhoan } from 'src/entites/taikhoan.entity';
 import { CreateAccountLoginDto } from 'src/dto/create-account-login.dto';
 import { AccountService } from './account.service';
 import * as moment from 'moment';
+import { timeLogin_DTO } from './dto/timeLogin.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -131,5 +134,22 @@ export class AuthController {
       statusCode: 200,
       message: 'Đã đăng xuất.',
     });
+  }
+
+  @Get('/time-login')
+  async getTimeLogin(@Query() query: timeLogin_DTO, @Res() res: Response) {
+    try {
+      const data = await this.authService.getTimeLogin(query);
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Lấy data thành công.',
+        data,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
   }
 }

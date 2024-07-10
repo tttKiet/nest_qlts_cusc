@@ -166,6 +166,7 @@ export class FileService {
       const nganhyeuthich = [];
       const phieudkxettuyen = [];
       const taikhoan = [];
+
       let getIdpdkxtMax = await this.getIdMaxTablePhieudkxettuyen();
 
       const getTableLop = await this.dataService.getTableLop();
