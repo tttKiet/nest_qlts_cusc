@@ -175,8 +175,11 @@ export class AuthService {
     }
     return {
       totalTime: totalTime,
+      totalAccess: result?.length,
       totalTimeAllADMIN: totalTimeAllAdmin,
+      totalTimeAllADMIN_Access: resultADMIN?.length,
       totalTimeAllUM: totalTimeAllUM,
+      totalTimeAllUM_Access: resultUM?.length,
     };
   }
 }
