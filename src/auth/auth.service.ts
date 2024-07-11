@@ -2,6 +2,8 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { JwtService } from '@nestjs/jwt';
 import { taikhoan } from 'src/entites/taikhoan.entity';
+import { admin } from 'src/entites/admin.entity';
+import { usermanager } from 'src/entites/usermanager.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { thoigiandangnhap } from 'src/entites/thoigiandangnhap.entity';
 import { Repository } from 'typeorm';
@@ -75,6 +77,8 @@ export class AuthService {
 
     const queryTimeLogin =
       this.thoigiandangnhapRepository.createQueryBuilder('time');
+    queryTimeLogin.leftJoinAndSelect('time.admin', 'admin');
+    queryTimeLogin.leftJoinAndSelect('time.usermanager', 'usermanager');
 
     if (maadmin) {
       queryTimeLogin.andWhere('time.maadmin = :maadmin', { maadmin });
@@ -131,6 +135,48 @@ export class AuthService {
       result,
       totalRows,
       totalTime,
+    };
+  }
+
+  async getTimeLoginDashboard() {
+    const queryTimeLogin =
+      this.thoigiandangnhapRepository.createQueryBuilder('time');
+
+    const [result, totalRows] = await queryTimeLogin.getManyAndCount();
+    // Total time for ADMIN
+    const [resultADMIN, totalRowsADMIN] = await queryTimeLogin
+      .where('time.maadmin IS NOT NULL')
+      .getManyAndCount();
+    // Total time for UM
+    const [resultUM, totalRowsUM] = await queryTimeLogin
+      .where('time.sdt IS NOT NULL')
+      .getManyAndCount();
+
+    let totalTime = 0;
+    let totalTimeAllAdmin = 0;
+    let totalTimeAllUM = 0;
+
+    if (result?.length > 0) {
+      totalTime = result.reduce((init, item) => init + item.tongthoigian, 0);
+    }
+
+    if (resultADMIN?.length > 0) {
+      totalTimeAllAdmin = resultADMIN.reduce(
+        (init, item) => init + item.tongthoigian,
+        0,
+      );
+    }
+
+    if (resultUM?.length > 0) {
+      totalTimeAllUM = resultUM.reduce(
+        (init, item) => init + item.tongthoigian,
+        0,
+      );
+    }
+    return {
+      totalTime: totalTime,
+      totalTimeAllADMIN: totalTimeAllAdmin,
+      totalTimeAllUM: totalTimeAllUM,
     };
   }
 }

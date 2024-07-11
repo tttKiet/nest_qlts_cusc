@@ -152,4 +152,24 @@ export class AuthController {
       );
     }
   }
+
+  @Get('/time-login-dashboard')
+  async getTimeLoginDashboard(
+    @Query() query: timeLogin_DTO,
+    @Res() res: Response,
+  ) {
+    try {
+      const data = await this.authService.getTimeLoginDashboard();
+      return res.status(200).json({
+        statusCode: 200,
+        message: 'Lấy data thành công.',
+        data,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error?.message || 'Đã có lỗi xảy ra, vui lòng thử lại.',
+        500,
+      );
+    }
+  }
 }
