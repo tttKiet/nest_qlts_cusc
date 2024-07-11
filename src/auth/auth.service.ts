@@ -5,6 +5,7 @@ import { taikhoan } from 'src/entites/taikhoan.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { thoigiandangnhap } from 'src/entites/thoigiandangnhap.entity';
 import { Repository } from 'typeorm';
+import { timeLogin_DTO } from './dto/timeLogin.dto';
 
 @Injectable()
 export class AuthService {
@@ -66,5 +67,70 @@ export class AuthService {
     const timeDoc = this.thoigiandangnhapRepository.create(data);
     const saving = await this.thoigiandangnhapRepository.save(timeDoc);
     return saving;
+  }
+
+  async getTimeLogin(query: timeLogin_DTO) {
+    const { maadmin, sdt, page, pageSize, startDate, endDate, month, year } =
+      query;
+
+    const queryTimeLogin =
+      this.thoigiandangnhapRepository.createQueryBuilder('time');
+
+    if (maadmin) {
+      queryTimeLogin.andWhere('time.maadmin = :maadmin', { maadmin });
+    }
+
+    if (sdt) {
+      queryTimeLogin.andWhere('time.sdt = :sdt', { sdt });
+    }
+
+    let startDateTime: string | undefined;
+    let endDateTime: string | undefined;
+
+    if (startDate) {
+      startDateTime = `${startDate} 00:00:00`;
+    }
+
+    if (endDate) {
+      endDateTime = `${endDate} 23:59:59`;
+    }
+
+    if (startDateTime && endDateTime) {
+      queryTimeLogin.andWhere(
+        'time.dangnhap BETWEEN :startDateTime AND :endDateTime',
+        { startDateTime, endDateTime },
+      );
+    } else if (startDateTime) {
+      queryTimeLogin.andWhere('time.dangnhap >= :startDateTime', {
+        startDateTime,
+      });
+    } else if (endDateTime) {
+      queryTimeLogin.andWhere('time.dangnhap <= :endDateTime', { endDateTime });
+    }
+
+    if (month) {
+      queryTimeLogin.andWhere('MONTH(time.dangnhap) = :month', { month });
+    }
+
+    if (year) {
+      queryTimeLogin.andWhere('YEAR(time.dangnhap) = :year', { year });
+    }
+
+    if (page && pageSize) {
+      queryTimeLogin.skip((page - 1) * pageSize).take(pageSize);
+    }
+
+    const [result, totalRows] = await queryTimeLogin.getManyAndCount();
+    let totalTime = 0;
+    if (result?.length > 0) {
+      totalTime = result?.reduce((init, item) => {
+        return (init += item?.tongthoigian);
+      }, 0);
+    }
+    return {
+      result,
+      totalRows,
+      totalTime,
+    };
   }
 }

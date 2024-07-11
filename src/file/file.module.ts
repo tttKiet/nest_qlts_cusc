@@ -35,6 +35,7 @@ import { khachhangcu } from 'src/entites/khachhangcu.entit';
 import { chuyende } from 'src/entites/chuyende.entity';
 import { hoso } from 'src/entites/hoso.entity';
 import { trangthai } from 'src/entites/trangthai.entity';
+import { dottuyendung } from 'src/entites/dottuyendung.entity';
 
 @Module({
   controllers: [FileController],
@@ -77,6 +78,7 @@ import { trangthai } from 'src/entites/trangthai.entity';
       chuyende,
       trangthai,
       hoso,
+      dottuyendung,
     ]),
   ],
 })
