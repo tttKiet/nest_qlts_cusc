@@ -29,4 +29,6 @@ export class readFileDto {
   page: number;
   @IsOptional()
   pageSize: number;
+  @IsOptional()
+  NAM: number;
 }

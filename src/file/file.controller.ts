@@ -210,7 +210,7 @@ export class FileController {
         statusCode: 200,
         message: 'Đọc hồ sơ thành công.',
         data: data,
-      });
+      }); 
     } catch (error) {
       return res.status(500).json({
         statusCode: 500,

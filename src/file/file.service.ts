@@ -32,6 +32,7 @@ import path, { relative } from 'path';
 import { khachhang } from 'src/entites/khachhang.entity';
 import { usermanager } from 'src/entites/usermanager.entity';
 import { chitietpq } from 'src/entites/chitietpq.entity';
+import { dottuyendung } from 'src/entites/dottuyendung.entity';
 
 @Injectable()
 export class FileService {
@@ -547,12 +548,13 @@ export class FileService {
   }
 
   async readAll(query: Partial<readFileDto>) {
-    const { SDT, MAHOSO, MAPHIEUDK, HOSO, page, pageSize } = query;
+    const { SDT, MAHOSO, MAPHIEUDK, HOSO, page, pageSize, NAM } = query;
     const condition: Partial<readFileDto> = {};
 
     const queryBuilder = this.khachhangRepository
       .createQueryBuilder('khachhang')
       .leftJoinAndSelect('khachhang.phieudkxettuyen', 'phieudkxettuyen')
+      .leftJoinAndSelect('phieudkxettuyen.dottuyendung', 'dottuyendung')
       .leftJoinAndSelect('phieudkxettuyen.hoso', 'hoso')
       .where('hoso IS NOT NULL');
 
@@ -571,6 +573,10 @@ export class FileService {
     }
     if (HOSO) {
       queryBuilder.andWhere('hoso.HOSO = :HOSO', { HOSO });
+    }
+
+    if (NAM) {
+      queryBuilder.andWhere('dottuyendung.NAM = :NAM', { NAM });
     }
 
     // Count total rows
