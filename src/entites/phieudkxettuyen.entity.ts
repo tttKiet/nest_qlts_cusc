@@ -75,7 +75,11 @@ export class phieudkxettuyen {
   ketquatotnghiep: ketquatotnghiep;
 
   // dot tuyen dung
-  @OneToMany(() => dottuyendung, (dottuyendung) => dottuyendung.phieudkxettuyen)
+  @OneToMany(
+    () => dottuyendung,
+    (dottuyendung) => dottuyendung.phieudkxettuyen,
+    { cascade: true },
+  )
   dottuyendung: dottuyendung[];
 
   // hoso

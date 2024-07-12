@@ -330,17 +330,41 @@ export class CustomerService {
   }
 
   async editInfoObjectCustomer(data: InforObjectDto) {
+    console.log('data', data);
+
     let chuyendethamgiaResult: UpdateResult;
     let nganhyeuthichResult: UpdateResult;
     if (Object.keys(data.chuyendethamgia).length > 0) {
-      chuyendethamgiaResult = await this.chitietchuyendeRepository.update(
-        {
+      const existingRecord = await this.chitietchuyendeRepository.findOne({
+        where: {
           SDT: data.chuyendethamgia.SDT,
         },
-        {
-          ...data.chuyendethamgia,
-        },
-      );
+      });
+
+      if (existingRecord) {
+        // Update the existing record
+        await this.chitietchuyendeRepository.update(
+          {
+            SDT: data.chuyendethamgia.SDT,
+          },
+          {
+            ...data.chuyendethamgia,
+          },
+        );
+      } else {
+        // Create a new record
+        const dataCreate = {
+          MACHUYENDE: data?.chuyendethamgia?.MACHUYENDE,
+          SDT: data?.chuyendethamgia?.SDT,
+          SDT_UM: data?.chuyendethamgia?.SDT_UM,
+          TRANGTHAI: data?.chuyendethamgia?.TRANGTHAI[0],
+          NGAYCAPNHAT: new Date(),
+        };
+
+        console.log('dataCreate', dataCreate);
+
+        await this.chitietchuyendeRepository.save(dataCreate);
+      }
     }
 
     if (Object.keys(data.nganhyeuthich).length > 0) {

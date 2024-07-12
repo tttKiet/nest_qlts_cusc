@@ -417,8 +417,6 @@ export class FileService {
         },
       );
 
-      // Kiểm tra trong table khách hàng mới nếu có thì disable nó và trả vế số lượng khách đã được update trong bảng khách hàng mới
-
       let deletedCount = 0;
       for (const item of khachhangcuFiltered) {
         let ex = await this.khachhangRepository.findOne({
@@ -435,7 +433,7 @@ export class FileService {
       // Kiểm tra file excel SDT trùng nhau trả về số SDT trùng nhé
       const sdtCount = {};
       khachhangcuFiltered.forEach((item) => {
-        sdtCount[item.SDT] = (sdtCount[item.SDT] || 0) + 1;
+        sdtCount[item?.SDT] = (sdtCount[item?.SDT] || 0) + 1;
       });
 
       const dupKH_Excel = Object.keys(sdtCount)
