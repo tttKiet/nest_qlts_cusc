@@ -140,6 +140,9 @@ export class ChuyenDeThamGiaDto {
 
   @IsOptional()
   TRANGTHAI: string;
+
+  @IsOptional()
+  SDT_UM: string;
 }
 
 export class NganhYeuThichDto {
