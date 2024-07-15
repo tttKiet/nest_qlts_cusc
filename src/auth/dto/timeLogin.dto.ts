@@ -14,7 +14,7 @@ export class timeLogin_DTO {
   @IsOptional()
   endDate: string;
   @IsOptional()
-  month: number;
+  month: string;
   @IsOptional()
   year: number;
 }
