@@ -244,7 +244,7 @@ export class AuthService {
     }
 
     return {
-      result: modifiedResult,
+      results: modifiedResult,
       totalTime: totalTime,
       totalRows: totalRows,
     };
