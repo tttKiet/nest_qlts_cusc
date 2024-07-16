@@ -32,6 +32,7 @@ import path, { relative } from 'path';
 import { khachhang } from 'src/entites/khachhang.entity';
 import { usermanager } from 'src/entites/usermanager.entity';
 import { chitietpq } from 'src/entites/chitietpq.entity';
+import { dottuyendung } from 'src/entites/dottuyendung.entity';
 
 @Injectable()
 export class FileService {
@@ -166,6 +167,7 @@ export class FileService {
       const nganhyeuthich = [];
       const phieudkxettuyen = [];
       const taikhoan = [];
+
       let getIdpdkxtMax = await this.getIdMaxTablePhieudkxettuyen();
 
       const getTableLop = await this.dataService.getTableLop();
@@ -406,33 +408,33 @@ export class FileService {
           HOTEN: item?.hoVaTen,
         });
       }
+      const khachhangcuFiltered = khachhangcu.filter(
+        (item) => item?.SDT != undefined,
+      );
 
       const resultUploadExcel = await this.customerService.createCustomerOldArr(
         {
-          data: khachhangcu,
+          data: khachhangcuFiltered,
         },
       );
 
-      // Kiểm tra trong table khách hàng mới nếu có thì disable nó và trả vế số lượng khách đã được update trong bảng khách hàng mới
-      const updateCusPromise = await Promise.all(
-        khachhangcu.map(async (item) => {
-          const ex = await this.customerService.findSDT(item?.SDT);
-          if (ex) {
-            return await this.customerService.update({
-              SDT: item?.SDT,
-              TRANGTHAIKHACHHANG: 0,
-            } as updateCustomerDTO);
-          }
-        }),
-      );
-      const updateCusPromiseFilter = updateCusPromise.filter(
-        (item) => item != null,
-      )?.length;
+      let deletedCount = 0;
+      for (const item of khachhangcuFiltered) {
+        let ex = await this.khachhangRepository.findOne({
+          where: {
+            SDT: item?.SDT,
+          },
+        });
 
+        if (ex) {
+          await this.khachhangRepository.remove(ex);
+          deletedCount++;
+        }
+      }
       // Kiểm tra file excel SDT trùng nhau trả về số SDT trùng nhé
       const sdtCount = {};
-      khachhangcu.forEach((item) => {
-        sdtCount[item.SDT] = (sdtCount[item.SDT] || 0) + 1;
+      khachhangcuFiltered.forEach((item) => {
+        sdtCount[item?.SDT] = (sdtCount[item?.SDT] || 0) + 1;
       });
 
       const dupKH_Excel = Object.keys(sdtCount)
@@ -444,7 +446,7 @@ export class FileService {
 
       return {
         tableCusOld: resultUploadExcel?.raw,
-        updateTableCusNew: updateCusPromiseFilter,
+        numberDeleteTableCusNew: deletedCount,
         excel: dupKH_Excel,
       };
     } catch (err) {
@@ -546,12 +548,13 @@ export class FileService {
   }
 
   async readAll(query: Partial<readFileDto>) {
-    const { SDT, MAHOSO, MAPHIEUDK, HOSO, page, pageSize } = query;
+    const { SDT, MAHOSO, MAPHIEUDK, HOSO, page, pageSize, NAM } = query;
     const condition: Partial<readFileDto> = {};
 
     const queryBuilder = this.khachhangRepository
       .createQueryBuilder('khachhang')
       .leftJoinAndSelect('khachhang.phieudkxettuyen', 'phieudkxettuyen')
+      .leftJoinAndSelect('phieudkxettuyen.dottuyendung', 'dottuyendung')
       .leftJoinAndSelect('phieudkxettuyen.hoso', 'hoso')
       .where('hoso IS NOT NULL');
 
@@ -570,6 +573,10 @@ export class FileService {
     }
     if (HOSO) {
       queryBuilder.andWhere('hoso.HOSO = :HOSO', { HOSO });
+    }
+
+    if (NAM) {
+      queryBuilder.andWhere('dottuyendung.NAM = :NAM', { NAM });
     }
 
     // Count total rows

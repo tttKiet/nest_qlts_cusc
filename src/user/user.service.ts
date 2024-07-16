@@ -1,8 +1,13 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AccountService } from 'src/auth/account.service';
-import { CreateAccountDto, EditAccountDto } from 'src/dto/edit-account.dto';
+import {
+  CreateAccountDto,
+  Delete_DTO,
+  EditAccountDto,
+} from 'src/dto/edit-account.dto';
 import { admin } from 'src/entites/admin.entity';
+import { khachhang } from 'src/entites/khachhang.entity';
 import { taikhoan } from 'src/entites/taikhoan.entity';
 import { usermanager } from 'src/entites/usermanager.entity';
 import { Brackets, DataSource, Repository } from 'typeorm';
@@ -16,6 +21,9 @@ export class UserService {
     private adminRepository: Repository<admin>,
     @InjectRepository(usermanager)
     private usermanagerRepository: Repository<usermanager>,
+    @InjectRepository(khachhang)
+    private khachhangRepository: Repository<khachhang>,
+
     private dataSource: DataSource,
     private accountService: AccountService,
   ) {}
@@ -379,5 +387,74 @@ export class UserService {
     );
 
     return rl;
+  }
+
+  async deleted(body: Delete_DTO) {
+    const { MAADMIN, SDT, SDT_KH } = body;
+
+    if (MAADMIN == 'AD0985765424') {
+      return;
+    }
+
+    if (MAADMIN) {
+      const rl = await this.taiKhoanRepository.delete({
+        MAADMIN,
+      });
+      const up = await this.adminRepository.update(
+        { MAADMIN: MAADMIN },
+        { TRANGTHAIADMIN: 0 },
+      );
+      return rl;
+    }
+
+    if (SDT) {
+      const rl = await this.taiKhoanRepository.delete({
+        SDT,
+      });
+      const up = await this.usermanagerRepository.update(
+        { SDT: SDT },
+        { TRANGTHAIUM: '0' },
+      );
+      return rl;
+    }
+
+    if (SDT_KH) {
+      const rl = await this.taiKhoanRepository.delete({
+        SDT_KH,
+      });
+      const up = await this.khachhangRepository.update(
+        { SDT: SDT_KH },
+        { TRANGTHAIKHACHHANG: 0 },
+      );
+      return rl;
+    }
+  }
+
+  async read(data: Delete_DTO) {
+    const { MAADMIN, SDT, SDT_KH } = data;
+
+    console.log('data', data);
+
+    const query = this.taiKhoanRepository.createQueryBuilder('tk');
+    if (MAADMIN) {
+      query
+        .leftJoinAndSelect('tk.admin', 'admin')
+        .andWhere('admin.MAADMIN = :MAADMIN', { MAADMIN });
+    }
+
+    if (SDT) {
+      query
+        .leftJoinAndSelect('tk.usermanager', 'usermanager')
+        .andWhere('tk.SDT = :SDT', { SDT });
+    }
+
+    if (SDT_KH) {
+      query
+        .leftJoinAndSelect('tk.khachhang', 'khachhang')
+        .andWhere('tk.SDT_KH = :SDT_KH', { SDT_KH });
+    }
+
+    // Execute the query and return the results
+    return await query.getOne();
   }
 }

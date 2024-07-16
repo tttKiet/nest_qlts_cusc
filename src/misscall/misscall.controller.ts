@@ -59,7 +59,7 @@ export class MisscallController {
   @Patch('update')
   async update(@Body() body: UpdateMisscallDto, @Res() res: Response) {
     try {
-      const data = await this.misscallService.update(body);
+      const data = await this.misscallService.update(body); 
       return res.status(200).json({
         statusCode: 200,
         message: 'Cập nhật ghi chú thành công.',

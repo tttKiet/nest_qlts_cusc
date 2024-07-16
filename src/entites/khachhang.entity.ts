@@ -41,7 +41,7 @@ export class khachhang {
   @Column({ nullable: false, type: 'char', length: 12 })
   CCCD: string;
 
-  @OneToOne(() => taikhoan, (taikhoan) => taikhoan.khachhang)
+  @OneToOne(() => taikhoan, (taikhoan) => taikhoan.khachhang, { cascade: true })
   taikhoan: taikhoan;
 
   @ManyToOne(() => truong, (truong) => truong.khachhang)
@@ -80,6 +80,7 @@ export class khachhang {
   @OneToOne(
     () => dulieukhachhang,
     (dulieukhachhang) => dulieukhachhang.khachhang,
+    { cascade: true }, 
   )
   // @JoinColumn({ referencedColumnName: 'SDT' })
   dulieukhachhang: dulieukhachhang;
@@ -87,26 +88,32 @@ export class khachhang {
   @OneToOne(
     () => phieudkxettuyen,
     (phieudkxettuyen) => phieudkxettuyen.khachhang,
+    { cascade: true },
   )
   phieudkxettuyen: phieudkxettuyen;
 
-  @OneToMany(() => nganhyeuthich, (nganhyeuthich) => nganhyeuthich.khachhang)
+  @OneToMany(() => nganhyeuthich, (nganhyeuthich) => nganhyeuthich.khachhang, {
+    cascade: true,
+  })
   nganhyeuthich: nganhyeuthich[];
 
   //chitietchuyende
   @OneToMany(
     () => chitietchuyende,
     (chitietchuyende) => chitietchuyende.khachhang,
+    { cascade: true },
   )
   chitietchuyende: chitietchuyende[];
 
-  @OneToMany(() => lienhe, (lienhe) => lienhe.khachhang)
+  @OneToMany(() => lienhe, (lienhe) => lienhe.khachhang, { cascade: true })
   lienhe: lienhe[];
   // chucvu
-  @OneToMany(() => chucvu, (chucvu) => chucvu.khachhang)
+  @OneToMany(() => chucvu, (chucvu) => chucvu.khachhang, { cascade: true })
   chucvu: chucvu[];
 
-  @OneToMany(() => misscall, (misscall) => misscall.khachhang)
+  @OneToMany(() => misscall, (misscall) => misscall.khachhang, {
+    cascade: true,
+  })
   misscall: misscall[];
 
   @CreateDateColumn({ type: 'timestamp' })

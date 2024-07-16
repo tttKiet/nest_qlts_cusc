@@ -26,6 +26,9 @@ export class dottuyendung {
   @ManyToOne(
     () => phieudkxettuyen,
     (phieudkxettuyen) => phieudkxettuyen.dottuyendung,
+    {
+      onDelete: 'CASCADE',
+    },  
   )
   @JoinColumn({ name: 'MAPHIEUDK' })
   phieudkxettuyen: phieudkxettuyen;

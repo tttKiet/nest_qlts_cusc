@@ -36,7 +36,7 @@ export class chitietchuyende {
   })
   chuyende: chuyende;
 
-  @ManyToOne(() => khachhang, (khachhang) => khachhang.chitietchuyende)
+  @ManyToOne(() => khachhang, (khachhang) => khachhang.chitietchuyende, { onDelete: 'CASCADE' })
   @JoinColumn({
     foreignKeyConstraintName: 'chitietchuyende_ibfk_2',
     name: 'SDT',

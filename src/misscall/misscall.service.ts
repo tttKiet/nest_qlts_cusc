@@ -70,7 +70,7 @@ export class MisscallService {
   }
 
   async update(body: UpdateMisscallDto) {
-    const { MAMISSCALL, thoigian, TRANGTHAI } = body;
+    const { MAMISSCALL, thoigian, TRANGTHAI, UPDATECONTACT, MALIENHE } = body;
 
     // Tạo một đối tượng chứa các giá trị cần cập nhật
     const updateNote: Partial<UpdateMisscallDto> = {};
@@ -92,12 +92,26 @@ export class MisscallService {
       throw new Error('Không tìm thấy ghi chú để cập nhật');
     }
 
-    return await this.misscallRepository.update(
+    await this.misscallRepository.update(
       {
         MAMISSCALL: MAMISSCALL,
       },
       updateNote,
     );
+
+    if (UPDATECONTACT > 0) {
+      await this.lienheRepository.update(
+        {
+          MALIENHE: MALIENHE,
+        },
+        {
+          MATRANGTHAI: 'tt03',
+          CHITIETTRANGTHAI: 'Đã liên hệ',
+        },
+      );
+    }
+
+    return true;
   }
 
   async remove(MAMISSCALL: number) {

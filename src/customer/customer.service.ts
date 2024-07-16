@@ -11,6 +11,7 @@ import { chucvu } from 'src/entites/chucvu.entity';
 import {
   CreateCustomerArrDto,
   CreateCustomerDataArrDto,
+  DotTuyenDungDTO,
   GetCustomerDto,
   JobLikeDtoArrDto,
   PositionArrDto,
@@ -29,6 +30,7 @@ import { taikhoan } from 'src/entites/taikhoan.entity';
 import { khachhangcu } from 'src/entites/khachhangcu.entit';
 import { phanquyen } from 'src/entites/phanquyen.entity';
 import { updateCustomerDTO } from './dto/update-customer.dto';
+import { dottuyendung } from 'src/entites/dottuyendung.entity';
 
 @Injectable()
 export class CustomerService {
@@ -55,6 +57,8 @@ export class CustomerService {
     private khachhangcuRepository: Repository<khachhangcu>,
     @InjectRepository(phanquyen)
     private phanquyenRepository: Repository<phanquyen>,
+    @InjectRepository(dottuyendung)
+    private dottuyendungRepository: Repository<dottuyendung>,
   ) {}
 
   async getContactNumber(SDT: string, number: number) {
@@ -230,6 +234,49 @@ export class CustomerService {
         // Nếu không tìm thấy bản ghi, tạo mới
         const doc = this.phieudkxettuyenRepository.create(data);
         const result = await this.phieudkxettuyenRepository.save(doc);
+
+        const ddt = this.dottuyendungRepository.create({
+          MAPHIEUDK: doc?.MAPHIEUDK,
+          NAM: new Date().getFullYear().toString(),
+          DOTXETTUYEN: null,
+        });
+        const resultddt = await this.dottuyendungRepository.save(ddt);
+
+        return result;
+      }
+    } catch (error) {
+      console.error(
+        'Lỗi khi thực hiện thao tác tạo mới/cập nhật bản ghi:',
+        error.message,
+      );
+      throw error;
+    }
+  }
+
+  async createDotTuyenDung(data: any) {
+    try {
+      // Tìm kiếm bản ghi dựa trên SDT
+      const existingRecord = await this.phieudkxettuyenRepository.findOne({
+        where: {
+          MAPHIEUDK: data.MAPHIEUDK,
+        },
+      });
+
+      if (!!existingRecord) {
+        // Nếu đã tồn tại bản ghi, cập nhật thông tin
+
+        const result = await this.dottuyendungRepository.update(
+          { MAPHIEUDK: data.MAPHIEUDK },
+          {
+            NAM: data.NAM,
+            DOTXETTUYEN: data.DOTXETTUYEN,
+          },
+        );
+        return result;
+      } else {
+        // Nếu không tìm thấy bản ghi, tạo mới
+        const doc = this.dottuyendungRepository.create(data);
+        const result = await this.dottuyendungRepository.save(doc);
         return result;
       }
     } catch (error) {
@@ -283,17 +330,41 @@ export class CustomerService {
   }
 
   async editInfoObjectCustomer(data: InforObjectDto) {
+    console.log('data', data);
+
     let chuyendethamgiaResult: UpdateResult;
     let nganhyeuthichResult: UpdateResult;
     if (Object.keys(data.chuyendethamgia).length > 0) {
-      chuyendethamgiaResult = await this.chitietchuyendeRepository.update(
-        {
+      const existingRecord = await this.chitietchuyendeRepository.findOne({
+        where: {
           SDT: data.chuyendethamgia.SDT,
         },
-        {
-          ...data.chuyendethamgia,
-        },
-      );
+      });
+
+      if (existingRecord) {
+        // Update the existing record
+        await this.chitietchuyendeRepository.update(
+          {
+            SDT: data.chuyendethamgia.SDT,
+          },
+          {
+            ...data.chuyendethamgia,
+          },
+        );
+      } else {
+        // Create a new record
+        const dataCreate = {
+          MACHUYENDE: data?.chuyendethamgia?.MACHUYENDE,
+          SDT: data?.chuyendethamgia?.SDT,
+          SDT_UM: data?.chuyendethamgia?.SDT_UM,
+          TRANGTHAI: data?.chuyendethamgia?.TRANGTHAI[0],
+          NGAYCAPNHAT: new Date(),
+        };
+
+        console.log('dataCreate', dataCreate);
+
+        await this.chitietchuyendeRepository.save(dataCreate);
+      }
     }
 
     if (Object.keys(data.nganhyeuthich).length > 0) {

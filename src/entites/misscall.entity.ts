@@ -29,7 +29,9 @@ export class misscall {
   @Column({ type: 'int' })
   MALIENHE: number;
 
-  @ManyToOne(() => khachhang, (khachhang) => khachhang.misscall)
+  @ManyToOne(() => khachhang, (khachhang) => khachhang.misscall, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({
     name: 'SDT',
     referencedColumnName: 'SDT',
@@ -39,4 +41,4 @@ export class misscall {
   @OneToOne(() => lienhe, (lienhe) => lienhe.misscall)
   @JoinColumn({ name: 'MALIENHE' })
   lienhe: lienhe;
-} 
+}

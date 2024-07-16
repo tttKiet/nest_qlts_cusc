@@ -24,7 +24,7 @@ export class taikhoan {
 
   @OneToOne(() => khachhang, (khachhang) => khachhang.taikhoan, {
     onDelete: 'CASCADE',
-    cascade: true,
+    // cascade: true,
   })
   @JoinColumn({
     name: 'SDT_KH',

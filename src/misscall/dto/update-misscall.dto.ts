@@ -1,13 +1,17 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateMisscallDto } from './create-misscall.dto';
 import { Optional } from '@nestjs/common';
-import { IsEmpty, IsNotEmpty } from 'class-validator';
+import { IsEmpty, IsNotEmpty, IsOptional } from 'class-validator';
 
-export class UpdateMisscallDto extends PartialType(CreateMisscallDto) {
+export class UpdateMisscallDto {
   @IsNotEmpty()
   MAMISSCALL: number;
-  @Optional()
+  @IsOptional()
   thoigian: Date;
-  @Optional()
+  @IsOptional()
   TRANGTHAI: number;
+  @IsOptional()
+  UPDATECONTACT: number;
+  @IsOptional()
+  MALIENHE: number;
 }

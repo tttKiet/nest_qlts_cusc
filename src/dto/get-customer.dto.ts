@@ -101,6 +101,17 @@ export class RegistrationFormDto {
   NGANHDK: string;
 }
 
+export class DotTuyenDungDTO {
+  @IsNotEmpty({ message: 'Bạn chưa gửi MAPHIEUDK.' })
+  MAPHIEUDK: string;
+
+  @IsNotEmpty({ message: 'Bạn chưa gửi NAM.' })
+  NAM: string;
+
+  @IsOptional()
+  DOTXETTUYEN: string;
+}
+
 export class RegistrationFormArrDto {
   @IsArray({ message: 'Vui lòng chuyền một array!' })
   @ValidateNested({ each: true })
