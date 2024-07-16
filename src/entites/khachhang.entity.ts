@@ -77,10 +77,13 @@ export class khachhang {
   @Column({ nullable: false, type: 'tinyint' })
   TRANGTHAIKHACHHANG: number;
 
+  @Column({ nullable: false, type: 'char', length: 20 })
+  NAM: string;
+
   @OneToOne(
     () => dulieukhachhang,
     (dulieukhachhang) => dulieukhachhang.khachhang,
-    { cascade: true }, 
+    { cascade: true },
   )
   // @JoinColumn({ referencedColumnName: 'SDT' })
   dulieukhachhang: dulieukhachhang;
