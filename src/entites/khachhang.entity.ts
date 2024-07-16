@@ -6,6 +6,7 @@ import {
   ManyToOne,
   OneToOne,
   OneToMany,
+  CreateDateColumn,
 } from 'typeorm';
 import { nghenghiep } from './nghenghiep.entity';
 import { truong } from './truong.entity';
@@ -16,7 +17,6 @@ import { dulieukhachhang } from './dulieukhachhang.entity';
 import { nganhyeuthich } from './nganhyeuthich.entity';
 import { chitietchuyende } from './chitietchuyende.entity';
 import { lienhe } from './lienhe.entity';
-import { chuyende } from './chuyende.entity';
 import { chucvu } from './chucvu.entity';
 import { taikhoan } from './taikhoan.entity';
 import { misscall } from './misscall.entity';
@@ -108,4 +108,7 @@ export class khachhang {
 
   @OneToMany(() => misscall, (misscall) => misscall.khachhang)
   misscall: misscall[];
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
 }

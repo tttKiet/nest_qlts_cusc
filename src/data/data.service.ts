@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Body, HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CreateSegmentDto,
@@ -341,11 +341,13 @@ export class DataService {
     provinceCode,
     phoneArray,
     DAUSO,
+    year,
   }: {
     schoolCode?: string;
     jobCode?: string;
     provinceCode?: string;
     jobDirCode?: string;
+    year?: string;
     limit?: number;
     phoneArray?: string[];
     DAUSO?: 'viettel' | 'vinaphone' | 'mobifone' | 'other' | undefined;
@@ -363,6 +365,10 @@ export class DataService {
       .leftJoinAndSelect('nganhyeuthich.nganh', 'nganh')
       .leftJoinAndSelect('nganhyeuthich.nhomnganh', 'nhom')
       .where(`kh.SDT NOT IN (${subQuery.getQuery()})`);
+
+    if (year) {
+      query.andWhere('EXTRACT(YEAR FROM kh.createdAt) = :year', { year });
+    }
 
     if (DAUSO && DAUSO != 'other') {
       const prefixes = carrierPrefixes[DAUSO];
@@ -456,12 +462,14 @@ export class DataService {
     provinceCode,
     phoneArray,
     DAUSO,
+    year,
   }: {
     MaPQ: string;
     MANGANH: string;
     MATRUONG: string;
     SODONG: number;
     jobDirCode?: string;
+    year?: string;
     provinceCode?: string;
     phoneArray?: string[];
     DAUSO?: 'viettel' | 'vinaphone' | 'mobifone' | 'other' | undefined;
@@ -474,6 +482,7 @@ export class DataService {
       provinceCode,
       phoneArray,
       DAUSO,
+      year,
     });
 
     // create data
@@ -504,6 +513,7 @@ export class DataService {
         provinceCode: body.provinceCode,
         phoneArray: body.phoneArray,
         DAUSO: body.DAUSO,
+        year: body.YEAR,
       });
 
       // check so dong
@@ -548,6 +558,7 @@ export class DataService {
           jobDirCode: body.NHOMNGANH,
           provinceCode: body.provinceCode,
           phoneArray: body.phoneArray,
+          year: body.YEAR,
           DAUSO: body.DAUSO,
         });
 
@@ -557,6 +568,7 @@ export class DataService {
           jobDirCode: body.NHOMNGANH,
           provinceCode: body.provinceCode,
           phoneArray: body.phoneArray,
+          year: body.YEAR,
           DAUSO: body.DAUSO,
         });
 
@@ -693,12 +705,14 @@ export class DataService {
     MANGANH,
     MATINH,
     DAUSO,
+    YEAR,
   }: {
     schoolCode?: string;
     SDT_UM?: string;
     MANHOM?: string;
     MATINH?: string;
     MANGANH?: string;
+    YEAR?: string;
     DAUSO?: 'viettel' | 'vinaphone' | 'mobifone' | 'other' | undefined;
     type?: 'doing' | 'done' | undefined;
   }) {
@@ -723,6 +737,11 @@ export class DataService {
     if (type == 'done') {
       query.andWhere('pd.SDT IS NOT NULL ');
     }
+
+    if (YEAR) {
+      query.andWhere('EXTRACT(YEAR FROM pd.createdAt) = :YEAR', { YEAR });
+    }
+
     query.orderBy('pd.createdAt', 'DESC');
 
     const data = await query.getMany();
@@ -977,6 +996,7 @@ export class DataService {
       jobCode: query.MANGANH,
       jobDirCode: query.MANHOM,
       DAUSO: query.DAUSO,
+      year: query.YEAR,
     });
   }
 }

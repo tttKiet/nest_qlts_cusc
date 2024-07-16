@@ -21,6 +21,9 @@ export class CreateSegmentDto {
   @IsOptional()
   provinceCode: string;
 
+  @IsOptional()
+  YEAR: string;
+
   @IsNotEmpty({ message: 'Bạn chưa gửi SODONG.' })
   SODONG: number;
 

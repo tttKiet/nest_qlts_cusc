@@ -79,25 +79,26 @@ export class AuthController {
 
   @Get('/logout')
   async logout(@Req() req: Request, @Res() res: Response) {
-    console.log('logout: ', req.session);
+    // console.log('\n ========================================\n ');
+    // console.log('Session: ', req.session);
 
     const timeIn = req.session.timeIn;
     const timeOut = new Date().toISOString();
     const TENDANGNHAP = req.session.loginId;
 
-    // req.session.destroy(function (err) {
-    //   console.log('Err Session Destroy: ', err);
-    // });
+    req.session.destroy((err) => {
+      console.log('Error session destroy: ', err);
+    });
 
     if (TENDANGNHAP && timeIn && timeOut) {
       const acc = await this.accountService.findOne({ TENDANGNHAP });
       const s = moment(timeIn);
       const e = moment(timeOut);
-      console.log('dir', { s, e });
+      // console.log('dir', { s, e });
 
       const dir = e.diff(s, 'second');
-      console.log('dir', e.format('YYYY[-]MM[-]DD h:mm:ss'));
-
+      // console.log('Logout: ', e.format('YYYY[-]MM[-]DD h:mm:ss'));
+      // console.log('\n ========================================\n ');
       if (acc.admin?.MAADMIN) {
         const logStore = await this.authService.createTime({
           maadmin: acc.admin.MAADMIN,

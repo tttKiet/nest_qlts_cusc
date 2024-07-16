@@ -34,6 +34,7 @@ interface TimeLogin {
 interface QueryDataAvailable {
   MATINH?: string;
   MATRUONG?: string;
+  YEAR?: string;
   MANGANH?: string;
   MANHOM?: string;
   DAUSO?: 'viettel' | 'vinaphone' | 'mobifone' | 'other' | undefined;
