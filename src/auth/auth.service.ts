@@ -259,7 +259,7 @@ export class AuthService {
     const [resultADMIN, totalRowsADMIN] = await queryTimeLogin
       .where('time.maadmin IS NOT NULL')
       .getManyAndCount();
-    // Total time for UM
+    // Total time for UM 1
     const [resultUM, totalRowsUM] = await queryTimeLogin
       .where('time.sdt IS NOT NULL')
       .getManyAndCount();
