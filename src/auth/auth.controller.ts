@@ -67,10 +67,11 @@ export class AuthController {
   async fetchProfile(@Req() req: Request, @Res() res: Response) {
     console.log('profile: ', req.session);
 
-    if (!req.session) {
+    if (!req.session.loginId) {
       const user: Partial<taikhoan> = req.user;
       req.session.timeIn = new Date().toUTCString();
       req.session.loginId = user.TENDANGNHAP;
+      console.log('Loading: ', req.session);
     }
 
     return res.status(200).json({

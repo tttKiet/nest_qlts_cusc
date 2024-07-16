@@ -74,10 +74,7 @@ export class DataController {
   async getCustomer(
     @Res() res: Response,
     @Query()
-    query: {
-      schoolCode?: string;
-      provinceCode?: string;
-    },
+    query,
   ) {
     try {
       const data = await this.dataService.getCustomer({
@@ -338,7 +335,7 @@ export class DataController {
 
       return res.status(200).json({
         statusCode: 200,
-        message: 'Lấy đoạn thành công.', 
+        message: 'Lấy đoạn thành công.',
         data,
       });
     } catch (error) {

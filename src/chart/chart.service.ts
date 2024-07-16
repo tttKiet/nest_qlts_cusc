@@ -378,6 +378,7 @@ export class ChartService {
         SDT: SDT_UM,
       },
     });
+
     if (segmentForUM.length == 0) {
       return {
         data: [],
@@ -397,7 +398,7 @@ export class ChartService {
     const _KH = await Promise.all(
       segmentForUM.map(
         async (s) =>
-          await this.segmentDetailsRepository.findOne({
+          await this.segmentDetailsRepository.find({
             where: {
               MaPQ: s.MaPQ,
             },
@@ -407,8 +408,9 @@ export class ChartService {
 
     const query = this.lienheRepository.createQueryBuilder('lienhe');
 
-    const phoneArray = _KH.map((k) => k.SDT);
-    // console.log(phoneArray);
+    const phoneArray = _KH.flat(1).map((s) => s.SDT);
+    console.log('_KH: ', _KH);
+    console.log('phoneArray');
 
     if (phoneArray.length == 0) {
       return {
@@ -427,10 +429,13 @@ export class ChartService {
     }
 
     // contact
-    query.select(['lienhe.LAN as LAN', 'COUNT(*) as SOLAN']);
+    query
+      .select(['lienhe.LAN as LAN', 'COUNT(*) as SOLAN'])
+      .where('lienhe.SDT = :SDT_UM', { SDT_UM });
     query.groupBy('lienhe.LAN');
 
     const data = await query.getRawMany();
+    console.log('phoneArray', phoneArray);
 
     // status
     const lan_1 = await this.getChartAdminIndex_2(phoneArray, '1');

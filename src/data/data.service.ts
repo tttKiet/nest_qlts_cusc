@@ -128,10 +128,14 @@ export class DataService {
     schoolCode,
     provinceCode,
     jobCode,
+    year,
+    lan,
   }: {
     schoolCode?: string;
     provinceCode?: string;
     jobCode?: string;
+    year?: string;
+    lan?: 'all' | '1' | '2' | '3' | '4' | '5' | '6' | '7';
   }) {
     const query = this.customerRepository.createQueryBuilder('kh');
     query
@@ -143,6 +147,28 @@ export class DataService {
     if (provinceCode) {
       query.where('kh.MATINH = :code', {
         code: provinceCode,
+      });
+    }
+    if (year) {
+      query.andWhere('EXTRACT(YEAR FROM kh.createdAt) = :year', { year });
+    }
+    console.log('lan', lan);
+
+    if (lan && lan != 'all') {
+      const arrayLan = await this.lienheRepository.find({
+        where: {
+          LAN: lan,
+        },
+      });
+      const phoneArray = arrayLan.map((l) => l.SDT);
+      console.log('phoneArray: ', phoneArray);
+
+      if (phoneArray.length == 0) {
+        return [];
+      }
+
+      query.andWhere('kh.SDT IN (:...phoneArray)', {
+        phoneArray,
       });
     }
 
