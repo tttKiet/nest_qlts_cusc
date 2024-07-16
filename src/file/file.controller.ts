@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express'; 
 import { CreateFileDto, readFileDto } from './dto/create-file.dto';
 import { FileService } from './file.service';
 

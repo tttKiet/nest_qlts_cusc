@@ -4,6 +4,8 @@ import { UpdateThematicDto } from './dto/update-thematic.dto';
 import { chuyende } from 'src/entites/chuyende.entity';
 import { chitietchuyende } from 'src/entites/chitietchuyende.entity';
 import { usermanager } from 'src/entites/usermanager.entity';
+import { khachhang } from 'src/entites/khachhang.entity';
+import { truong } from 'src/entites/truong.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -76,18 +78,20 @@ export class ThematicService {
       condition.SDT = SDT;
     }
 
-    const queryOptions: any = {
-      where: condition,
-      relations: ['chitietchuyende','usermanager'],
-    };
+    const queryBuilder = this.chuyendeRepository.createQueryBuilder('chuyende');
 
+    queryBuilder
+      .leftJoinAndSelect('chuyende.truong', 'truong')
+      .leftJoinAndSelect('truong.khachhang', 'khachhang')
+      .leftJoinAndSelect('chuyende.chitietchuyende', 'chitietchuyende')
+      .leftJoinAndSelect('chuyende.usermanager', 'usermanager');
+
+    // Thêm các tùy chọn phân trang nếu có
     if (page !== undefined && pageSize !== undefined) {
-      queryOptions.take = pageSize;
-      queryOptions.skip = (page - 1) * pageSize;
+      queryBuilder.take(pageSize);
+      queryBuilder.skip((page - 1) * pageSize);
     }
-
-    const [data, totalRows] =
-      await this.chuyendeRepository.findAndCount(queryOptions);
+    const [data, totalRows] = await queryBuilder.getManyAndCount();
     return {
       totalRows: totalRows,
       results: data,

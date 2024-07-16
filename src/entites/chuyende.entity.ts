@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { chitietchuyende } from './chitietchuyende.entity';
 import { usermanager } from './usermanager.entity';
+import { truong } from './truong.entity';
 
 @Entity()
 export class chuyende {
@@ -41,6 +42,10 @@ export class chuyende {
   chitietchuyende: chitietchuyende[];
 
   @ManyToOne(() => usermanager, (usermanager) => usermanager.phanquyen)
-  @JoinColumn({ name: 'SDT', foreignKeyConstraintName: 'fk_SDT' }) 
+  @JoinColumn({ name: 'SDT', foreignKeyConstraintName: 'fk_SDT' })
   usermanager: usermanager;
+
+  @ManyToOne(() => truong, (truong) => truong.chuyende)
+  @JoinColumn({ name: 'MATRUONG' })
+  truong: truong;
 }

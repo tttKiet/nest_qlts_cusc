@@ -6,7 +6,7 @@ import {
   Patch,
   Param,
   Delete,
-  Res,
+  Res, 
   Req,
   Query,
   Put,
@@ -14,7 +14,7 @@ import {
 import { Request, Response } from 'express';
 import { ThematicService } from './thematic.service';
 import { CreateThematicDto } from './dto/create-thematic.dto';
-import { UpdateThematicDto } from './dto/update-thematic.dto';
+import { UpdateThematicDto } from './dto/update-thematic.dto'; 
 
 @Controller('thematic')
 export class ThematicController {

@@ -145,6 +145,9 @@ export class CustomerDto {
 
   @IsOptional()
   TRANGTHAIKHACHHANG: number;
+
+  @IsOptional()
+  NAM: string;
 }
 
 export class CreateCustomerArrDto {

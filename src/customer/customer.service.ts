@@ -174,6 +174,8 @@ export class CustomerService {
   }
 
   async createCustomerArr(data: CreateCustomerArrDto) {
+    console.log(data);
+
     const dataResult = await this.khachhangRepository.upsert(data.data, [
       'SDT',
     ]);
@@ -235,12 +237,12 @@ export class CustomerService {
         const doc = this.phieudkxettuyenRepository.create(data);
         const result = await this.phieudkxettuyenRepository.save(doc);
 
-        const ddt = this.dottuyendungRepository.create({
-          MAPHIEUDK: doc?.MAPHIEUDK,
-          NAM: new Date().getFullYear().toString(),
-          DOTXETTUYEN: null,
-        });
-        const resultddt = await this.dottuyendungRepository.save(ddt);
+        // const ddt = this.dottuyendungRepository.create({
+        //   MAPHIEUDK: doc?.MAPHIEUDK,
+        //   NAM: new Date().getFullYear().toString(),
+        //   DOTXETTUYEN: null,
+        // });
+        // const resultddt = await this.dottuyendungRepository.save(ddt);
 
         return result;
       }
