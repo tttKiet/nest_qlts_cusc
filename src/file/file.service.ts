@@ -54,10 +54,11 @@ export class FileService {
   removeAccentsAndLowerCase(str: string) {
     return str
       .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // Remove diacritical marks
-      .replace(/đ/g, 'd') // Replace lowercase đ with d
-      .replace(/Đ/g, 'd') // Replace uppercase Đ with d
-      .toLowerCase();
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/Đ/g, 'd')
+      .toLowerCase()
+      .trim();
   }
 
   filterObject(ar: any[], column: string, value: string) {
@@ -157,6 +158,7 @@ export class FileService {
             kenhNhanThongBao: row[24],
             khoaHocQuanTam: row[25],
             ketQuaDaiHocCaoDang: row[26],
+            nam: row[27],
           };
         })
         .filter((student) => student !== null);
@@ -210,14 +212,15 @@ export class FileService {
 
         khachhang.push({
           SDT: item?.dienThoai,
-          MANGHENGHIEP: dataNghenghiepItem?.MANGHENGHIEP,
-          MATRUONG: dataTruongItem?.MATRUONG,
-          MATINH: dataTinhItem?.MATINH,
-          MAHINHTHUC: dataMahinhthucItem?.MAHINHTHUC,
+          MANGHENGHIEP: dataNghenghiepItem?.MANGHENGHIEP || null,
+          MATRUONG: dataTruongItem?.MATRUONG || null,
+          MATINH: dataTinhItem?.MATINH || null,
+          MAHINHTHUC: dataMahinhthucItem?.MAHINHTHUC || null,
           HOTEN: item?.hoVaTen,
           EMAIL: item?.email,
           CCCD: item?.CCCD,
           TRANGTHAIKHACHHANG: 1,
+          NAM: item?.nam,
         });
 
         // dư liệu khách hàng

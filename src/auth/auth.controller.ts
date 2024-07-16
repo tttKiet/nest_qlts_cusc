@@ -140,7 +140,7 @@ export class AuthController {
   @Get('/time-login')
   async getTimeLogin(@Query() query: timeLogin_DTO, @Res() res: Response) {
     try {
-      const data = await this.authService.getTimeLogin(query);
+      const data = await this.authService.getTimeLoginV2(query);
       return res.status(200).json({
         statusCode: 200,
         message: 'Lấy data thành công.',

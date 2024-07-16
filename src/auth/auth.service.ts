@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { thoigiandangnhap } from 'src/entites/thoigiandangnhap.entity';
 import { Repository } from 'typeorm';
 import { timeLogin_DTO } from './dto/timeLogin.dto';
+import { time } from 'console';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +17,12 @@ export class AuthService {
     private jwtService: JwtService,
     @InjectRepository(thoigiandangnhap)
     private thoigiandangnhapRepository: Repository<thoigiandangnhap>,
+    @InjectRepository(usermanager)
+    private usermanagerRepository: Repository<usermanager>,
+    @InjectRepository(admin)
+    private adminRepository: Repository<admin>,
+    @InjectRepository(taikhoan)
+    private taikhoanRepository: Repository<taikhoan>,
   ) {}
 
   async login({
@@ -135,6 +142,111 @@ export class AuthService {
       result,
       totalRows,
       totalTime,
+    };
+  }
+
+  async getTimeLoginV2(query: timeLogin_DTO) {
+    const { maadmin, sdt, page, pageSize, startDate, endDate, month, year } =
+      query;
+    let startDateTime: string | undefined;
+    let endDateTime: string | undefined;
+
+    if (startDate) {
+      startDateTime = `${startDate} 00:00:00`;
+    }
+
+    if (endDate) {
+      endDateTime = `${endDate} 23:59:59`;
+    }
+    let queryTimeLogin = this.taikhoanRepository
+      .createQueryBuilder('TK')
+      .where('TK.MAADMIN IS NOT NULL')
+      .orWhere('TK.SDT IS NOT NULL')
+      .leftJoinAndSelect('TK.admin', 'admin')
+      .leftJoinAndSelect('TK.usermanager', 'usermanager');
+
+    if (page && pageSize) {
+      queryTimeLogin.skip((page - 1) * pageSize).take(pageSize);
+    }
+
+    if (maadmin) {
+      queryTimeLogin.where('TK.MAADMIN = :maadmin', { maadmin });
+    }
+
+    if (sdt) {
+      queryTimeLogin.where('TK.SDT = :sdt', { sdt });
+    }
+
+    const [result, totalRows] = await queryTimeLogin.getManyAndCount();
+
+    var queryThoigiandangnhap =
+      this.thoigiandangnhapRepository.createQueryBuilder('thoigiandangnhap');
+
+    let a = result?.map(async (m) => {
+      let temp: any = {};
+
+      if (startDate && endDate) {
+        queryThoigiandangnhap.andWhere(
+          'thoigiandangnhap.dangnhap BETWEEN :startDateTime AND :endDateTime',
+          { startDateTime, endDateTime },
+        );
+      }
+
+      if (month) {
+        const [year, monthNumber] = month.split('-').map(Number);
+        queryThoigiandangnhap.andWhere(
+          'YEAR(thoigiandangnhap.dangnhap) = :year AND MONTH(thoigiandangnhap.dangnhap) = :month',
+          {
+            year,
+            month: monthNumber,
+          },
+        );
+      }
+
+      if (year) {
+        queryThoigiandangnhap.andWhere(
+          'YEAR(thoigiandangnhap.dangnhap) = :year',
+          {
+            year,
+          },
+        );
+      }
+
+      let timeLogs = await queryThoigiandangnhap.getMany();
+
+      if (m?.admin?.MAADMIN) {
+        temp.thoigiandangnhap = timeLogs.filter((t) => {
+          return t.maadmin == m?.admin?.MAADMIN;
+        });
+      }
+
+      if (m?.usermanager?.SDT) {
+        temp.thoigiandangnhap = timeLogs.filter((t) => {
+          return t.sdt == m?.usermanager?.SDT;
+        });
+      }
+
+      return {
+        ...m,
+        ...temp,
+      };
+    });
+
+    const modifiedResult = await Promise.all(a);
+
+    let totalTime = 0;
+    if (modifiedResult?.length > 0) {
+      modifiedResult?.forEach((item) => {
+        totalTime = item?.thoigiandangnhap?.reduce((init, item) => {
+          return (init += item?.tongthoigian);
+        }, 0);
+      });
+    }
+
+    return {
+      results: modifiedResult,
+      totalTime: totalTime,
+      totalRows: totalRows,
     };
   }
 
