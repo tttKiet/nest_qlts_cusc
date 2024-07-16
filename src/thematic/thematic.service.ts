@@ -56,29 +56,31 @@ export class ThematicService {
     } = drops;
 
     let condition: Partial<IFThematic> = {};
-    if (MACHUYENDE) {
-      condition.MACHUYENDE = MACHUYENDE;
-    }
-    if (TENCHUYENDE) {
-      condition.TENCHUYENDE = TENCHUYENDE;
-    }
-    if (THOIGIANTHONGBAO) {
-      condition.THOIGIANTHONGBAO = THOIGIANTHONGBAO;
-    }
-    if (THOIGIANTOCHUCCHUYENDE) {
-      condition.THOIGIANTOCHUCCHUYENDE = THOIGIANTOCHUCCHUYENDE;
-    }
-    if (NOIDUNG) {
-      condition.NOIDUNG = NOIDUNG;
-    }
-    if (MATRUONG) {
-      condition.MATRUONG = MATRUONG;
-    }
-    if (SDT) {
-      condition.SDT = SDT;
-    }
+
+    // if (TENCHUYENDE) {
+    //   condition.TENCHUYENDE = TENCHUYENDE;
+    // }
+    // if (THOIGIANTHONGBAO) {
+    //   condition.THOIGIANTHONGBAO = THOIGIANTHONGBAO;
+    // }
+    // if (THOIGIANTOCHUCCHUYENDE) {
+    //   condition.THOIGIANTOCHUCCHUYENDE = THOIGIANTOCHUCCHUYENDE;
+    // }
+    // if (NOIDUNG) {
+    //   condition.NOIDUNG = NOIDUNG;
+    // }
+    // if (MATRUONG) {
+    //   condition.MATRUONG = MATRUONG;
+    // }
+    // if (SDT) {
+    //   condition.SDT = SDT;
+    // }
 
     const queryBuilder = this.chuyendeRepository.createQueryBuilder('chuyende');
+
+    if (MACHUYENDE) {
+      queryBuilder.where('chuyende.MACHUYENDE = :MACHUYENDE', { MACHUYENDE });
+    }
 
     queryBuilder
       .leftJoinAndSelect('chuyende.truong', 'truong')
