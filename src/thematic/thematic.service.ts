@@ -69,7 +69,7 @@ export class ThematicService {
       .leftJoinAndSelect('chuyende.chitietchuyende', 'chitietchuyende')
       .leftJoinAndSelect('chuyende.usermanager', 'usermanager');
 
-    // Thêm các tùy chọn phân trang nếu có
+    // Thêm các tùy chọn phân trang nếu có 1
     if (page !== undefined && pageSize !== undefined) {
       queryBuilder.take(pageSize);
       queryBuilder.skip((page - 1) * pageSize);
