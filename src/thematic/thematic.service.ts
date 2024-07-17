@@ -45,11 +45,7 @@ export class ThematicService {
   async readAll(drops: IFThematic) {
     const {
       MACHUYENDE,
-      TENCHUYENDE,
-      THOIGIANTHONGBAO,
-      THOIGIANTOCHUCCHUYENDE,
-      NOIDUNG,
-      MATRUONG,
+      TRANGTHAI,
       SDT,
       page,
       pageSize,
@@ -57,29 +53,20 @@ export class ThematicService {
 
     let condition: Partial<IFThematic> = {};
 
-    // if (TENCHUYENDE) {
-    //   condition.TENCHUYENDE = TENCHUYENDE;
-    // }
-    // if (THOIGIANTHONGBAO) {
-    //   condition.THOIGIANTHONGBAO = THOIGIANTHONGBAO;
-    // }
-    // if (THOIGIANTOCHUCCHUYENDE) {
-    //   condition.THOIGIANTOCHUCCHUYENDE = THOIGIANTOCHUCCHUYENDE;
-    // }
-    // if (NOIDUNG) {
-    //   condition.NOIDUNG = NOIDUNG;
-    // }
-    // if (MATRUONG) {
-    //   condition.MATRUONG = MATRUONG;
-    // }
-    // if (SDT) {
-    //   condition.SDT = SDT;
-    // }
-
     const queryBuilder = this.chuyendeRepository.createQueryBuilder('chuyende');
 
     if (MACHUYENDE) {
       queryBuilder.where('chuyende.MACHUYENDE = :MACHUYENDE', { MACHUYENDE });
+    }
+
+    if (SDT) {
+      queryBuilder.where('chuyende.SDT = :SDT', { SDT });
+    }
+
+    if (TRANGTHAI) {
+      queryBuilder.where('chitietchuyende.TRANGTHAI = :TRANGTHAI', {
+        TRANGTHAI,
+      });
     }
 
     queryBuilder
