@@ -43,13 +43,7 @@ export class ThematicService {
   }
 
   async readAll(drops: IFThematic) {
-    const {
-      MACHUYENDE,
-      TRANGTHAI,
-      SDT,
-      page,
-      pageSize,
-    } = drops;
+    const { MACHUYENDE, TRANGTHAI, SDT, page, pageSize } = drops;
 
     let condition: Partial<IFThematic> = {};
 
@@ -60,7 +54,7 @@ export class ThematicService {
     }
 
     if (SDT) {
-      queryBuilder.where('chuyende.SDT = :SDT', { SDT });
+      queryBuilder.andWhere('chuyende.SDT = :SDT', { SDT });
     }
 
     if (TRANGTHAI) {
