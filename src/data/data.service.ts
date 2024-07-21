@@ -164,9 +164,6 @@ export class DataService {
 
     if (provinceCode) {
       this.addCondition(query, 'kh.MATINH = :code', { code: provinceCode });
-      // query.where('kh.MATINH = :code', {
-      //   code: provinceCode,
-      // });
     }
 
     if (year) {
@@ -218,7 +215,24 @@ export class DataService {
     }
 
     const data = await query.getMany();
-    return data;
+    // Get lienhe
+
+    const result = await Promise.all(
+      data.map(async (d) => {
+        const ct = await this.lienheRepository.find({
+          where: {
+            SDT_KH: d.SDT,
+          },
+        });
+
+        return {
+          ...d,
+          contactDetails: ct,
+        };
+      }),
+    );
+
+    return result;
   }
 
   async getJobLike({ schoolCode, isAvalable }: FilterJobLikeDto) {
