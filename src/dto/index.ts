@@ -229,5 +229,8 @@ export class ChartAdmin {
   SDT_UM: string;
 
   @IsOptional()
+  year: string;
+
+  @IsOptional()
   MACHUYENDE;
 }
