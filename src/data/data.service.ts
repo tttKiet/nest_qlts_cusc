@@ -1,4 +1,4 @@
-import { Body, HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CreateSegmentDto,
@@ -25,7 +25,13 @@ import { phanquyen } from 'src/entites/phanquyen.entity';
 import { tinh } from 'src/entites/tinh.entity';
 import { truong } from 'src/entites/truong.entity';
 import { UserService } from 'src/user/user.service';
-import { Brackets, DataSource, In, Repository } from 'typeorm';
+import {
+  Brackets,
+  DataSource,
+  In,
+  Repository,
+  SelectQueryBuilder,
+} from 'typeorm';
 import * as moment from 'moment';
 import { trangthai } from 'src/entites/trangthai.entity';
 import { chuyende } from 'src/entites/chuyende.entity';
@@ -124,6 +130,18 @@ export class DataService {
     return data;
   }
 
+  async addCondition(
+    query: SelectQueryBuilder<any>,
+    condition: string,
+    parameters?: object,
+  ) {
+    if (query.expressionMap.wheres.length === 0) {
+      query.where(condition, parameters);
+    } else {
+      query.andWhere(condition, parameters);
+    }
+  }
+
   async getCustomer({
     schoolCode,
     provinceCode,
@@ -145,14 +163,19 @@ export class DataService {
       .leftJoinAndSelect('kh.nganhyeuthich', 'nganhyeuthich');
 
     if (provinceCode) {
-      query.where('kh.MATINH = :code', {
-        code: provinceCode,
-      });
+      this.addCondition(query, 'kh.MATINH = :code', { code: provinceCode });
+      // query.where('kh.MATINH = :code', {
+      //   code: provinceCode,
+      // });
     }
+
     if (year) {
-      query.andWhere('EXTRACT(YEAR FROM kh.createdAt) = :year', { year });
+      this.addCondition(query, 'EXTRACT(YEAR FROM kh.createdAt) = :year', {
+        year,
+      });
+
+      // query.andWhere('EXTRACT(YEAR FROM kh.createdAt) = :year', { year });
     }
-    console.log('lan', lan);
 
     if (lan && lan != 'all') {
       const arrayLan = await this.lienheRepository.find({
@@ -160,20 +183,23 @@ export class DataService {
           LAN: lan,
         },
       });
-      const phoneArray = arrayLan.map((l) => l.SDT);
-      console.log('phoneArray: ', phoneArray);
+      const phoneArray = arrayLan.map((l) => l.SDT_KH);
+      console.log('PhoneArray: ', phoneArray);
 
-      if (phoneArray.length == 0) {
+      if (phoneArray.length != 0) {
+        this.addCondition(query, 'kh.SDT IN (:...phoneArray)', {
+          phoneArray,
+        });
+      } else {
         return [];
       }
-
-      query.andWhere('kh.SDT IN (:...phoneArray)', {
-        phoneArray,
-      });
     }
 
     if (schoolCode) {
-      query.where('kh.MATRUONG = :code', {
+      // query.where('kh.MATRUONG = :code', {
+      //   code: schoolCode,
+      // });
+      this.addCondition(query, 'kh.MATRUONG = :code', {
         code: schoolCode,
       });
     }
@@ -186,8 +212,6 @@ export class DataService {
         .from('nganhyeuthich', 'like')
         .where('like.MANGANH = :jobCode', { jobCode });
 
-      // const data = await subQuery.getMany();
-      // console.log(subQuery.getQuery());
       query
         .andWhere(`kh.SDT IN (${subQuery.getQuery()})`)
         .setParameters({ jobCode });

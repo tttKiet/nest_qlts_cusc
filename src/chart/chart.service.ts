@@ -23,6 +23,7 @@ import { truong } from 'src/entites/truong.entity';
 import { UserService } from 'src/user/user.service';
 import { DataSource, Repository } from 'typeorm';
 import * as moment from 'moment';
+import { addCondition } from 'src/user/untils';
 
 @Injectable()
 export class ChartService {
@@ -118,6 +119,7 @@ export class ChartService {
           const data = await this.getChartDataIndex_2({
             MATINH: query?.MATINH,
             MATRUONG: query?.MATRUONG,
+            year: query?.year,
           });
           return data;
         }
@@ -302,19 +304,45 @@ export class ChartService {
   async getChartDataIndex_2({
     MATINH,
     MATRUONG,
+    year,
   }: {
     MATINH?: string;
     MATRUONG?: string;
+    year?: string;
   }) {
     const query = this.lienheRepository.createQueryBuilder('lienhe');
 
-    const dataCustomer = await this.customerRepository.find({
-      where: {
-        MATINH,
-        MATRUONG,
-      },
-    });
-    // console.log(dataCustomer);
+    const queryDataCustomer = this.customerRepository
+      .createQueryBuilder('kh')
+      .leftJoinAndSelect('kh.tinh', 'tinh')
+      .leftJoinAndSelect('kh.truong', 'truong')
+      .leftJoinAndSelect('kh.dulieukhachhang', 'dulieukhachhang')
+      .leftJoinAndSelect('kh.nganhyeuthich', 'nganhyeuthich');
+
+    if (MATINH) {
+      addCondition(queryDataCustomer, 'kh.MATINH = :MATINH', { MATINH });
+    }
+    if (MATRUONG) {
+      addCondition(queryDataCustomer, 'kh.MATRUONG = :MATRUONG', { MATRUONG });
+    }
+    if (year) {
+      addCondition(
+        queryDataCustomer,
+        'EXTRACT(YEAR FROM kh.createdAt) = :year',
+        { year },
+      );
+    }
+    // .where('kh.MATINH = :MATINH', { MATINH })
+    // .andWhere('kh.MATRUONG = :MATRUONG', { MATRUONG })
+    // .andWhere('EXTRACT(YEAR FROM kh.createdAt) = :year', { year });
+    const dataCustomer = await queryDataCustomer.getMany();
+    console.log(dataCustomer);
+    // const dataCustomer = await this.customerRepository.find({
+    //   where: {
+    //     MATINH,
+    //     MATRUONG,
+    //   },
+    // });
 
     if (dataCustomer.length == 0) {
       return {
@@ -341,6 +369,7 @@ export class ChartService {
         phoneArray,
       });
     }
+
     query.groupBy('lienhe.LAN');
     const data = await query.getRawMany();
 
@@ -409,8 +438,6 @@ export class ChartService {
     const query = this.lienheRepository.createQueryBuilder('lienhe');
 
     const phoneArray = _KH.flat(1).map((s) => s.SDT);
-    console.log('_KH: ', _KH);
-    console.log('phoneArray');
 
     if (phoneArray.length == 0) {
       return {
