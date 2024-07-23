@@ -77,8 +77,8 @@ export class khachhang {
   @Column({ nullable: false, type: 'tinyint' })
   TRANGTHAIKHACHHANG: number;
 
-  @Column({ nullable: false, type: 'char', length: 20 })
-  NAM: string;
+  // @Column({ nullable: false, type: 'char', length: 20 })
+  // NAM: string;
 
   @OneToOne(
     () => dulieukhachhang,

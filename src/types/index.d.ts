@@ -21,6 +21,7 @@ interface IFThematic {
   SDT?: string;
   page?: number;
   pageSize?: number;
+  TRANGTHAI?: number;
 }
 
 interface TimeLogin {

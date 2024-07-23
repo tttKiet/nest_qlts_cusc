@@ -43,42 +43,25 @@ export class ThematicService {
   }
 
   async readAll(drops: IFThematic) {
-    const {
-      MACHUYENDE,
-      TENCHUYENDE,
-      THOIGIANTHONGBAO,
-      THOIGIANTOCHUCCHUYENDE,
-      NOIDUNG,
-      MATRUONG,
-      SDT,
-      page,
-      pageSize,
-    } = drops;
+    const { MACHUYENDE, TRANGTHAI, SDT, page, pageSize } = drops;
 
     let condition: Partial<IFThematic> = {};
-    if (MACHUYENDE) {
-      condition.MACHUYENDE = MACHUYENDE;
-    }
-    if (TENCHUYENDE) {
-      condition.TENCHUYENDE = TENCHUYENDE;
-    }
-    if (THOIGIANTHONGBAO) {
-      condition.THOIGIANTHONGBAO = THOIGIANTHONGBAO;
-    }
-    if (THOIGIANTOCHUCCHUYENDE) {
-      condition.THOIGIANTOCHUCCHUYENDE = THOIGIANTOCHUCCHUYENDE;
-    }
-    if (NOIDUNG) {
-      condition.NOIDUNG = NOIDUNG;
-    }
-    if (MATRUONG) {
-      condition.MATRUONG = MATRUONG;
-    }
-    if (SDT) {
-      condition.SDT = SDT;
-    }
 
     const queryBuilder = this.chuyendeRepository.createQueryBuilder('chuyende');
+
+    if (MACHUYENDE) {
+      queryBuilder.where('chuyende.MACHUYENDE = :MACHUYENDE', { MACHUYENDE });
+    }
+
+    if (SDT) {
+      queryBuilder.andWhere('chuyende.SDT = :SDT', { SDT });
+    }
+
+    if (TRANGTHAI) {
+      queryBuilder.where('chitietchuyende.TRANGTHAI = :TRANGTHAI', {
+        TRANGTHAI,
+      });
+    }
 
     queryBuilder
       .leftJoinAndSelect('chuyende.truong', 'truong')
@@ -86,7 +69,7 @@ export class ThematicService {
       .leftJoinAndSelect('chuyende.chitietchuyende', 'chitietchuyende')
       .leftJoinAndSelect('chuyende.usermanager', 'usermanager');
 
-    // Thêm các tùy chọn phân trang nếu có
+    // Thêm các tùy chọn phân trang nếu có 1
     if (page !== undefined && pageSize !== undefined) {
       queryBuilder.take(pageSize);
       queryBuilder.skip((page - 1) * pageSize);

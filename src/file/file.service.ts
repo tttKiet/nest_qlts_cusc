@@ -158,7 +158,7 @@ export class FileService {
             kenhNhanThongBao: row[24],
             khoaHocQuanTam: row[25],
             ketQuaDaiHocCaoDang: row[26],
-            nam: row[27],
+            // nam: row[27],
           };
         })
         .filter((student) => student !== null);
@@ -220,7 +220,7 @@ export class FileService {
           EMAIL: item?.email,
           CCCD: item?.CCCD,
           TRANGTHAIKHACHHANG: 1,
-          NAM: item?.nam,
+          // NAM: item?.nam,
         });
 
         // dư liệu khách hàng
