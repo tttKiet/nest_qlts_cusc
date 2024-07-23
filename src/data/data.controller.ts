@@ -114,11 +114,29 @@ export class DataController {
     }
   }
 
+  @UseGuards(JwtGuards)
   @Post('/segment')
-  async createSegment(@Body() body: CreateSegmentDto, @Res() res: Response) {
+  async createSegment(
+    @Req() req: Request,
+    @Body() body: CreateSegmentDto,
+    @Res() res: Response,
+  ) {
     try {
+      const user: Partial<taikhoan> = req.user;
+      if (!user.admin) {
+        throw new HttpException(
+          'Dữ liệu admin bị sai trong database, vui lòng kiểm tra lại.',
+          500,
+        );
+      }
       const data = await this.dataService.createSegment(body);
-
+      if (data.length > 0) {
+        await this.dataService.addStory({
+          hanhdong: `Admin ${user.admin.HOTEN} đã phân ${data.length} đoạn.`,
+          maadmin: user.MAADMIN,
+          sdt: null,
+        });
+      }
       return res.status(200).json({
         statusCode: 200,
         message: 'Phân đoạn thành công.',

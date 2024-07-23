@@ -77,6 +77,7 @@ import { dottuyendung } from 'src/entites/dottuyendung.entity';
       khachhangcu,
       chuyende,
       trangthai,
+      nhatkythaydoi,
       hoso,
       dottuyendung,
     ]),

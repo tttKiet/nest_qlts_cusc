@@ -33,6 +33,9 @@ import { khachhang } from 'src/entites/khachhang.entity';
 import { usermanager } from 'src/entites/usermanager.entity';
 import { chitietpq } from 'src/entites/chitietpq.entity';
 import { dottuyendung } from 'src/entites/dottuyendung.entity';
+import { StoryDto } from 'src/dto';
+import * as moment from 'moment';
+import { nhatkythaydoi } from 'src/entites/nhatkythaydoi.entity';
 
 @Injectable()
 export class FileService {
@@ -49,7 +52,24 @@ export class FileService {
     private khachhangRepository: Repository<khachhang>,
     @InjectRepository(usermanager)
     private usermanagerRepository: Repository<usermanager>,
+    @InjectRepository(nhatkythaydoi)
+    private nhatkythaydoiRepository: Repository<nhatkythaydoi>,
   ) {}
+
+  async addStory(data: StoryDto) {
+    if (!data.maadmin && !data.sdt) {
+      throw new HttpException('Vui lòng truyền người tạo.', 400);
+    }
+    const timestamp = moment().format('YYYY[-]MM[-]DD h:mm:ss');
+
+    // create
+    const story = this.nhatkythaydoiRepository.create({
+      ...data,
+      thoigian: timestamp,
+    });
+    const storyDoc = await this.nhatkythaydoiRepository.save(story);
+    return storyDoc;
+  }
 
   removeAccentsAndLowerCase(str: string) {
     return str
@@ -423,7 +443,7 @@ export class FileService {
 
       let deletedCount = 0;
       for (const item of khachhangcuFiltered) {
-        let ex = await this.khachhangRepository.findOne({
+        const ex = await this.khachhangRepository.findOne({
           where: {
             SDT: item?.SDT,
           },

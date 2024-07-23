@@ -996,7 +996,11 @@ export class DataService {
   }
 
   async getStory() {
-    const storyDoc = await this.nhatkythaydoiRepository.find();
+    const storyDoc = await this.nhatkythaydoiRepository.find({
+      order: {
+        thoigian: 'DESC',
+      },
+    });
     return storyDoc;
   }
 

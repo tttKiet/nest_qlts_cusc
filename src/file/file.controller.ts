@@ -3,19 +3,22 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
   HttpStatus,
   Param,
   ParseFilePipeBuilder,
   Post,
   Query,
+  Req,
   Res,
   StreamableFile,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 
-import { FileInterceptor } from '@nestjs/platform-express'; 
+import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateFileDto, readFileDto } from './dto/create-file.dto';
 import { FileService } from './file.service';
 
@@ -24,11 +27,14 @@ import * as mime from 'mime-types';
 import * as path from 'path';
 import { log } from 'console';
 import * as ExcelJS from 'exceljs';
+import { JwtGuards } from 'src/auth/guards/jwt.guard';
+import { taikhoan } from 'src/entites/taikhoan.entity';
 
 @Controller('file')
 export class FileController {
   constructor(private readonly fileService: FileService) {}
 
+  @UseGuards(JwtGuards)
   @Post('upload/dataCustomerNew')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
@@ -45,10 +51,29 @@ export class FileController {
         }),
     )
     file: Express.Multer.File,
+    @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
+      const user: Partial<taikhoan> = req.user;
+      if (!user.admin) {
+        throw new HttpException(
+          'Dữ liệu admin bị sai trong database, vui lòng kiểm tra lại.',
+          500,
+        );
+      }
       const data = await this.fileService.readExcelFile(file.path);
+      // cal
+      const kh = data?.kh?.raw?.info;
+      const numbersKH = kh.match(/\d+/g).map(Number);
+      const newCustomers = numbersKH[0] - numbersKH[1];
+      const duplicateCustomers = numbersKH[1];
+
+      await this.fileService.addStory({
+        hanhdong: `Admin ${user.admin.HOTEN} đã tải lên file khách hàng mới: ${newCustomers} KH mới, ${duplicateCustomers} bị trùng.`,
+        maadmin: user.MAADMIN,
+        sdt: null,
+      });
 
       return res.status(200).json({
         fileName: file.originalname,
@@ -64,6 +89,7 @@ export class FileController {
     }
   }
 
+  @UseGuards(JwtGuards)
   @Post('upload/dataCustomerOld')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFileCustomerOld(
@@ -76,14 +102,32 @@ export class FileController {
           maxSize: 1000000,
         })
         .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY, 
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
         }),
     )
     file: Express.Multer.File,
+    @Req() req: Request,
     @Res() res: Response,
   ) {
     try {
+      const user: Partial<taikhoan> = req.user;
+      if (!user.admin) {
+        throw new HttpException(
+          'Dữ liệu admin bị sai trong database, vui lòng kiểm tra lại.',
+          500,
+        );
+      }
       const data = await this.fileService.readExcelFileCustomerOld(file.path);
+      // cal
+      const tableOld = data?.tableCusOld?.info;
+      const numbersKH = tableOld?.match(/\d+/g)?.map(Number);
+      const newCustomers = numbersKH[0] - numbersKH[1];
+      const numberDeleteTableCusNew = data?.numberDeleteTableCusNew;
+      await this.fileService.addStory({
+        hanhdong: `Admin ${user.admin.HOTEN} đã xóa: ${numberDeleteTableCusNew} KH; Đã thêm ${newCustomers} KH cũ.`,
+        maadmin: user.MAADMIN,
+        sdt: null,
+      });
 
       return res.status(200).json({
         fileName: file.originalname,
@@ -152,10 +196,7 @@ export class FileController {
         });
       }
 
-      console.log('hoSo', hoSo);
-
       const filePath = path.join(__dirname, '..', hoSo?.HOSO);
-      console.log('filePath', filePath);
 
       if (!fs.existsSync(filePath)) {
         return res.status(HttpStatus.NOT_FOUND).json({
@@ -185,10 +226,25 @@ export class FileController {
     }
   }
 
+  @UseGuards(JwtGuards)
   @Delete(':id')
-  async remove(@Param('id') MAHOSO: number, @Res() res: Response) {
+  async remove(
+    @Param('id') MAHOSO: number,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
     try {
+      const user: Partial<taikhoan> = req.user;
       const data = await this.fileService.remove(+MAHOSO);
+
+      if (!!user.admin) {
+        await this.fileService.addStory({
+          hanhdong: `Admin ${user.admin.HOTEN} đã xóa hồ sơ ${data.MAHOSO}.`,
+          maadmin: user.MAADMIN,
+          sdt: null,
+        });
+      }
+
       return res.status(200).json({
         statusCode: 200,
         message: 'Xóa hồ sơ thành công.',
@@ -210,7 +266,7 @@ export class FileController {
         statusCode: 200,
         message: 'Đọc hồ sơ thành công.',
         data: data,
-      }); 
+      });
     } catch (error) {
       return res.status(500).json({
         statusCode: 500,
